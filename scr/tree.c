@@ -41,7 +41,7 @@ void encode(bsTree *root) {
   head->code = 1;
   encode(root->right);
   if(root->left != NULL) {
-    //newnode
+    insert_list_node(head);
     head->code = 0;
     encode(root->left);
   }
