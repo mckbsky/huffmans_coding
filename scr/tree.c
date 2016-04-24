@@ -59,9 +59,9 @@ list* create_list(void) {
 
 
 
-void saveCode(list *head, char c) {
-
-}
+// void saveCode(list *head, char c) {
+//
+// }
 
 void insert_list_node(list *head) {
   if(head) {
@@ -85,4 +85,19 @@ void prepare_histogram (bsTree *histogram){
     histogram->c = (char)i;
     histogram->freq = 0;
   }
+}
+
+void create_histogram(char *inputFile, bsTree *histogram) {
+  FILE *file;
+  char buffer;
+  file = fopen(inputFile, "r");
+  if(file == NULL) {
+    fprintf(stderr, "Error: Can't open input file - function 'create histogram'");
+  }
+  while(!feof(file)) { //go through file char by char
+    fscanf(file,"%c", &buffer);
+    histogram[(int)buffer].freq++;
+  }
+  if(fclose(file))
+    fprintf(stderr, "Error closing input file - function 'create histogram'\n");
 }

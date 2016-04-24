@@ -2,7 +2,7 @@
 #define TREE_H
 #include <stdio.h>
 
-//drzewo poszukiwan binarnych: Binary Search Tree
+//binarne drzewo poszukiwan: Binary Search Tree
 struct bsTreeNode {
   int freq;
   char c;
@@ -41,20 +41,10 @@ void writeToFile(char *inputFile, char *outputFile);
 void decode(bsTree *root, char *inputFile);
 
 
-/*
- * TODO: Mariusz - wypełnienie tablicy struktur kolejnymi literami i ustawienie
- * int occ na 0
- * NOTE: uwzględniać wielkośc liter?
- */
-
 void prepareHistogram(bsTree *histogram);
 
-/*
- * TODO: Mariusz - funkcja otwiera plik tekstowy o nazwie podanej jako argument
- * wywołania i tworzy na jego podstawie histogram występowania poszczególnych
- * liter
- */
-void createHistogram(char* filename, bsTree *histogram);
+
+void createHistogram(char* inputFile, bsTree *histogram);
 
 /*
  * TODO: sortowanie względem ilości wystąpień danej litery
