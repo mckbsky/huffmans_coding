@@ -81,7 +81,7 @@ void delete_list_node(list *head) {
 
 void prepare_histogram (bsTree *histogram){
   unsigned int i;
-  for(i = 0; i < 256; i++) { //all ASCII codes
+  for(i = 0; i < 256; i++) { //all ASCII codes (2^(8 * sizeof(char)))
     histogram->c = (char)i;
     histogram->freq = 0;
   }
