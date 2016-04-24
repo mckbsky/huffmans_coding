@@ -41,7 +41,7 @@ void encode(bsTree *root) {
   head->code = 1;
   encode(root->right);
   if(root->left != NULL) {
-    insert_list_node(head);
+    //newnode
     head->code = 0;
     encode(root->left);
   }
@@ -77,4 +77,12 @@ void delete_list_node(list *head) {
   head = head->next;
   head->next = head->next->next;
   free(tmp);
+}
+
+void prepare_histogram (bsTree *histogram){
+  unsigned int i;
+  for(i = 0; i < 256; i++) { //all ASCII codes
+    histogram->c = (char)i;
+    histogram->freq = 0;
+  }
 }
