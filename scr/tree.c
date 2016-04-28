@@ -8,30 +8,43 @@ void generateBSTree(bsTree *histogram, int n, bsTree *root) {
 
       bsTree *node = (bsTree *)malloc(sizeof(bsTree));
       node->c = 0;
-      node->freq = histogram[n].freq + histogram[n - 1].freq;
+      //node->freq = histogram[n].freq + histogram[n - 1].freq;
 
     if(root) {
-      if(n == 0) {
-        node->left = &histogram[n];
+     if(n == 0) {
+        node->left = (bsTree *)malloc(sizeof(bsTree));
+        node->left->c = histogram[n]->c;
         node->right = root;
         root = node;
       } else {
-        node->left = &histogram[n - 1];
-        node->right = &histogram[n];
+        node->left = (bsTree *)malloc(sizeof(bsTree));
+        node->left->c = histogram[n - 1]->c;
+        node->right = (bsTree *)malloc(sizeof(bsTree));
+        node->right->c = histogram[n]->c;
 
         bsTree *new_root = (bsTree *)malloc(sizeof(bsTree));
+        new_root->c = 0;
         new_root->left = node;
         new_root->right = root;
         root = new_root;
       }
-    } else {
-      node = root;
+    }
+    else if(n == 0){
+        node->c = histogram[n]->c;
+        root = node;
+    }
+    else {
+        node->left = (bsTree *)malloc(sizeof(bsTree));
+        node->left->c = histogram[n - 1]->c;
+        node->right = (bsTree *)malloc(sizeof(bsTree));
+        node->right->c = histogram[n]->c;
+        node = root;
     }
     n -= 2;
   }
 }
 
-void encode(bsTree *root) {
+void encode(bsTree *root) { //TODO: zmienic nazwe na createCodes
   if(root->c != 0) {
     saveCode(head, root->c);
     delete_list_node(head);
@@ -48,38 +61,121 @@ void encode(bsTree *root) {
   delete_list_node(head);
 }
 
-list* create_list(void) {
-    list *head = (list *)malloc(sizeof(list));
-    if (head != NULL) {
-        head->code = 2;
-        head->next = NULL;
-    }
-    return head;
+void TMPencode(int (*codes)[256], char *inputFile, char *outputFile) {
+    FILE *iFile, *oFile;
+   char buffer;
+  iFile = fopen(inputFile, "r");
+  oFile = fopen(outputFile, "w");
+  if(iFile == NULL) {
+    fprintf(stderr, "Error: Can't open input file - function 'encode'");
+  }
+ if(oFile == NULL) {
+    fprintf(stderr, "Error: Can't open output file - function 'encode'");
+  }
+
+   while(!feof(iFile)) {
+        scanf(iFile,"%c", &buffer);
+        fprintf(oFile, "%s", codes[(int)buffer];
+   }
+
+    if(fclose(iFile))
+    fprintf(stderr, "Error closing input file - function 'encode'\n");
+  if(fclose(oFile))
+    fprintf(stderr, "Error closing output file - function 'encode'\n");
 }
 
+void decode(bsTree *root, char *inputFile, char *outputFile) {
+   struct bsTree *tmp = root;
+   FILE *iFile, *oFile;
+   char buffer;
+  iFile = fopen(inputFile, "r");
+  oFile = fopen(outputFile, "w");
+  if(iFile == NULL) {
+    fprintf(stderr, "Error: Can't open input file - function 'decode'");
+  }
+ if(oFile == NULL) {
+    fprintf(stderr, "Error: Can't open output file - function 'decode'");
+  }
+  while(!feof(iFile)) {
+    while(1) {
+        scanf(file,"%c", &buffer);
+        if(buffer = ='0') {
+            tmp = tmp->left;
+        }
+        else if(buffer == '1') {
+            tmp = tmp->right;
+        }
+        if(tmp->c != 0) {
+            fprintf(oFile, tmp->c);
+            fseek(oFile, 1, SEEK_CURR); //NOTE: moze przesuwac o dwa miejsca, sprawdzic
+            tmp = root;
+            break;
+        }
+    fseek(iFile, 1, SEEK_CURR);
+    }
+  }
+  if(fclose(iFile))
+    fprintf(stderr, "Error closing input file - function 'decode'\n");
+  if(fclose(oFile))
+    fprintf(stderr, "Error closing output file - function 'decode'\n");
+}
 
+void removeTree(bsTree *root) {
+    if(root->c != 0) {
+    free(root);
+    return;
+  }
+  removeTree(root->right);
+  if(root->left != NULL) {
+    removeTree(root->left);
+  }
+  free(root);
+}
 
-// void saveCode(list *head, char c) {
-//
-// }
+list* create_list(void) {
+    list *new_node = (list *)malloc(sizeof(list));
+    if (new_node != NULL) {
+        new_node->code = 2;
+        new_node->next = new_node->prev = NULL;
+    }
+    return new_node;
+}
 
-void insert_list_node(list *head) {
-  if(head) {
-    list *list_node = (list*)malloc(sizeof(list));
-    list_node->next = head;
-    head = list_node;
+void saveCode(int (*codes)[256], struct list_pointers *top, char c) {
+    struct list_node *tmp = tail->prev;
+    int i;
+    for(i = 0; tmp != NULL; i++) {
+        realloc(&codes[(int)c], (i + 1) * sizeof(int));
+        codes[(int)c][i] = top->head->code;
+        tmp = temp->prev;
+    }
+}
+
+void insert_list_node(struct list_pointers *top) { //TODO: wyjebac typedefy, zmienic nazwe z top na list
+  if(top) {
+    list *new_node = (list*)malloc(sizeof(list));
+    new_node->prev = NULL;
+    new_node->next = top->head;
+    top->head->prev = new_node;
+    top->head = new_node;
   }
   fprintf(stderr, "Empty list, can't add new element\n");
 }
 
-void delete_list_node(list *head) {
-  list *tmp = head;
-  head = head->next;
-  head->next = head->next->next;
-  free(tmp);
+void delete_list_node(struct list_pointers *top) {
+    if(top != NULL) {
+    list *tmp = top->head->next;
+    tmp->prev = NULL;
+    free(head);
+    head = temp;
+    }
+    else {
+        fprintf(stderr, "Can't delete list node");
+    }
+
 }
 
-void prepare_histogram (bsTree *histogram){
+void prepareHistogram (bsTree *histogram){
   unsigned int i;
   for(i = 0; i < 256; i++) { //all ASCII codes (2^(8 * sizeof(char)))
     histogram->c = (char)i;
@@ -100,4 +196,42 @@ void create_histogram(char *inputFile, bsTree *histogram) {
   }
   if(fclose(file))
     fprintf(stderr, "Error closing input file - function 'create histogram'\n");
+}
+
+
+void quickSort(bsTree *histogram, int begin, int end, int flag) {
+    //flag = 0 -> po charach
+    //flag = 1 -> po frequency
+    int i = begin;
+    int j = end;
+    x = histogram[(i + j) / 2];
+
+    do {
+        while(histogram[i] < x) {
+            i++;
+        }
+        while(histogram[j] > x) {
+            j++;
+        }
+        if(i <= j && !flag) {
+            char tmp = histogram[i]->c;
+            histogram[i]->c = histogram[j]->c;
+            histogram[j--]->c = tmp;
+            i++;
+        }
+        else if(i <= j && flag) {
+            int tmp = histogram[i]->frequency;
+            histogram[i]->frequency = histogram[j]->frequency;
+            histogram[j--]->frequency = tmp;
+            i++;
+        }
+    }
+    while(i <=j);
+
+    if(begin < j) {
+        quickSort(histogram, begin, j, flag);
+    }
+    if(i < end) {
+        quickSort(histogram, i, end, flag);
+    }
 }

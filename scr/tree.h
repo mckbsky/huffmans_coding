@@ -11,19 +11,26 @@ struct bsTreeNode {
 
 struct list_node {
   unsigned int code:2;
-  struct list_node *next;
+  struct list_node *prev, *next;
+};
+
+struct list_pointers {
+    struct list_node *head, *tail;
 };
 
 typedef struct list_node list;
 typedef struct bsTreeNode bsTree;
 
 bsTree *root = NULL;
-bsTree histogram[25];
+bsTree histogram[256];
+
+int **codes[256][];
 
 list* create_list(void);
 void insert_list_node(list *head);
 void saveCode(list *head, char c);
 void delete_list_node(list *head);
+
 
 
 
@@ -40,17 +47,14 @@ void writeToFile(char *inputFile, char *outputFile);
 
 void decode(bsTree *root, char *inputFile);
 
+void removeTree(bsTree *root);
 
 void prepareHistogram(bsTree *histogram);
 
 
 void createHistogram(char* inputFile, bsTree *histogram);
 
-/*
- * TODO: sortowanie względem ilości wystąpień danej litery
- * NOTE: początkowo może to być jakieś proste sortowanie, docelowo qsort
- */
 
-void quickSort(bsTree *histogram);
+void quickSort(bsTree *histogram, int begin, int end, int flag);
 
 #endif //tree.h
