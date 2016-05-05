@@ -2,11 +2,10 @@
 #define TREE_H
 #include <stdio.h>
 
-//binarne drzewo poszukiwan: Binary Search Tree
-struct bsTreeNode {
+struct treeNode {
   int freq;
   char c;
-  struct bsTreeNode *left, *right;
+  struct treeNode *left, *right;
 };
 
 struct list_node {
@@ -18,43 +17,33 @@ struct list_pointers {
     struct list_node *head, *tail;
 };
 
-typedef struct list_node list;
-typedef struct bsTreeNode bsTree;
+struct treeNode *root = NULL;
+struct treeNode histogram[256];
 
-bsTree *root = NULL;
-bsTree histogram[256];
+struct list_node* createList(void);
 
-int **codes[256][];
+void insertListNode(struct list_pointers *list);
 
-list* create_list(void);
-void insert_list_node(list *head);
-void saveCode(list *head, char c);
-void delete_list_node(list *head);
+void saveCode(struct list_pointers *list, char c);
 
+void deleteListNode(struct list_pointers *list);
 
+void generateTree(struct treeNode *histogram, int n, struct treeNode *root);
 
+void createCodes(struct treeNode *root);
 
-void generateBSTree(bsTree *histogram, int n, bsTree *root);
-
-void encode(bsTree *root);
+void encode(int (*codes)[256], char *inputFile, char *outputFile);
 
 void writeToFile(char *inputFile, char *outputFile);
 
-/*
- * TODO: Maciek, Mariusz: funkcja dekodująca z pliku zakodowany ciąg zer i
- * jedynek
- */
+void decode(struct treeNode *root, char *inputFile, char *outputFile);
 
-void decode(bsTree *root, char *inputFile);
+void removeTree(struct treeNode *root);
 
-void removeTree(bsTree *root);
+void prepareHistogram (struct treeNode *histogram);
 
-void prepareHistogram(bsTree *histogram);
+void createHistogram(char *inputFile, struct treeNode *histogram);
 
-
-void createHistogram(char* inputFile, bsTree *histogram);
-
-
-void quickSort(bsTree *histogram, int begin, int end, int flag);
+void quickSort(struct treeNode *histogram, int begin, int end, int flag);
 
 #endif //tree.h

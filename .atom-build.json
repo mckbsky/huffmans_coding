@@ -1,6 +1,6 @@
 {
   "cmd": "clang",
-  "args": ["scr/huffman.c", "scr/histogram.c", "scr/tree.c", "-Wall", "-Wextra", "-pedantic", "-std=c99",
+  "args": ["/scr/huffman.c", "scr/tree.c", "-Wall", "-Wextra", "-pedantic", "-std=c99",
            "-o", "bin/huffman.out", "&& bin/huffman.out"],
   "sh": true,
   "cwd": "{FILE_ACTIVE_PATH}"

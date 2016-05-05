@@ -1,6 +1,6 @@
 #include "tree.h"
 
 int main(void) {
-    prepareHistogram(hisrtogram);
+    prepareHistogram(histogram);
     return 0;
 }
