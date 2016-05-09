@@ -17,7 +17,7 @@ struct list_pointers {
     struct list_node *head, *tail;
 };
 
-struct treeNode *root = NULL;
+extern struct treeNode *root;
 struct treeNode histogram[256];
 
 struct list_node* createList(void);

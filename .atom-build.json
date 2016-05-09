@@ -1,7 +1,7 @@
 {
-  "cmd": "clang",
-  "args": ["/scr/huffman.c", "scr/tree.c", "-Wall", "-Wextra", "-pedantic", "-std=c99",
-           "-o", "bin/huffman.out", "&& bin/huffman.out"],
+  "cmd": "gcc",
+  "args": ["{PROJECT_PATH}/scr/huffman.c", "{PROJECT_PATH}/scr/tree.c", "-Wall", "-Wextra",
+           "-pedantic", "-std=c99", "-o", "{PROJECT_PATH}/bin/huffman.out", "&& {PROJECT_PATH}/bin/huffman.out"],
   "sh": true,
   "cwd": "{FILE_ACTIVE_PATH}"
 }
