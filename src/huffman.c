@@ -1,4 +1,4 @@
-#include "tree.h"
+#include "../headers/tree.h"
 
 struct treeNode histogram[256];
 

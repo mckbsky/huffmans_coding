@@ -1,4 +1,4 @@
-#include "tree.h"
+#include "../headers/tree.h"
 #include <stdlib.h>
 #include <string.h>
 
@@ -247,7 +247,7 @@ void quickSortFreq(struct treeNode *histogram, int begin, int end) {
             j++;
         }
         if(i <= j) {
-            char tmp = histogram[i].freq;
+            int tmp = histogram[i].freq;
             histogram[i].freq = histogram[j].freq;
             histogram[j--].freq = tmp;
             i++;

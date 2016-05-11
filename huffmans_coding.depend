@@ -1,0 +1,7 @@
+# depslib dependency file v1.0
+1463006569 source:/home/drkp/workspace/huffmans_coding/src/huffman.c
+	"../headers/tree.h"
+
+1463003953 /home/drkp/workspace/huffmans_coding/headers/tree.h
+	<stdio.h>
+
