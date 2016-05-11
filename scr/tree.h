@@ -4,7 +4,7 @@
 
 struct treeNode {
   int freq;
-  char c;
+  unsigned char c;
   struct treeNode *left, *right;
 };
 
@@ -18,7 +18,7 @@ struct list_pointers {
 };
 
 extern struct treeNode *root;
-struct treeNode histogram[256];
+extern struct treeNode histogram[256];
 
 struct list_node* createList(void);
 
@@ -44,6 +44,9 @@ void prepareHistogram (struct treeNode *histogram);
 
 void createHistogram(char *inputFile, struct treeNode *histogram);
 
-void quickSort(struct treeNode *histogram, int begin, int end, int flag);
+void quickSortChar(struct treeNode *histogram, int begin, int end);
+
+void quickSortFreq(struct treeNode *histogram, int begin, int end);
+
 
 #endif //tree.h

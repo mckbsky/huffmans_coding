@@ -1,5 +1,5 @@
 {
-  "cmd": "gcc",
+  "cmd": "clang",
   "args": ["{PROJECT_PATH}/scr/huffman.c", "{PROJECT_PATH}/scr/tree.c", "-Wall", "-Wextra",
            "-pedantic", "-std=c99", "-o", "{PROJECT_PATH}/bin/huffman.out", "&& {PROJECT_PATH}/bin/huffman.out"],
   "sh": true,

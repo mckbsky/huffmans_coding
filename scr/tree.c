@@ -180,8 +180,8 @@ void deleteListNode(struct list_pointers *list) {
 void prepareHistogram (struct treeNode *histogram) {
   unsigned int i;
   for(i = 0; i < 256; i++) { //all ASCII codes (2^(8 * sizeof(char)))
-    histogram->c = (char)i;
-    histogram->freq = 0;
+    histogram[i].c = (char)i;
+    histogram[i].freq = 0;
   }
 }
 
@@ -190,7 +190,8 @@ void createHistogram(char *inputFile, struct treeNode *histogram) {
   char buffer;
   file = fopen(inputFile, "r");
   if(file == NULL) {
-    fprintf(stderr, "Error: Can't open input file - function 'create histogram'");
+    fprintf(stderr, "Error: Can't open input file - function 'create histogram'\n");
+    return;
   }
   while(!feof(file)) { //go through file char by char
     fscanf(file,"%c", &buffer);
@@ -200,36 +201,53 @@ void createHistogram(char *inputFile, struct treeNode *histogram) {
     fprintf(stderr, "Error closing input file - function 'create histogram'\n");
 }
 
-
-void quickSort(struct treeNode *histogram, int begin, int end, int flag) {
-    //flag = 0 -> po charach
-    //flag = 1 -> po frequency
-
+void quickSortChar(struct treeNode *histogram, int begin, int end) {
     int i = begin;
     int j = end;
     int x;
-    if(flag) {
-      x = histogram[(i + j) / 2].freq;
-    }
-    else {
-      x = histogram[(i + j) / 2].c;
-    }
+
+    x = histogram[(i + j) / 2].c;
 
     do {
-        while(histogram[i].c < x) {//FIXME: just to supress warning
+        while(histogram[i].c < x) {
             i++;
         }
-        while(histogram[j].c > x) {//FIXME: just to supress warning
+        while(histogram[j].c > x) {
             j++;
         }
-        if(i <= j && !flag) {
+        if(i <= j) {
             char tmp = histogram[i].c;
             histogram[i].c = histogram[j].c;
             histogram[j--].c = tmp;
             i++;
         }
-        else if(i <= j && flag) {
-            int tmp = histogram[i].freq;
+    }
+    while(i <=j);
+
+    if(begin < j) {
+        quickSortChar(histogram, begin, j);
+    }
+    if(i < end) {
+        quickSortChar(histogram, i, end);
+    }
+}
+
+void quickSortFreq(struct treeNode *histogram, int begin, int end) {
+    int i = begin;
+    int j = end;
+    int x;
+
+    x = histogram[(i + j) / 2].freq;
+
+    do {
+        while(histogram[i].freq < x) {
+            i++;
+        }
+        while(histogram[j].freq > x) {
+            j++;
+        }
+        if(i <= j) {
+            char tmp = histogram[i].freq;
             histogram[i].freq = histogram[j].freq;
             histogram[j--].freq = tmp;
             i++;
@@ -238,9 +256,9 @@ void quickSort(struct treeNode *histogram, int begin, int end, int flag) {
     while(i <=j);
 
     if(begin < j) {
-        quickSort(histogram, begin, j, flag);
+        quickSortFreq(histogram, begin, j);
     }
     if(i < end) {
-        quickSort(histogram, i, end, flag);
+        quickSortFreq(histogram, i, end);
     }
 }
