@@ -2,51 +2,58 @@
 #include <stdlib.h>
 #include <string.h>
 
-struct list_pointers *list;
-int **codes;
 
-void generateTree(struct treeNode *histogram, int n, struct treeNode *root) {
+struct treeNode* generateTree(struct treeNode *root, int n) {
   while(n >= 0) {
 
       struct treeNode *node = (struct treeNode *)malloc(sizeof(struct treeNode));
       node->c = 0;
-      //node->freq = histogram[n].freq + histogram[n - 1].freq;
+      node->freq = histogram[n].freq + histogram[n - 1].freq;
 
     if(root) {
      if(n == 0) {
         node->left = (struct treeNode *)malloc(sizeof(struct treeNode));
+        node->left->freq = histogram[n].freq;
         node->left->c = histogram[n].c;
         node->right = root;
         root = node;
+        root->freq = root->left->freq + root->right->freq;
       } else {
         node->left = (struct treeNode *)malloc(sizeof(struct treeNode));
+        node->left->freq = histogram[n- 1].freq;
         node->left->c = histogram[n - 1].c;
         node->right = (struct treeNode *)malloc(sizeof(struct treeNode));
+        node->right->freq = histogram[n].freq;
         node->right->c = histogram[n].c;
+        node->freq = node->left->freq + node->right->freq;
 
         struct treeNode *new_root = (struct treeNode *)malloc(sizeof(struct treeNode));
         new_root->c = 0;
         new_root->left = node;
         new_root->right = root;
         root = new_root;
+        root->freq = root->left->freq + root->right->freq;
       }
     }
     else if(n == 0){
         node->c = histogram[n].c;
         root = node;
+        root->freq = histogram[n].freq;
     }
     else {
         node->left = (struct treeNode *)malloc(sizeof(struct treeNode));
         node->left->c = histogram[n - 1].c;
         node->right = (struct treeNode *)malloc(sizeof(struct treeNode));
         node->right->c = histogram[n].c;
-        node = root;
+        root = node;
     }
     n -= 2;
   }
+  printf("Weight of tree: %d", root->freq);
+  return root;
 }
 
-void createCodes(struct treeNode *root) {
+void createCodes(struct list_pointers *list, struct treeNode *root) {
   if(root->c != 0) {
     saveCode(list, root->c);
     deleteListNode(list);
@@ -54,13 +61,23 @@ void createCodes(struct treeNode *root) {
   }
   insertListNode(list);
   list->head->code = 1;
-  createCodes(root->right);
+  createCodes(list, root->right);
   if(root->left != NULL) {
     insertListNode(list);
     list->head->code = 0;
-    createCodes(root->left);
+    createCodes(list, root->left);
   }
   deleteListNode(list);
+}
+
+void saveCode(struct list_pointers *list, char c) {
+    struct list_node *tmp = list->tail->prev;
+    int i;
+    for(i = 0; tmp != NULL; i++) {
+        codes[(int)c] = (int *)realloc(&codes[(int)c], (i + 1) * sizeof(int));
+        codes[(int)c][i] = tmp->code;
+        tmp = tmp->prev;
+    }
 }
 
 void encode(int (*codes)[256], char *inputFile, char *outputFile) {
@@ -134,42 +151,32 @@ void removeTree(struct treeNode *root) {
   free(root);
 }
 
-struct list_node* createList(void) {
+void createList(struct list_pointers *list) {
     struct list_node *new_node = (struct list_node *)malloc(sizeof(struct list_node));
     if (new_node != NULL) {
         new_node->code = 2;
         new_node->next = new_node->prev = NULL;
-    }
-    return new_node;
-}
-
-void saveCode(struct list_pointers *list, char c) {
-    struct list_node *tmp = list->tail->prev;
-    int i;
-    for(i = 0; tmp != NULL; i++) {
-        codes[(int)c] = (int *)realloc(&codes[(int)c], (i + 1) * sizeof(int));
-        codes[(int)c][i] = list->head->code;
-        tmp = tmp->prev;
+        list->head = list->tail = new_node;
     }
 }
 
 void insertListNode(struct list_pointers *list) {
   if(list) {
     struct list_node *new_node = (struct list_node*)malloc(sizeof(struct list_node));
-    new_node->prev = NULL;
-    new_node->next = list->head;
-    list->head->prev = new_node;
+    list->head->next = new_node;
     list->head = new_node;
   }
-  fprintf(stderr, "Empty list, can't add new element\n");
+  else {
+    fprintf(stderr, "Empty list, can't add new element\n");
+  }
 }
 
 void deleteListNode(struct list_pointers *list) {
     if(list != NULL) {
-    struct list_node *tmp = list->head->next;
-    tmp->prev = NULL;
-    free(list->head);
-    list->head = tmp;
+        struct list_node *tmp = list->head->next;
+        tmp->prev = NULL;
+        free(list->head);
+        list->head = tmp;
     }
     else {
         fprintf(stderr, "Can't delete list node");
@@ -187,7 +194,7 @@ void prepareHistogram (struct treeNode *histogram) {
 
 void createHistogram(char *inputFile, struct treeNode *histogram) {
   FILE *file;
-  char buffer;
+  unsigned char buffer;
   file = fopen(inputFile, "r");
   if(file == NULL) {
     fprintf(stderr, "Error: Can't open input file - function 'create histogram'\n");
@@ -195,7 +202,7 @@ void createHistogram(char *inputFile, struct treeNode *histogram) {
   }
   while(!feof(file)) { //go through file char by char
     fscanf(file,"%c", &buffer);
-    histogram[(int)buffer].freq++;
+    histogram[(int)buffer].freq++; //FIXME: dodaje o jeden znak za duzo
   }
   if(fclose(file))
     fprintf(stderr, "Error closing input file - function 'create histogram'\n");
@@ -213,13 +220,17 @@ void quickSortChar(struct treeNode *histogram, int begin, int end) {
             i++;
         }
         while(histogram[j].c > x) {
-            j++;
+            j--;
         }
         if(i <= j) {
             char tmp = histogram[i].c;
             histogram[i].c = histogram[j].c;
-            histogram[j--].c = tmp;
-            i++;
+            histogram[j].c = tmp;
+
+            int tmp2 = histogram[i].freq;
+            histogram[i].freq = histogram[j].freq;
+            histogram[j].freq = tmp2;
+            i++; j--;
         }
     }
     while(i <=j);
@@ -235,25 +246,27 @@ void quickSortChar(struct treeNode *histogram, int begin, int end) {
 void quickSortFreq(struct treeNode *histogram, int begin, int end) {
     int i = begin;
     int j = end;
-    int x;
-
-    x = histogram[(i + j) / 2].freq;
+    int x = histogram[(i + j) / 2].freq;
 
     do {
-        while(histogram[i].freq < x) {
+        while(histogram[i].freq > x) {
             i++;
         }
-        while(histogram[j].freq > x) {
-            j++;
+        while(histogram[j].freq < x) {
+            j--;
         }
         if(i <= j) {
             int tmp = histogram[i].freq;
             histogram[i].freq = histogram[j].freq;
-            histogram[j--].freq = tmp;
-            i++;
+            histogram[j].freq = tmp;
+
+            tmp = histogram[i].c;
+            histogram[i].c = histogram[j].c;
+            histogram[j].c = tmp;
+            i++; j--;
         }
     }
-    while(i <=j);
+    while(i <= j);
 
     if(begin < j) {
         quickSortFreq(histogram, begin, j);

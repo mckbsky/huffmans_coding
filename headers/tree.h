@@ -19,8 +19,10 @@ struct list_pointers {
 
 extern struct treeNode *root;
 extern struct treeNode histogram[256];
+extern struct list_pointers *list;
+extern int **codes;
 
-struct list_node* createList(void);
+void createList(struct list_pointers *list);
 
 void insertListNode(struct list_pointers *list);
 
@@ -28,9 +30,9 @@ void saveCode(struct list_pointers *list, char c);
 
 void deleteListNode(struct list_pointers *list);
 
-void generateTree(struct treeNode *histogram, int n, struct treeNode *root);
+struct treeNode* generateTree(struct treeNode *root, int n);
 
-void createCodes(struct treeNode *root);
+void createCodes(struct list_pointers *, struct treeNode *root);
 
 void encode(int (*codes)[256], char *inputFile, char *outputFile);
 
