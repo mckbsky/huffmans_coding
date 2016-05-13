@@ -3,7 +3,7 @@
 #include <string.h>
 
 
-struct treeNode* generateTree(struct treeNode *root, int n) {
+struct treeNode* generateTree(struct treeNode *root, struct treeNode *histogram, int n) {
   while(n >= 0) {
 
       struct treeNode *node = (struct treeNode *)malloc(sizeof(struct treeNode));
@@ -60,27 +60,27 @@ void createCodes(struct list_pointers *list, struct treeNode *root) {
     return;
   }
   insertListNode(list);
-  list->head->code = 1;
+  list->head->code = '1';
   createCodes(list, root->right);
-  if(root->left != NULL) {
     insertListNode(list);
-    list->head->code = 0;
+    list->head->code = '0';
     createCodes(list, root->left);
-  }
-  deleteListNode(list);
+    deleteListNode(list);
+
 }
 
 void saveCode(struct list_pointers *list, char c) {
     struct list_node *tmp = list->tail->prev;
-    int i;
+    int unsigned i;
     for(i = 0; tmp != NULL; i++) {
-        codes[(int)c] = (int *)realloc(&codes[(int)c], (i + 1) * sizeof(int));
+        codes[(int)c] = (char *)realloc(codes[(int)c], (i + 2) * sizeof(char));
         codes[(int)c][i] = tmp->code;
+        codes[(int)c][i + 1] = '\0';
         tmp = tmp->prev;
     }
 }
 
-void encode(int (*codes)[256], char *inputFile, char *outputFile) {
+void encode(char *inputFile, char *outputFile) {
     FILE *iFile, *oFile;
    char buffer;
   iFile = fopen(inputFile, "r");
@@ -94,7 +94,7 @@ void encode(int (*codes)[256], char *inputFile, char *outputFile) {
 
    while(!feof(iFile)) {
         fscanf(iFile,"%c", &buffer);
-        fprintf(oFile, "%d", *codes[(int)buffer]);
+        fprintf(oFile, "%s", codes[(int)buffer]);
    }
 
     if(fclose(iFile))
@@ -116,8 +116,10 @@ void decode(struct treeNode *root, char *inputFile, char *outputFile) {
     fprintf(stderr, "Error: Can't open output file - function 'decode'");
   }
   while(!feof(iFile)) {
-    while(1) {
+    printf("\n");
+
         fscanf(iFile,"%c", &buffer);
+        printf("%c", buffer);
         if(buffer == '0') {
             tmp = tmp->left;
         }
@@ -126,12 +128,8 @@ void decode(struct treeNode *root, char *inputFile, char *outputFile) {
         }
         if(tmp->c != 0) {
             fprintf(oFile, "%c", tmp->c);
-            fseek(oFile, 1, SEEK_CUR); //NOTE: moze przesuwac o dwa miejsca, sprawdzic
             tmp = root;
-            break;
         }
-    fseek(iFile, 1, SEEK_CUR);
-    }
   }
   if(fclose(iFile))
     fprintf(stderr, "Error closing input file - function 'decode'\n");
@@ -163,8 +161,12 @@ void createList(struct list_pointers *list) {
 void insertListNode(struct list_pointers *list) {
   if(list) {
     struct list_node *new_node = (struct list_node*)malloc(sizeof(struct list_node));
-    list->head->next = new_node;
-    list->head = new_node;
+    if(new_node) {
+      new_node->prev = NULL;
+      new_node->next = list->head;
+      list->head->prev = new_node;
+      list->head = new_node;
+      }
   }
   else {
     fprintf(stderr, "Empty list, can't add new element\n");
@@ -172,7 +174,11 @@ void insertListNode(struct list_pointers *list) {
 }
 
 void deleteListNode(struct list_pointers *list) {
-    if(list != NULL) {
+    if(list->head == list->tail) {
+        free(list->head);
+        list = NULL;
+    }
+    else if(list->head) {
         struct list_node *tmp = list->head->next;
         tmp->prev = NULL;
         free(list->head);
@@ -260,9 +266,9 @@ void quickSortFreq(struct treeNode *histogram, int begin, int end) {
             histogram[i].freq = histogram[j].freq;
             histogram[j].freq = tmp;
 
-            tmp = histogram[i].c;
+            char tmp2 = histogram[i].c;
             histogram[i].c = histogram[j].c;
-            histogram[j].c = tmp;
+            histogram[j].c = tmp2;
             i++; j--;
         }
     }

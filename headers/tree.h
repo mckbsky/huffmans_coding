@@ -4,12 +4,12 @@
 
 struct treeNode {
   int freq;
-  unsigned char c;
+  char c;
   struct treeNode *left, *right;
 };
 
 struct list_node {
-  unsigned int code:2;
+  char code;
   struct list_node *prev, *next;
 };
 
@@ -17,10 +17,7 @@ struct list_pointers {
     struct list_node *head, *tail;
 };
 
-extern struct treeNode *root;
-extern struct treeNode histogram[256];
-extern struct list_pointers *list;
-extern int **codes;
+extern char **codes;
 
 void createList(struct list_pointers *list);
 
@@ -30,11 +27,11 @@ void saveCode(struct list_pointers *list, char c);
 
 void deleteListNode(struct list_pointers *list);
 
-struct treeNode* generateTree(struct treeNode *root, int n);
+struct treeNode* generateTree(struct treeNode *root, struct treeNode *histogram, int n);
 
-void createCodes(struct list_pointers *, struct treeNode *root);
+void createCodes(struct list_pointers *list, struct treeNode *root);
 
-void encode(int (*codes)[256], char *inputFile, char *outputFile);
+void encode(char *inputFile, char *outputFile);
 
 void writeToFile(char *inputFile, char *outputFile);
 
