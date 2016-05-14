@@ -56,7 +56,7 @@ struct treeNode* generateTree(struct treeNode *root, struct treeNode *histogram,
 void createCodes(struct list_pointers *list, struct treeNode *root) {
   if(root->c != 0) {
     saveCode(list, root->c);
-    deleteListNode(&list);
+    deleteListNode(list);
     return;
   }
   insertListNode(list);
@@ -65,7 +65,7 @@ void createCodes(struct list_pointers *list, struct treeNode *root) {
     insertListNode(list);
     list->head->code = '0';
     createCodes(list, root->left);
-    deleteListNode(&list);
+    deleteListNode(list);
 
 }
 
@@ -173,14 +173,20 @@ void insertListNode(struct list_pointers *list) {
   }
 }
 
-void deleteListNode(struct list_pointers **list) {
-    if((*list)->head == NULL) {
-      fprintf(stderr, "Can't delete node from empty list\n");
-      return;
+void deleteListNode(struct list_pointers *list) {
+    if(list->head == list->tail) {
+        free(list->head);
+        list = NULL;
     }
-    struct list_node* deleted_node = (*list)->head;
-    (*list)->head = deleted_node->next;
-    free(deleted_node);
+    else if(list->head) {
+        struct list_node *tmp = list->head->next;
+        tmp->prev = NULL;
+        free(list->head);
+        list->head = tmp;
+    }
+    else {
+        fprintf(stderr, "Can't delete list node");
+    }
 }
 
 void prepareHistogram (struct treeNode *histogram) {
@@ -193,7 +199,7 @@ void prepareHistogram (struct treeNode *histogram) {
 
 void createHistogram(char *inputFile, struct treeNode *histogram) {
   FILE *file;
-  unsigned char buffer;
+  char buffer;
   file = fopen(inputFile, "r");
   if(file == NULL) {
     fprintf(stderr, "Error: Can't open input file - function 'create histogram'\n");

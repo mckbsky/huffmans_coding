@@ -25,7 +25,7 @@ void insertListNode(struct list_pointers *list);
 
 void saveCode(struct list_pointers *list, char c);
 
-void deleteListNode(struct list_pointers **list);
+void deleteListNode(struct list_pointers *list);
 
 struct treeNode* generateTree(struct treeNode *root, struct treeNode *histogram, int n);
 
