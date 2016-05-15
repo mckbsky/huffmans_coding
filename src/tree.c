@@ -4,11 +4,13 @@
 
 
 struct treeNode* generateTree(struct treeNode *root, struct treeNode *histogram, int n) {
+  if(n == 0) {
+    return NULL;
+  }
   while(n >= 0) {
-
-      struct treeNode *node = (struct treeNode *)malloc(sizeof(struct treeNode));
-      node->c = 0;
-      node->freq = histogram[n].freq + histogram[n - 1].freq;
+    struct treeNode *node = (struct treeNode *)malloc(sizeof(struct treeNode));
+    node->c = 0;
+    node->freq = histogram[n].freq + histogram[n - 1].freq;
 
     if(root) {
      if(n == 0) {
@@ -116,10 +118,7 @@ void decode(struct treeNode *root, char *inputFile, char *outputFile) {
     fprintf(stderr, "Error: Can't open output file - function 'decode'");
   }
   while(!feof(iFile)) {
-    printf("\n");
-
         fscanf(iFile,"%c", &buffer);
-        printf("%c", buffer);
         if(buffer == '0') {
             tmp = tmp->left;
         }
