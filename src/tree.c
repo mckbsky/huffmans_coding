@@ -4,9 +4,6 @@
 
 
 struct treeNode* generateTree(struct treeNode *root, struct treeNode *histogram, int n) {
-  if(n == 0) {
-    return NULL;
-  }
   while(n >= 0) {
     struct treeNode *node = (struct treeNode *)malloc(sizeof(struct treeNode));
     node->c = 0;
@@ -56,11 +53,20 @@ struct treeNode* generateTree(struct treeNode *root, struct treeNode *histogram,
 }
 
 void createCodes(struct list_pointers *list, struct treeNode *root) {
+  if(root->c != 0 && list->head == list->tail) {
+    insertListNode(list);
+    list->head->code = '0';
+    saveCode(list, root->c);
+    deleteListNode(list);
+    return;
+  }
+
   if(root->c != 0) {
     saveCode(list, root->c);
     deleteListNode(list);
     return;
   }
+
   insertListNode(list);
   list->head->code = '1';
   createCodes(list, root->right);
@@ -94,8 +100,7 @@ void encode(char *inputFile, char *outputFile) {
     fprintf(stderr, "Error: Can't open output file - function 'encode'");
   }
 
-   while(!feof(iFile)) {
-        fscanf(iFile,"%c", &buffer);
+   while(fscanf(iFile,"%c", &buffer) == 1) {
         fprintf(oFile, "%s", codes[(int)buffer]);
    }
 
@@ -106,29 +111,28 @@ void encode(char *inputFile, char *outputFile) {
 }
 
 void decode(struct treeNode *root, char *inputFile, char *outputFile) {
-   struct treeNode *tmp = root;
-   FILE *iFile, *oFile;
-   char buffer;
+  struct treeNode *tmp = root;
+  FILE *iFile, *oFile;
+  char buffer;
   iFile = fopen(inputFile, "r");
   oFile = fopen(outputFile, "w");
   if(iFile == NULL) {
     fprintf(stderr, "Error: Can't open input file - function 'decode'");
   }
- if(oFile == NULL) {
+  if(oFile == NULL) {
     fprintf(stderr, "Error: Can't open output file - function 'decode'");
   }
-  while(!feof(iFile)) {
-        fscanf(iFile,"%c", &buffer);
-        if(buffer == '0') {
-            tmp = tmp->left;
-        }
-        else if(buffer == '1') {
-            tmp = tmp->right;
-        }
-        if(tmp->c != 0) {
-            fprintf(oFile, "%c", tmp->c);
-            tmp = root;
-        }
+  while(fscanf(iFile, "%c", &buffer) == 1) {
+    if(tmp->c != 0) {
+      fprintf(oFile, "%c", tmp->c);
+      tmp = root;
+    }
+    if(buffer == '0') {
+      tmp = tmp->left;
+    }
+    else if(buffer == '1') {
+      tmp = tmp->right;
+    }
   }
   if(fclose(iFile))
     fprintf(stderr, "Error closing input file - function 'decode'\n");
@@ -196,19 +200,29 @@ void prepareHistogram (struct treeNode *histogram) {
   }
 }
 
-void createHistogram(char *inputFile, struct treeNode *histogram) {
+bool createHistogram(char *inputFile, struct treeNode *histogram) {
   FILE *file;
   char buffer;
   file = fopen(inputFile, "r");
   if(file == NULL) {
     fprintf(stderr, "Error: Can't open input file - function 'create histogram'\n");
-    return;
+    return false;
+  }
+  fseek(file, 0, SEEK_END);
+  if(ftell(file) == 0) {
+    fprintf(stderr, "Error: empty input file\n");
+    return false;
+  } else {
+    rewind(file);
   }
   while(fscanf(file, "%c", &buffer) == 1) { //go through file char by char
     histogram[(int)buffer].freq++; //FIXME: dodaje o jeden znak za duzo
   }
-  if(fclose(file))
+  if(fclose(file)) {
     fprintf(stderr, "Error closing input file - function 'create histogram'\n");
+    return false;
+  }
+  return true;
 }
 
 void quickSortChar(struct treeNode *histogram, int begin, int end) {

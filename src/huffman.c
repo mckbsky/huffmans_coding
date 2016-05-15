@@ -7,7 +7,10 @@ char **codes;
 int main(void) {
     struct treeNode histogram[256];
     prepareHistogram(histogram);
-    createHistogram("input.txt", histogram);
+    if(!createHistogram("input.txt", histogram)) {
+      return 0;
+    }
+
     int i;
 
     quickSortFreq(histogram, 0, 255);
@@ -17,24 +20,17 @@ int main(void) {
              if (histogram[i].freq != 0)
             printf("%d -> %d\n", histogram[i].c, histogram[i].freq);
      }
-    //print sorted histogram
-
-    // for(i = 0; i < 256; i++) {
-    //     if (histogram[i].freq != 0)
-    //         printf("%c -> %d\n", histogram[i].c, histogram[i].freq);
-    // }
 
     for(i = 0; i < 256; i++) {
-        if(histogram[i].freq == 0)
+        if(histogram[i + 1].freq == 0)
             break;
     }
-    i--;
 
     struct treeNode *root = NULL;
     root = generateTree(root, histogram, i);
-
+    if(root == NULL)
+      return 0;
     quickSortChar(histogram, 0, 255);
-
 
 
     struct list_pointers *list = NULL;
@@ -43,14 +39,9 @@ int main(void) {
 
     codes = (char**)malloc(256 * sizeof(char *));
     createCodes(list, root);
-
-    int j;
     for(i = 0; i < 256; i++) {
-        if(codes[i]) {
-        printf("\n%c :", i);
-            for(j = 0; codes[i][j] != '\0'; j++) {
-                printf("%c", codes[i][j]);
-            }
+        if(codes[i] != NULL) {
+          printf("\n%c: %s", i, codes[i]);
         }
     }
 

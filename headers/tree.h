@@ -1,6 +1,7 @@
 #ifndef TREE_H
 #define TREE_H
 #include <stdio.h>
+#include <stdbool.h>
 
 struct treeNode {
   int freq;
@@ -41,7 +42,7 @@ void removeTree(struct treeNode *root);
 
 void prepareHistogram (struct treeNode *histogram);
 
-void createHistogram(char *inputFile, struct treeNode *histogram);
+bool createHistogram(char *inputFile, struct treeNode *histogram);
 
 void quickSortChar(struct treeNode *histogram, int begin, int end);
 
