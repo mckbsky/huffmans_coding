@@ -205,8 +205,7 @@ void createHistogram(char *inputFile, struct treeNode *histogram) {
     fprintf(stderr, "Error: Can't open input file - function 'create histogram'\n");
     return;
   }
-  while(!feof(file)) { //go through file char by char
-    fscanf(file,"%c", &buffer);
+  while(fscanf(file, "%c", &buffer) == 1) { //go through file char by char
     histogram[(int)buffer].freq++; //FIXME: dodaje o jeden znak za duzo
   }
   if(fclose(file))
