@@ -122,7 +122,8 @@ void decode(struct treeNode *root, char *inputFile, char *outputFile) {
   if(oFile == NULL) {
     fprintf(stderr, "Error: Can't open output file - function 'decode'");
   }
-  while(fscanf(iFile, "%c", &buffer) == 1) {
+  while(!feof(iFile)) {
+    fscanf(iFile, "%c", &buffer);
     if(tmp->c != 0) {
       fprintf(oFile, "%c", tmp->c);
       tmp = root;
