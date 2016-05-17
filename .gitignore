@@ -5,3 +5,5 @@
 Makefile
 /obj/
 *.out
+*.txt
+*.bmp
