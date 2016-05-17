@@ -1,13 +1,25 @@
 # depslib dependency file v1.0
-1463151867 source:/home/drkp/workspace/huffmans_coding/src/huffman.c
+1463056195 source:c:\documents and settings\sysop\pulpit\ariadna nie rusz\huffmans_coding-master2\huffmans_coding-master\src\huffman.c
 	<stdlib.h>
 	"../headers/tree.h"
 
-1463147409 /home/drkp/workspace/huffmans_coding/headers/tree.h
+1463056299 c:\documents and settings\sysop\pulpit\ariadna nie rusz\huffmans_coding-master2\huffmans_coding-master\headers\tree.h
 	<stdio.h>
 
-1463151834 source:/home/drkp/workspace/huffmans_coding/src/tree.c
+1463055202 source:c:\documents and settings\sysop\pulpit\ariadna nie rusz\huffmans_coding-master2\huffmans_coding-master\src\tree.c
 	"../headers/tree.h"
 	<stdlib.h>
+	<string.h>
+
+1463477721 source:c:\documents and settings\sysop\pulpit\ariadna nie rusz\huffmans_coding-master\src\huffman.c
+	"../headers/tree.h"
+
+1463474552 c:\documents and settings\sysop\pulpit\ariadna nie rusz\huffmans_coding-master\headers\tree.h
+	<stdio.h>
+	<stdbool.h>
+	<stdlib.h>
+
+1463476853 source:c:\documents and settings\sysop\pulpit\ariadna nie rusz\huffmans_coding-master\src\tree.c
+	"../headers/tree.h"
 	<string.h>
 
