@@ -1,33 +1,25 @@
-#include <stdlib.h>
 #include "../headers/tree.h"
-
 
 char **codes;
 
 int main(void) {
+    int i;
     struct treeNode histogram[256];
-    prepareHistogram(histogram);
+
     if(!createHistogram("input.txt", histogram)) {
       return 0;
     }
 
-    int i;
-
     quickSortFreq(histogram, 0, 255);
 
-    printf("\n");
+    printf("Number of occurrences of chars in histogram:\n");
      for(i = 0; i < 256; i++) {
              if (histogram[i].freq != 0)
-            printf("%d -> %d\n", histogram[i].c, histogram[i].freq);
+            printf("%c -> %d\n", histogram[i].c, histogram[i].freq);
      }
 
-    for(i = 0; i < 256; i++) {
-        if(histogram[i + 1].freq == 0)
-            break;
-    }
-
     struct treeNode *root = NULL;
-    root = generateTree(root, histogram, i);
+    root = generateTree(root, histogram);
     if(root == NULL)
       return 0;
     quickSortChar(histogram, 0, 255);
@@ -38,15 +30,25 @@ int main(void) {
     createList(list);
 
     codes = (char**)malloc(256 * sizeof(char *));
-    createCodes(list, root);
     for(i = 0; i < 256; i++) {
-        if(codes[i] != NULL) {
+        codes[i] = NULL;
+    }
+
+    createCodes(list, root);
+    printf("\nCodes: ");
+    for(i = 0; i < 256; i++) {
+      if(codes[i] != NULL) {
           printf("\n%c: %s", i, codes[i]);
         }
     }
 
-    encode("input.txt", "output.txt");
-    decode(root, "output.txt", "decoded.txt");
+    encode("input.txt", "encoded.txt");
+    decode(root, "encoded.txt", "decoded.txt");
+
+    for(i = 0; i < 256; i++) {
+        free(codes[i]);
+    }
+    free(codes);
     removeTree(root);
 
     return 0;

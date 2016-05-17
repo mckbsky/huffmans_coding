@@ -2,6 +2,7 @@
 #define TREE_H
 #include <stdio.h>
 #include <stdbool.h>
+#include <stdlib.h>
 
 struct treeNode {
   int freq;
@@ -20,33 +21,28 @@ struct list_pointers {
 
 extern char **codes;
 
-void createList(struct list_pointers *list);
-
-void insertListNode(struct list_pointers *list);
-
-void saveCode(struct list_pointers *list, char c);
-
-void deleteListNode(struct list_pointers *list);
-
-struct treeNode* generateTree(struct treeNode *root, struct treeNode *histogram, int n);
-
-void createCodes(struct list_pointers *list, struct treeNode *root);
-
-void encode(char *inputFile, char *outputFile);
-
-void writeToFile(char *inputFile, char *outputFile);
-
-void decode(struct treeNode *root, char *inputFile, char *outputFile);
-
-void removeTree(struct treeNode *root);
-
-void prepareHistogram (struct treeNode *histogram);
-
 bool createHistogram(char *inputFile, struct treeNode *histogram);
 
 void quickSortChar(struct treeNode *histogram, int begin, int end);
 
 void quickSortFreq(struct treeNode *histogram, int begin, int end);
 
+struct treeNode* generateTree(struct treeNode *root, struct treeNode *histogram);
+
+void createCodes(struct list_pointers *list, struct treeNode *root);
+
+void saveCode(struct list_pointers *list, char c);
+
+void createList(struct list_pointers *list);
+
+void insertListNode(struct list_pointers *list);
+
+void deleteListNode(struct list_pointers *list);
+
+void encode(char *inputFile, char *outputFile);
+
+void decode(struct treeNode *root, char *inputFile, char *outputFile);
+
+void removeTree(struct treeNode *root);
 
 #endif //tree.h
