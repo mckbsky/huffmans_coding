@@ -23,9 +23,9 @@ extern char **codes;
 
 bool createHistogram(char *inputFile, struct treeNode *histogram);
 
-void quickSortChar(struct treeNode *histogram, int begin, int end);
+void quickSort(struct treeNode *histogram, int begin, int end, int type);
 
-void quickSortFreq(struct treeNode *histogram, int begin, int end);
+int *getHistogram(struct treeNode *histogram, int i, int type);
 
 struct treeNode* generateTree(struct treeNode *root, struct treeNode *histogram);
 

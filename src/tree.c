@@ -36,72 +36,50 @@ bool createHistogram(char *inputFile, struct treeNode *histogram) {
   return true;
 }
 
-void quickSortChar(struct treeNode *histogram, int begin, int end) {
-    int i = begin;
-    int j = end;
-    int x;
+void quickSort(struct treeNode *histogram, int begin, int end, int type) {
+  int i = begin;
+  int j = end;
+  int x = *getHistogram(histogram, (i + j) / 2, type);
 
-    x = histogram[(i + j) / 2].c;
+  do {
+      while(*getHistogram(histogram, i, type) > x) {
+          i++;
+      }
+      while(*getHistogram(histogram, j, type) < x) {
+          j--;
+      }
+      if(i <= j) {
+        int tmp = *getHistogram(histogram, i, type);
+         *getHistogram(histogram, i, type) = *getHistogram(histogram, j, type);
+         *getHistogram(histogram, j, type) = tmp;
 
-    do {
-        while(histogram[i].c < x) {
-            i++;
-        }
-        while(histogram[j].c > x) {
-            j--;
-        }
-        if(i <= j) {
-            char tmp = histogram[i].c;
-            histogram[i].c = histogram[j].c;
-            histogram[j].c = tmp;
+        char tmp2 = *getHistogram(histogram, i, !type);
+        *getHistogram(histogram, i, !type) = *getHistogram(histogram, j, !type);
+        *getHistogram(histogram, j, !type) = tmp2;
+        i++; j--;
+      }
+  }
+  while(i <= j);
 
-            int tmp2 = histogram[i].freq;
-            histogram[i].freq = histogram[j].freq;
-            histogram[j].freq = tmp2;
-            i++; j--;
-        }
-    }
-    while(i <=j);
-
-    if(begin < j) {
-        quickSortChar(histogram, begin, j);
-    }
-    if(i < end) {
-        quickSortChar(histogram, i, end);
-    }
+  if(begin < j) {
+      quickSort(histogram, begin, j, type);
+  }
+  if(i < end) {
+      quickSort(histogram, i, end, type);
+  }
 }
 
-void quickSortFreq(struct treeNode *histogram, int begin, int end) {
-    int i = begin;
-    int j = end;
-    int x = histogram[(i + j) / 2].freq;
-
-    do {
-        while(histogram[i].freq > x) {
-            i++;
-        }
-        while(histogram[j].freq < x) {
-            j--;
-        }
-        if(i <= j) {
-            int tmp = histogram[i].freq;
-            histogram[i].freq = histogram[j].freq;
-            histogram[j].freq = tmp;
-
-            char tmp2 = histogram[i].c;
-            histogram[i].c = histogram[j].c;
-            histogram[j].c = tmp2;
-            i++; j--;
-        }
-    }
-    while(i <= j);
-
-    if(begin < j) {
-        quickSortFreq(histogram, begin, j);
-    }
-    if(i < end) {
-        quickSortFreq(histogram, i, end);
-    }
+int *getHistogram(struct treeNode *histogram, int i, int type) {
+  if(type == 0) {
+    return &histogram[i].freq;
+  }
+  else if(type == 1) {
+    return &histogram[i].c;
+  }
+  else {
+    fprintf(stderr, "Error: wrong quickSort type\n");
+    return NULL;
+  }
 }
 
 struct treeNode* generateTree(struct treeNode *root, struct treeNode *histogram) {

@@ -10,7 +10,7 @@ int main(void) {
       return 0;
     }
 
-    quickSortFreq(histogram, 0, 255);
+    quickSort(histogram, 0, 255, 0);
 
     printf("Number of occurrences of chars in histogram:\n");
      for(i = 0; i < 256; i++) {
@@ -22,8 +22,7 @@ int main(void) {
     root = generateTree(root, histogram);
     if(root == NULL)
       return 0;
-    quickSortChar(histogram, 0, 255);
-
+    quickSort(histogram, 0, 255, 1);
 
     struct list_pointers *list = NULL;
     list = (struct list_pointers *)malloc(sizeof(struct list_pointers));
