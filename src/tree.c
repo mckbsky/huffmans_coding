@@ -168,7 +168,7 @@ void createCodes(struct list_pointers *list, struct treeNode *root) {
 
   if(root->c != 0) {
     saveCode(list, root->c);
-    deleteListNode(list);
+    deleteListNode(&list);
     return;
   }
 
@@ -178,7 +178,7 @@ void createCodes(struct list_pointers *list, struct treeNode *root) {
   insertListNode(list);
   list->head->code = '0';
   createCodes(list, root->left);
-  deleteListNode(list);
+  deleteListNode(&list);
 }
 
 void saveCode(struct list_pointers *list, char c) {
@@ -216,20 +216,14 @@ void insertListNode(struct list_pointers *list) {
   }
 }
 
-void deleteListNode(struct list_pointers *list) {
-    if(list->head == list->tail) {
-        free(list->head);
-        list = NULL;
+void deleteListNode(struct list_pointers **list) {
+    if((*list)->head == NULL) {
+      fprintf(stderr, "Can't delete node from empty list\n");
+      return;
     }
-    else if(list->head) {
-        struct list_node *tmp = list->head->next;
-        tmp->prev = NULL;
-        free(list->head);
-        list->head = tmp;
-    }
-    else {
-        fprintf(stderr, "Error: Can't delete list node");
-    }
+    struct list_node* deleted_node = (*list)->head;
+    (*list)->head = deleted_node->next;
+    free(deleted_node);
 }
 
 void encode(char *inputFile, char *outputFile) {
@@ -300,4 +294,3 @@ void removeTree(struct treeNode *root) {
   }
   free(root);
 }
-

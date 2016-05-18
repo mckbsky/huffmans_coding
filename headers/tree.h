@@ -37,7 +37,7 @@ void createList(struct list_pointers *list);
 
 void insertListNode(struct list_pointers *list);
 
-void deleteListNode(struct list_pointers *list);
+void deleteListNode(struct list_pointers **list);
 
 void encode(char *inputFile, char *outputFile);
 
