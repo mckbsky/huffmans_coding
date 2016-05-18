@@ -83,7 +83,6 @@ int *getHistogram(struct treeNode *histogram, int i, int type) {
 }
 
 struct treeNode* generateTree(struct treeNode *root, struct treeNode *histogram) {
-
    int n;
    for(n= 0; n < 256; n++) {
       if(histogram[n + 1].freq == 0)
