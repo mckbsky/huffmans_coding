@@ -236,8 +236,9 @@ void encode(char *inputFile, char *outputFile, struct treeNode *histogram) {
         }
       }
       if (i == 9) {
-        //printf("\nBUFF ARR: %d", binToAscii(buffer_arr));
-        fprintf(oFile, "%c", binToAscii(buffer_arr, histogram));
+        //printf("\nBUFF ARR: %d", binToAscii(buffer_arr, histogram));
+        unsigned char tmp = binToAscii(buffer_arr, histogram);
+        fwrite(&tmp, 1, 1, oFile);
         memset(buffer_arr, 0, sizeof(buffer_arr));
         i = 1;
         continue;
@@ -245,8 +246,13 @@ void encode(char *inputFile, char *outputFile, struct treeNode *histogram) {
     }
   }
     if( i != 9) {
-        //printf("\nBUFF ARR2: %d", binToAscii(buffer_arr));
-        fprintf(oFile, "%c", binToAscii(buffer_arr, histogram));
+        //printf("\nBUFF ARR2: %d", binToAscii(buffer_arr, histogram));
+        //fprintf(oFile, "%c", binToAscii(buffer_arr, histogram));
+        unsigned char tmp = binToAscii(buffer_arr, histogram);
+        if(tmp != 0) {
+            fwrite(&tmp, 1, 1, oFile);
+        }
+        memset(buffer_arr, 0, sizeof(buffer_arr));
     }
 
   if(fclose(iFile))
@@ -263,6 +269,7 @@ unsigned char binToAscii(unsigned char *array, struct treeNode *histogram) {
     //printf("\narray: %s", array);
     for(i = 0; array[i + 1] != '\0'; i++);
 
+
     for(j = 0; i >= 0; i--) {
         if(array[i] == '1') {
             result += pow(2, j++);
@@ -271,14 +278,15 @@ unsigned char binToAscii(unsigned char *array, struct treeNode *histogram) {
             j++;
         }
     }
-
-
-    for(i = 0; array[i] == '0'; i++) {
-        if(array[i] == '0') {
-        histogram[result].zeroes++;
+    if(histogram[result].zeroes == 0) {
+        for(j = 0; array[j] == '0'; j++) {
+        //printf(" JAJEBE");
+         histogram[result].zeroes++;
     }
     }
-    //printf("   RESULT: %d\n", result);
+
+    //if(histogram[result].zeroes != 0)
+        //printf("Array: %s, %c ->ZEROES: %d\n",array, result,  histogram[result].zeroes);
     return result;
 }
 
@@ -301,7 +309,7 @@ void decode(struct treeNode *root, char *inputFile, char *outputFile, struct tre
 
    while(fread(&buffer, 1, 1, iFile) == 1) {
       asciiToBin(buffer, buffer_arr, histogram);
-      printf("\nASCI TO BIN :%d %s", buffer, buffer_arr);
+      //printf("\nASCI TO BIN :%d %s", buffer, buffer_arr);
         for(i = 0; buffer_arr[i] != '\0'; i++) {
           if(buffer_arr[i] == '0' && tmp->left != NULL) {
              tmp = tmp->left;
@@ -316,6 +324,7 @@ void decode(struct treeNode *root, char *inputFile, char *outputFile, struct tre
             tmp = root;
          }
         }
+        memset(buffer_arr, 0, sizeof(buffer_arr));
   }
 
   if(fclose(iFile))
@@ -328,35 +337,36 @@ void asciiToBin(unsigned char c, unsigned char *buffer, struct treeNode *histogr
     int i;
     int j = 0;
     int k = histogram[c].zeroes;
-    printf("\nZERA: %d", k);
+    //printf("\nC: %d", c);
 
     //memset(buffer, '0', sizeof(unsigned char));
 
     for(i = 7; c != 0; i--) {
         if(c % 2 == 0) {
             buffer[i] = '0';
-            //printf(" SAP %c", buffer[i]);
+            //printf(" %c", buffer[i]);
         }
         else {
             buffer[i] = '1';
-            //printf(" SAP %c", buffer[i]);
+            //printf(" %c", buffer[i]);
         }
         c = c >> 1;
     }
     i++;
 
-
     if(i != 0) {
-        for(; k > 0; i--) {
+    if(k > 0) {
+       for(; k > 0; i--) {
             buffer[i - 1] = '0';
             k--;
         }
-
-        while(buffer[i] != 0) {
+    }
+        while(buffer[i] != '\0') {
             buffer[j++] = buffer[i++];
         }
         buffer[j] = '\0';
     }
+    //printf(" array: %s", buffer);
     //printf("SAP: %s\n", buffer);
 }
 
