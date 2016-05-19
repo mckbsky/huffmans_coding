@@ -41,8 +41,8 @@ int main(void) {
         }
     }
 
-    encode("input.txt", "encoded.txt");
-    decode(root, "encoded.txt", "decoded.txt");
+    encode("input.txt", "encoded.bin", histogram);
+    decode(root, "encoded.bin", "decoded.txt", histogram);
 
     for(i = 0; i < 256; i++) {
         free(codes[i]);

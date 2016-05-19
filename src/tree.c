@@ -23,6 +23,7 @@ bool createHistogram(char *inputFile, struct treeNode *histogram) {
   for(i = 0; i < 256; i++) { //all ASCII codes (2^(8 * sizeof(char)))
     histogram[i].c = (char)i;
     histogram[i].freq = 0;
+    histogram[i].zeroes = 0;
   }
 
   while(fscanf(file, "%c", &buffer) == 1) {
@@ -203,11 +204,15 @@ void deleteListNode(struct list_pointers **list) {
     free(deleted_node);
 }
 
-void encode(char *inputFile, char *outputFile) {
+void encode(char *inputFile, char *outputFile, struct treeNode *histogram) {
   FILE *iFile, *oFile;
-  char buffer;
+  unsigned char buffer;
+  unsigned char buffer_arr[9];
+  memset(buffer_arr, 0, sizeof(buffer_arr));
+  int i = 1;
+  int j = 0;
   iFile = fopen(inputFile, "r");
-  oFile = fopen(outputFile, "w");
+  oFile = fopen(outputFile, "wb");
 
   if(iFile == NULL) {
     fprintf(stderr, "Error: Can't open input file - encode()\n");
@@ -216,9 +221,33 @@ void encode(char *inputFile, char *outputFile) {
     fprintf(stderr, "Error: Can't open output file - encode()\n");
   }
 
-   while(fscanf(iFile,"%c", &buffer) == 1) {
-        fprintf(oFile, "%s", codes[(int)buffer]);
-   }
+  while(fscanf(iFile,"%c", &buffer) == 1) {
+    while(1) {
+      if(codes[(int)buffer][j] != '\0') {
+        buffer_arr[i - 1] = codes[(int)buffer][j];
+        i++; j++;
+      }
+      else {
+        if(fscanf(iFile,"%c", &buffer) == 1) {
+          j = 0;
+        }
+        else {
+          break;
+        }
+      }
+      if (i == 9) {
+        //printf("\nBUFF ARR: %d", binToAscii(buffer_arr));
+        fprintf(oFile, "%c", binToAscii(buffer_arr, histogram));
+        memset(buffer_arr, 0, sizeof(buffer_arr));
+        i = 1;
+        continue;
+      }
+    }
+  }
+    if( i != 9) {
+        //printf("\nBUFF ARR2: %d", binToAscii(buffer_arr));
+        fprintf(oFile, "%c", binToAscii(buffer_arr, histogram));
+    }
 
   if(fclose(iFile))
     fprintf(stderr, "Error: can't close input file - encode()\n");
@@ -226,11 +255,41 @@ void encode(char *inputFile, char *outputFile) {
     fprintf(stderr, "Error: can't close output file - encode()\n");
 }
 
-void decode(struct treeNode *root, char *inputFile, char *outputFile) {
+unsigned char binToAscii(unsigned char *array, struct treeNode *histogram) {
+    int i;
+    int j;
+    unsigned char result = 0;
+
+    //printf("\narray: %s", array);
+    for(i = 0; array[i + 1] != '\0'; i++);
+
+    for(j = 0; i >= 0; i--) {
+        if(array[i] == '1') {
+            result += pow(2, j++);
+        }
+        else {
+            j++;
+        }
+    }
+
+
+    for(i = 0; array[i] == '0'; i++) {
+        if(array[i] == '0') {
+        histogram[result].zeroes++;
+    }
+    }
+    //printf("   RESULT: %d\n", result);
+    return result;
+}
+
+void decode(struct treeNode *root, char *inputFile, char *outputFile, struct treeNode *histogram) {
   struct treeNode *tmp = root;
   FILE *iFile, *oFile;
-  char buffer;
-  iFile = fopen(inputFile, "r");
+  unsigned char buffer;
+  unsigned char buffer_arr[9];
+  int i;
+  memset(buffer_arr, 0, sizeof(buffer_arr));
+  iFile = fopen(inputFile, "rb");
   oFile = fopen(outputFile, "w");
 
   if(iFile == NULL) {
@@ -240,24 +299,65 @@ void decode(struct treeNode *root, char *inputFile, char *outputFile) {
     fprintf(stderr, "Error: Can't open output file - decode()\n");
   }
 
-   while(fscanf(iFile, "%c", &buffer) == 1) {
-      if(buffer == '0' && tmp->left != NULL) {
-         tmp = tmp->left;
-      }
-      else if(buffer == '1' && tmp->right != NULL) {
-      tmp = tmp->right;
-      }
-
-     if(tmp->c != 0) {
-        fprintf(oFile, "%c", tmp->c);
-        tmp = root;
-    }
+   while(fread(&buffer, 1, 1, iFile) == 1) {
+      asciiToBin(buffer, buffer_arr, histogram);
+      printf("\nASCI TO BIN :%d %s", buffer, buffer_arr);
+        for(i = 0; buffer_arr[i] != '\0'; i++) {
+          if(buffer_arr[i] == '0' && tmp->left != NULL) {
+             tmp = tmp->left;
+          }
+          else if(buffer_arr[i] == '1' && tmp->right != NULL) {
+            tmp = tmp->right;
+          }
+         if(tmp->c != 0) {
+            fprintf(oFile, "%c", tmp->c);
+            //printf("Char: %c\n", tmp->c);
+            //printf("BUF arr: %c\n", buffer_arr[i]);
+            tmp = root;
+         }
+        }
   }
 
   if(fclose(iFile))
     fprintf(stderr, "Error: Can't close input file - decode()\n");
   if(fclose(oFile))
     fprintf(stderr, "Error: Can't close output file - decode()\n");
+}
+
+void asciiToBin(unsigned char c, unsigned char *buffer, struct treeNode *histogram) {
+    int i;
+    int j = 0;
+    int k = histogram[c].zeroes;
+    printf("\nZERA: %d", k);
+
+    //memset(buffer, '0', sizeof(unsigned char));
+
+    for(i = 7; c != 0; i--) {
+        if(c % 2 == 0) {
+            buffer[i] = '0';
+            //printf(" SAP %c", buffer[i]);
+        }
+        else {
+            buffer[i] = '1';
+            //printf(" SAP %c", buffer[i]);
+        }
+        c = c >> 1;
+    }
+    i++;
+
+
+    if(i != 0) {
+        for(; k > 0; i--) {
+            buffer[i - 1] = '0';
+            k--;
+        }
+
+        while(buffer[i] != 0) {
+            buffer[j++] = buffer[i++];
+        }
+        buffer[j] = '\0';
+    }
+    //printf("SAP: %s\n", buffer);
 }
 
 void removeTree(struct treeNode *root) {

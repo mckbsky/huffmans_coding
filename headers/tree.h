@@ -3,10 +3,12 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdlib.h>
+#include <math.h>
 
 struct treeNode {
   int freq;
-  char c;
+  unsigned char c;
+  int zeroes;
   struct treeNode *left, *right;
 };
 
@@ -39,9 +41,13 @@ void insertListNode(struct list_pointers *list);
 
 void deleteListNode(struct list_pointers **list);
 
-void encode(char *inputFile, char *outputFile);
+void encode(char *inputFile, char *outputFile, struct treeNode *histogram);
 
-void decode(struct treeNode *root, char *inputFile, char *outputFile);
+unsigned char binToAscii(unsigned char *array, struct treeNode *histogram);
+
+void decode(struct treeNode *root, char *inputFile, char *outputFile, struct treeNode *histogram);
+
+void asciiToBin(unsigned char c, unsigned char *buffer, struct treeNode *histogram);
 
 void removeTree(struct treeNode *root);
 
