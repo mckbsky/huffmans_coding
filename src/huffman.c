@@ -41,7 +41,7 @@ int main(void) {
         }
     }
 
-    encode("input.txt", "encoded.bin", histogram);
+    printf("\nCompression ratio = %.2lf", encode("input.txt", "encoded.bin", histogram));
     decode(root, "encoded.bin", "decoded.txt", histogram);
 
     for(i = 0; i < 256; i++) {

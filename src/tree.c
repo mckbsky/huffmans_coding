@@ -204,10 +204,11 @@ void deleteListNode(struct list_pointers **list) {
     free(deleted_node);
 }
 
-void encode(char *inputFile, char *outputFile, struct treeNode *histogram) {
+double encode(char *inputFile, char *outputFile, struct treeNode *histogram) {
   FILE *iFile, *oFile;
   unsigned char buffer;
   unsigned char buffer_arr[9];
+  long iFileSize = 0, oFileSize = 0;
   memset(buffer_arr, 0, sizeof(buffer_arr));
   int i = 1;
   int j = 0;
@@ -222,6 +223,7 @@ void encode(char *inputFile, char *outputFile, struct treeNode *histogram) {
   }
 
   while(fscanf(iFile,"%c", &buffer) == 1) {
+    iFileSize++;
     while(1) {
       if(codes[(int)buffer][j] != '\0') {
         buffer_arr[i - 1] = codes[(int)buffer][j];
@@ -229,6 +231,7 @@ void encode(char *inputFile, char *outputFile, struct treeNode *histogram) {
       }
       else {
         if(fscanf(iFile,"%c", &buffer) == 1) {
+          iFileSize++;
           j = 0;
         }
         else {
@@ -239,6 +242,7 @@ void encode(char *inputFile, char *outputFile, struct treeNode *histogram) {
         //printf("\nBUFF ARR: %d", binToAscii(buffer_arr, histogram));
         unsigned char tmp = binToAscii(buffer_arr, histogram);
         fwrite(&tmp, 1, 1, oFile);
+        oFileSize++;
         memset(buffer_arr, 0, sizeof(buffer_arr));
         i = 1;
         continue;
@@ -251,6 +255,7 @@ void encode(char *inputFile, char *outputFile, struct treeNode *histogram) {
         unsigned char tmp = binToAscii(buffer_arr, histogram);
         if(tmp != 0) {
             fwrite(&tmp, 1, 1, oFile);
+            oFileSize++;
         }
         memset(buffer_arr, 0, sizeof(buffer_arr));
     }
@@ -259,6 +264,8 @@ void encode(char *inputFile, char *outputFile, struct treeNode *histogram) {
     fprintf(stderr, "Error: can't close input file - encode()\n");
   if(fclose(oFile))
     fprintf(stderr, "Error: can't close output file - encode()\n");
+
+    return (double)oFileSize / iFileSize;
 }
 
 unsigned char binToAscii(unsigned char *array, struct treeNode *histogram) {
