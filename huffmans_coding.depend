@@ -3,8 +3,12 @@
 	<stdlib.h>
 	"../headers/tree.h"
 
+1463477721 s/tree.h"
+
 1463056299 c:\documents and settings\sysop\pulpit\ariadna nie rusz\huffmans_coding-master2\huffmans_coding-master\headers\tree.h
 	<stdio.h>
+
+1463476853 
 
 1463055202 source:c:\documents and settings\sysop\pulpit\ariadna nie rusz\huffmans_coding-master2\huffmans_coding-master\src\tree.c
 	"../headers/tree.h"
@@ -20,6 +24,19 @@
 	<stdlib.h>
 
 1463476853 source:c:\documents and settings\sysop\pulpit\ariadna nie rusz\huffmans_coding-master\src\tree.c
+	"../headers/tree.h"
+	<string.h>
+
+1463690046 source:/home/drkp/workspace/huffmans_coding/src/huffman.c
+	"../headers/tree.h"
+
+1463672488 /home/drkp/workspace/huffmans_coding/headers/tree.h
+	<stdio.h>
+	<stdbool.h>
+	<stdlib.h>
+	<math.h>
+
+1463696633 source:/home/drkp/workspace/huffmans_coding/src/tree.c
 	"../headers/tree.h"
 	<string.h>
 

@@ -18,7 +18,7 @@ struct list_node {
 };
 
 struct list_pointers {
-    struct list_node *head, *tail;
+  struct list_node *head, *tail;
 };
 
 extern char **codes;
@@ -41,7 +41,7 @@ void insertListNode(struct list_pointers *list);
 
 void deleteListNode(struct list_pointers **list);
 
-void encode(char *inputFile, char *outputFile, struct treeNode *histogram);
+double encode(char *inputFile, char *outputFile, struct treeNode *histogram);
 
 unsigned char binToAscii(unsigned char *array, struct treeNode *histogram);
 
