@@ -1,5 +1,4 @@
 #include "../headers/tree.h"
-#include <string.h>
 
 bool createHistogram(char *inputFile, struct treeNode *histogram) {
   FILE *file;
@@ -54,9 +53,14 @@ void quickSort(struct treeNode *histogram, int begin, int end, int type) {
          *getHistogram(histogram, i, type) = *getHistogram(histogram, j, type);
          *getHistogram(histogram, j, type) = tmp;
 
-        char tmp2 = *getHistogram(histogram, i, !type);
+        tmp = *getHistogram(histogram, i, !type);
         *getHistogram(histogram, i, !type) = *getHistogram(histogram, j, !type);
-        *getHistogram(histogram, j, !type) = tmp2;
+        *getHistogram(histogram, j, !type) = tmp;
+
+        //tmp = histogram[i].zeroes;
+        //histogram[i].zeroes = histogram[j].zeroes;
+        //histogram[j].zeroes = tmp;
+
         i++; j--;
       }
   }
@@ -70,7 +74,7 @@ void quickSort(struct treeNode *histogram, int begin, int end, int type) {
   }
 }
 
-int *getHistogram(struct treeNode *histogram, int i, int type) {
+long *getHistogram(struct treeNode *histogram, int i, int type) {
   if(type == 0) {
     return &histogram[i].freq;
   }
@@ -134,7 +138,7 @@ struct treeNode* generateTree(struct treeNode *root, struct treeNode *histogram)
     }
     n -= 2;
   }
-  printf("Weight of tree: %d", root->freq);
+  //printf("Weight of tree: %ld", root->freq);
   return root;
 }
 
@@ -204,7 +208,7 @@ void deleteListNode(struct list_pointers **list) {
   free(deleted_node);
 }
 
-double encode(char *inputFile, char *outputFile, struct treeNode *histogram) {
+double encode(char *input, char *outputFile, struct treeNode *histogram) {
   FILE *iFile, *oFile;
   unsigned char buffer;
   unsigned char buffer_arr[9];
@@ -212,7 +216,7 @@ double encode(char *inputFile, char *outputFile, struct treeNode *histogram) {
   memset(buffer_arr, 0, sizeof(buffer_arr));
   int i = 1;
   int j = 0;
-  iFile = fopen(inputFile, "r");
+  iFile = fopen(input, "r");
   oFile = fopen(outputFile, "wb");
 
   if(iFile == NULL) {
@@ -289,6 +293,24 @@ unsigned char binToAscii(unsigned char *array, struct treeNode *histogram) {
   return result;
 }
 
+void generateKey(struct treeNode *histogram) {
+  int i;
+  for(i = 0; i < 256; i++) {
+    if (histogram[i].freq != 0)
+      printf("%d:%ld:%d:", histogram[i].c, histogram[i].freq, histogram[i].zeroes);
+  }
+}
+
+void keyToHistogram(char *key, struct treeNode *histogram) {
+  int i;
+  for(i = 0; i < 256; i++) {
+    histogram[i].c = (char)i;
+    histogram[i].freq = 0;
+    histogram[i].zeroes = 0;
+  }
+
+}
+
 void decode(struct treeNode *root, char *inputFile, char *outputFile, struct treeNode *histogram) {
   struct treeNode *tmp = root;
   FILE *iFile, *oFile;
@@ -335,7 +357,7 @@ void asciiToBin(unsigned char c, unsigned char *buffer, struct treeNode *histogr
   int k = histogram[c].zeroes;
 
   for(i = 7; c != 0; i--) {
-    if(c % 2 == 0) {
+    if((c & 1) == 0) {
         buffer[i] = '0';
     }
     else {

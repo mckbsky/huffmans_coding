@@ -27,16 +27,16 @@
 	"../headers/tree.h"
 	<string.h>
 
-1463690046 source:/home/drkp/workspace/huffmans_coding/src/huffman.c
+1464185402 source:/home/drkp/workspace/huffmans_coding/src/huffman.c
 	"../headers/tree.h"
 
-1463672488 /home/drkp/workspace/huffmans_coding/headers/tree.h
+1464180687 /home/drkp/workspace/huffmans_coding/headers/tree.h
 	<stdio.h>
 	<stdbool.h>
 	<stdlib.h>
 	<math.h>
-
-1463696633 source:/home/drkp/workspace/huffmans_coding/src/tree.c
-	"../headers/tree.h"
 	<string.h>
+
+1464186055 source:/home/drkp/workspace/huffmans_coding/src/tree.c
+	"../headers/tree.h"
 
