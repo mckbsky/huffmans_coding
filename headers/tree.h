@@ -58,7 +58,7 @@ struct list_pointers {
 extern char **codes;
 
 /*!
- * \fn bool createHistogram(char *inputFile, struct treeNode *histogram);
+ * \fn bool createHistogram(char *inputFile, struct treeNode *histogram)
  * \brief Funkcja tworząca histogram
  *
  * Funkcja przyjmuje dwa parametry: char *inputFile - nazwa pliku wejściowego,
@@ -77,16 +77,19 @@ bool createHistogram(char *inputFile, struct treeNode *histogram);
 void quickSort(struct treeNode *histogram, int begin, int end, int type);
 
 /*!
- * \fn
- * \brief
+ * \fn void quickSort(struct treeNode *histogram, int begin, int end, int type)
+ * \brief Funkcja sortująca histogram
  *
- * Mariusz
+ * Funkcja przyjmuje cztery parametry: struct treeNode *histogram - tablica do posortowania
+ * int begin - początkowy kraniec sortowania
+ * int end - końcowy kraniec sortowania
+ * int type - znienna przyjmujaca 0 lub 1 w zaleznosci co sortujemy (0 - int freq, 1 - unsigned char c)
  */
 
 long *getHistogram(struct treeNode *histogram, int i, int type);
 
 /*!
- * \fn
+ * \fn struct treeNode* generateTree(struct treeNode *root, struct treeNode *histogram)
  * \brief
  *
  * Maciek
@@ -95,10 +98,13 @@ long *getHistogram(struct treeNode *histogram, int i, int type);
 struct treeNode* generateTree(struct treeNode *root, struct treeNode *histogram);
 
 /*!
- * \fn
- * \brief
+ * \fn void createCodes(struct list_pointers *list, struct treeNode *root)
+ * \brief Funkcja generujaca kody dla każdego znaku
  *
- * Mariusz
+ * Funkcja przyjmuje dwa parametry: struct list_pointers *list - wskaźnik na pierwszy element listy
+ * struct treeNode *root - wskaźnik na korzeń drzewa
+ * Funkcja przechodzi rekurencyjnie przez drzewo i z każdym wywołaniem dopisuje 0 lub 1 do
+ * nowego elementu listy, aż do dojścia do końca drzewa gdzie wywoływana jest funkcja saveCode
  */
 
 void createCodes(struct list_pointers *list, struct treeNode *root);
@@ -113,10 +119,12 @@ void createCodes(struct list_pointers *list, struct treeNode *root);
 void saveCode(struct list_pointers *list, char c);
 
 /*!
- * \fn
- * \brief
+ * \fn void createList(struct list_pointers *list)
+ * \brief Funkcja towrząca liste
  *
  * Mariusz
+ * Funkcja przyjmuje wskaźnik na liste ?
+ * Tworzenie pierwszego elemtnu listy
  */
 
 void createList(struct list_pointers *list);
@@ -131,10 +139,12 @@ void createList(struct list_pointers *list);
 void insertListNode(struct list_pointers *list);
 
 /*!
- * \fn
- * \brief
+ * \fn void deleteListNode(struct list_pointers **list)
+ * \brief Funkcja usuwająca element listy
  *
  * Mariusz
+ * Funkcja przyjmuje ??
+ * Usuwanie ostatnio dodanego elementu listy
  */
 
 void deleteListNode(struct list_pointers **list);
@@ -149,10 +159,13 @@ void deleteListNode(struct list_pointers **list);
 double encode(char *input, char *outputFile, struct treeNode *histogram);
 
 /*!
- * \fn
- * \brief
+ * \fn unsigned char binToAscii(unsigned char *array, struct treeNode *histogram)
+ * \brief Funkcja zamieniająca kody binarne na znaki ASCII
  *
  * Mariusz
+ * Funkcja przyjmuje dwa parametry: unsigned char *array - tablica 8 kodow binarnych
+ * struct treeNode *histogram - zmienna zawierajaca ilosc zer w znaku
+ * Funkcja zwraca gotowy znak ASCII
  */
 
 unsigned char binToAscii(unsigned char *array, struct treeNode *histogram);
@@ -167,10 +180,12 @@ unsigned char binToAscii(unsigned char *array, struct treeNode *histogram);
 void generateKey(struct treeNode *histogram);
 
 /*!
- * \fn
- * \brief
+ * \fn void keyToHistogram(char *key, struct treeNode *histogram)
+ * \brief Funkcja odczytujaca klucz i zamieniajaca go na histogram
  *
  * Mariusz
+ * Funkcja przyjmuje dwa parametry: char *key - klucz do odkodowania
+ * struct treeNode *histogram - tablica
  */
 
 void keyToHistogram(char *key, struct treeNode *histogram);
@@ -185,10 +200,13 @@ void keyToHistogram(char *key, struct treeNode *histogram);
 void decode(struct treeNode *root, char *inputFile, char *outputFile, struct treeNode *histogram);
 
 /*!
- * \fn
- * \brief
+ * \fn void asciiToBin(unsigned char c, unsigned char *buffer, struct treeNode *histogram)
+ * \brief Funkcja zamieniajaca pobrany z pliku znak ASCII na kody binarne
  *
  * Mariusz
+ * Funkcja przyjmuje trzy parametry: unsigned char c - znak pobrany z pliku binarnego
+ * unsigned char *buffer - tablica 8 kodow binarnych ??
+ * struct treeNode *histogram - tablica ??
  */
 
 void asciiToBin(unsigned char c, unsigned char *buffer, struct treeNode *histogram);
