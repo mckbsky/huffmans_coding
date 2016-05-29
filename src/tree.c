@@ -57,9 +57,9 @@ void quickSort(struct treeNode *histogram, int begin, int end, int type) {
         *getHistogram(histogram, i, !type) = *getHistogram(histogram, j, !type);
         *getHistogram(histogram, j, !type) = tmp;
 
-        //tmp = histogram[i].zeroes;
-        //histogram[i].zeroes = histogram[j].zeroes;
-        //histogram[j].zeroes = tmp;
+        tmp = histogram[i].zeroes;
+        histogram[i].zeroes = histogram[j].zeroes;
+        histogram[j].zeroes = tmp;
 
         i++; j--;
       }
