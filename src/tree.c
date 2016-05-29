@@ -44,27 +44,27 @@ void quickSortChar(struct treeNode *histogram, int begin, int end) {
     x = histogram[(i + j) / 2].c;
 
     do {
-        while(histogram[i].c < x) {
-            i++;
-        }
-        while(histogram[j].c > x) {
-            j--;
-        }
-        if(i <= j) {
-          unsigned char tmp = histogram[i].c;
-          histogram[i].c = histogram[j].c;
-          histogram[j].c = tmp;
+      while(histogram[i].c < x) {
+        i++;
+      }
+      while(histogram[j].c > x) {
+        j--;
+      }
+      if(i <= j) {
+        unsigned char tmp = histogram[i].c;
+        histogram[i].c = histogram[j].c;
+        histogram[j].c = tmp;
 
-          int tmp2 = histogram[i].freq;
-          histogram[i].freq = histogram[j].freq;
-          histogram[j].freq = tmp2;
+        int tmp2 = histogram[i].freq;
+        histogram[i].freq = histogram[j].freq;
+        histogram[j].freq = tmp2;
 
-          tmp2 = histogram[i].zeroes;
-          histogram[i].zeroes = histogram[j].zeroes;
-          histogram[j].zeroes = tmp2;
+        tmp2 = histogram[i].zeroes;
+        histogram[i].zeroes = histogram[j].zeroes;
+        histogram[j].zeroes = tmp2;
 
-          i++; j--;
-        }
+        i++; j--;
+      }
     }
     while(i <=j);
 
@@ -82,27 +82,27 @@ void quickSortFreq(struct treeNode *histogram, int begin, int end) {
     int x = histogram[(i + j) / 2].freq;
 
     do {
-        while(histogram[i].freq > x) {
-            i++;
-        }
-        while(histogram[j].freq < x) {
-            j--;
-        }
-        if(i <= j) {
-            int tmp = histogram[i].freq;
-            histogram[i].freq = histogram[j].freq;
-            histogram[j].freq = tmp;
+      while(histogram[i].freq > x) {
+        i++;
+      }
+      while(histogram[j].freq < x) {
+        j--;
+      }
+      if(i <= j) {
+        int tmp = histogram[i].freq;
+        histogram[i].freq = histogram[j].freq;
+        histogram[j].freq = tmp;
 
-            unsigned char tmp2 = histogram[i].c;
-            histogram[i].c = histogram[j].c;
-            histogram[j].c = tmp2;
+        unsigned char tmp2 = histogram[i].c;
+        histogram[i].c = histogram[j].c;
+        histogram[j].c = tmp2;
 
-            tmp = histogram[i].zeroes;
-            histogram[i].zeroes = histogram[j].zeroes;
-            histogram[j].zeroes = tmp;
+        tmp = histogram[i].zeroes;
+        histogram[i].zeroes = histogram[j].zeroes;
+        histogram[j].zeroes = tmp;
 
-            i++; j--;
-        }
+        i++; j--;
+      }
     }
     while(i <= j);
 
@@ -118,7 +118,7 @@ struct treeNode* generateTree(struct treeNode *root, struct treeNode *histogram)
   int n;
   for(n= 0; n < 256; n++) {
     if(histogram[n + 1].freq == 0)
-       break;
+      break;
   }
 
   while(n >= 0) {
@@ -126,20 +126,20 @@ struct treeNode* generateTree(struct treeNode *root, struct treeNode *histogram)
 
     if(root) {
     if(n == 0) {
-        node->left = (struct treeNode *)calloc(1, sizeof(struct treeNode));
-        node->left->c = histogram[n].c;
-        node->right = root;
-        root = node;
-      } else {
-        node->left = (struct treeNode *)calloc(1, sizeof(struct treeNode));
-        node->left->c = histogram[n - 1].c;
-        node->right = (struct treeNode *)calloc(1, sizeof(struct treeNode));
-        node->right->c = histogram[n].c;
+      node->left = (struct treeNode *)calloc(1, sizeof(struct treeNode));
+      node->left->c = histogram[n].c;
+      node->right = root;
+      root = node;
+    } else {
+      node->left = (struct treeNode *)calloc(1, sizeof(struct treeNode));
+      node->left->c = histogram[n - 1].c;
+      node->right = (struct treeNode *)calloc(1, sizeof(struct treeNode));
+      node->right->c = histogram[n].c;
 
-        struct treeNode *new_root = (struct treeNode *)calloc(1, sizeof(struct treeNode));
-        new_root->left = node;
-        new_root->right = root;
-        root = new_root;
+      struct treeNode *new_root = (struct treeNode *)calloc(1, sizeof(struct treeNode));
+      new_root->left = node;
+      new_root->right = root;
+      root = new_root;
       }
     }
     else if(n == 0){
@@ -271,9 +271,6 @@ double encode(char *input, char *outputFile, struct treeNode *histogram, int *do
 
   if( i != 9) {
     unsigned char tmp = binToAscii(buffer_arr, histogram, double_representation);
-    if(*double_representation != -1) {
-      printf("\n%d zeroes at the end", *double_representation);
-    }
     fwrite(&tmp, 1, 1, oFile);
     oFileSize++;
   }
@@ -283,7 +280,8 @@ double encode(char *input, char *outputFile, struct treeNode *histogram, int *do
   if(fclose(oFile))
     fprintf(stderr, "Error: can't close output file - encode()\n");
 
-    return (double)oFileSize / iFileSize;
+  printf("Encoding of [%s] successful!\n", input);
+  return (double)oFileSize / iFileSize;
 }
 
 unsigned char binToAscii(unsigned char *array, struct treeNode *histogram, int *double_representation) {
@@ -307,29 +305,21 @@ unsigned char binToAscii(unsigned char *array, struct treeNode *histogram, int *
   }
   if(zeroes != 0 && histogram[result].zeroes == 0) {
     histogram[result].zeroes = zeroes;
-    printf("\n%d -> %d zeroes", result, histogram[result].zeroes);
   } else if(histogram[result].zeroes != zeroes){
-    printf("\nDouble representation of binary");
-    printf("\n%d -> %d zeroes", result, zeroes);
     *double_representation = zeroes;
   }
-  //if(histogram[result].zeroes == 0) {
-  //  for(j = 0; array[j] == '0'; j++) {
-  //    histogram[result].zeroes++;
-  //  }
-  //}
-
   return result;
 }
 
 void generateKey(struct treeNode *histogram, int double_representation) {
   int i;
+  printf("Your key for decoding is:\n\n");
   printf("%d:", double_representation);
   for(i = 0; i < 256; i++) {
     if (histogram[i].freq != 0 || histogram[i].zeroes != 0)
       printf("%d:%d:%d:", histogram[i].c, histogram[i].freq, histogram[i].zeroes);
   }
-  printf("\b");
+  printf("\n\nSave it if you wish to decode your file later on.\n");
 }
 
 void keyToHistogram(char *key, struct treeNode *histogram, int *double_representation) {
@@ -350,12 +340,6 @@ void keyToHistogram(char *key, struct treeNode *histogram, int *double_represent
     pch = strtok(NULL, ":");
     histogram[i].zeroes = atoi(pch);
     pch = strtok(NULL, ":");
-  }
-  printf("\nHIST:\n");
-  for(i = 0; i < 256; i++) {
-    if(histogram[i].freq != 0 || histogram[i].zeroes) {
-      printf("%d %d %d\n", histogram[i].c, histogram[i].freq, histogram[i].zeroes);
-    }
   }
 }
 
@@ -381,8 +365,6 @@ void decode(struct treeNode *root, char *inputFile, char *outputFile, struct tre
   fseek(iFile, 0, SEEK_END);
   file_size = ftell(iFile);
   fseek(iFile, 0, SEEK_SET);
-  printf("\nFILE SIZE: %d", file_size);
-  printf("\nFILE BEGIN: %lu\n", ftell(iFile));
 
   while(fread(&buffer, 1, 1, iFile) == 1) {
     j++;
@@ -404,12 +386,12 @@ void decode(struct treeNode *root, char *inputFile, char *outputFile, struct tre
       }
       memset(buffer_arr, 0, sizeof(buffer_arr));
   }
-  printf("\nBUFFER: %d", buffer);
-  printf("\nJ: %d", j);
   if(fclose(iFile))
     fprintf(stderr, "Error: Can't close input file - decode()\n");
   if(fclose(oFile))
     fprintf(stderr, "Error: Can't close output file - decode()\n");
+
+  printf("Decoding of file [%s] successful!\n", inputFile);
 }
 
 void asciiToBin(unsigned char c, unsigned char *buffer, struct treeNode *histogram) {

@@ -3,20 +3,22 @@
 char **codes;
 
 int main(int argc, char **argv) {
-  int i;
-
-
-  //printf("SAP: %d, argv: %s", argc, argv[2]);
-
   if(argc < 2) {
-    printf("ERROR\n"); //TODO: komunikat
+    printf("Huffman's Coding\n");
+    printf("Available Commands:\n");
+    printf("-e [input] [output] - encodes your input file and saves it to output file\n");
+    printf("-s [string] [output] - encodes your string and saves it to output file\n");
+    printf("-d [input] [output] [key] - decodes your input file and saves it to output file. It uses key generated with either '-s' or '-e'\n");
+    printf("-a [input] [output] - perform encoding and decoding -- used for debugging purposes\n");
+    printf("-authors - prints authors of this application\n");
   }
 
   if(argc == 4 && (strcmp(argv[1], "-e") == 0 || strcmp(argv[1], "-s") == 0 || strcmp(argv[1], "-a") == 0)) {
+    int i;
     int double_representation = -1;
     struct treeNode histogram[256];
-    printf("SAP: %d, argv[2]: %s, argv[3]: %s\n", argc, argv[2], argv[3]);
     char *buffer;
+
     if(strcmp(argv[1], "-s") == 0) {
       FILE *file;
       file = fopen("temp.txt", "w");
@@ -24,20 +26,13 @@ int main(int argc, char **argv) {
       buffer = (char *)malloc(strlen("temp.txt"));
       strcpy(buffer, "temp.txt");
       fclose(file);
-    }
-    else {
+    } else {
       buffer = (char *)malloc(strlen(argv[2]));
       strcpy(buffer, argv[2]);
     }
 
     if(!createHistogram(buffer, histogram)) {
       return 0;
-    }
-
-    printf("Number of occurrences of chars in histogram:\n");
-    for(i = 0; i < 256; i++) {
-      if (histogram[i].freq != 0)
-        printf("%c -> %d\n", histogram[i].c, histogram[i].freq);
     }
 
     quickSortFreq(histogram, 0, 255);
@@ -58,14 +53,14 @@ int main(int argc, char **argv) {
     }
     createCodes(list, root);
 
-    printf("\nCodes: ");
+    /*printf("\nCodes: ");
     for(i = 0; i < 256; i++) {
      if(codes[i] != NULL) {
        printf("\n%d: %s", i, codes[i]);
      }
-    }
+    }*/
 
-    printf("\nCompression ratio = %.2lf\n", encode(buffer, argv[3], histogram, &double_representation));
+    printf("Compression ratio = %.2lf\n", encode(buffer, argv[3], histogram, &double_representation));
 
     generateKey(histogram, double_representation);
 
@@ -81,49 +76,25 @@ int main(int argc, char **argv) {
     free(buffer);
     removeTree(root);
     remove("temp.txt");
+
+    printf("Process completed after seconds\n");
   }
-  else if(argc == 4 && strcmp(argv[1], "-d") == 0) {
+  else if(argc == 4 && strcmp(argv[1], "-d") == 0) { //decoding
     struct treeNode histogram[256];
     int double_representation = -1;
+
     keyToHistogram(argv[3], histogram, &double_representation);
-    printf("\nHIST po key to hist:\n");
-    for(i = 0; i < 256; i++) {
-      if(histogram[i].freq != 0 || histogram[i].zeroes) {
-        printf("%d %d %d %d\n",i, histogram[i].c, histogram[i].freq, histogram[i].zeroes);
-      }
-    }
     quickSortFreq(histogram, 0, 255);
-
-    printf("\nHIST po pierwszym sortowaniu:\n");
-    for(i = 0; i < 256; i++) {
-      if(histogram[i].freq != 0 || histogram[i].zeroes) {
-        printf("%d %d %d\n", histogram[i].c, histogram[i].freq, histogram[i].zeroes);
-      }
-    }
-
     struct treeNode *root = NULL;
     root = generateTree(root, histogram);
     if(root == NULL)
       return 0;
     quickSortChar(histogram, 0, 255);
-    printf("\nHIST po drugim sort:\n");
-    for(i = 0; i < 256; i++) {
-      if(histogram[i].freq != 0 || histogram[i].zeroes) {
-        printf(" %d %d %d %d\n",i,  histogram[i].c, histogram[i].freq, histogram[i].zeroes);
-      }
-    }
+
     decode(root, argv[2], "decoded.txt", histogram, &double_representation);
+
+    printf("Process completed after seconds\n");
   }
 
-  // printf("Number of occurrences of chars in histogram:\n");
-  // for(i = 0; i < 256; i++) {
-  //   if (histogram[i].freq != 0)
-  //     printf("%c -> %d\n", histogram[i].c, histogram[i].freq);
-  // }
-
-
-
-
-  //decode(root, "encoded.bin", "decoded.txt", histogram);
   return 0;
 }
