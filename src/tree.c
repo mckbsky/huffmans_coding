@@ -74,7 +74,7 @@ void quickSort(struct treeNode *histogram, int begin, int end, int type) {
   }
 }
 
-long *getHistogram(struct treeNode *histogram, int i, int type) {
+int *getHistogram(struct treeNode *histogram, int i, int type) {
   if(type == 0) {
     return &histogram[i].freq;
   }
@@ -208,7 +208,7 @@ void deleteListNode(struct list_pointers **list) {
   free(deleted_node);
 }
 
-double encode(char *input, char *outputFile, struct treeNode *histogram) {
+double encode(char *input, char *outputFile, struct treeNode *histogram, int *double_representation) {
   FILE *iFile, *oFile;
   unsigned char buffer;
   unsigned char buffer_arr[9];
@@ -243,7 +243,7 @@ double encode(char *input, char *outputFile, struct treeNode *histogram) {
         }
       }
       if (i == 9) {
-        unsigned char tmp = binToAscii(buffer_arr, histogram);
+        unsigned char tmp = binToAscii(buffer_arr, histogram, double_representation);
         fwrite(&tmp, 1, 1, oFile);
         oFileSize++;
         memset(buffer_arr, 0, sizeof(buffer_arr));
@@ -252,13 +252,14 @@ double encode(char *input, char *outputFile, struct treeNode *histogram) {
       }
     }
   }
+
   if( i != 9) {
-      unsigned char tmp = binToAscii(buffer_arr, histogram);
-      if(tmp != 0) {
-          fwrite(&tmp, 1, 1, oFile);
-          oFileSize++;
-      }
-      memset(buffer_arr, 0, sizeof(buffer_arr));
+    unsigned char tmp = binToAscii(buffer_arr, histogram, double_representation);
+    if(*double_representation != -1) {
+      printf("\n%d zeroes at the end", *double_representation);
+    }
+    fwrite(&tmp, 1, 1, oFile);
+    oFileSize++;
   }
 
   if(fclose(iFile))
@@ -269,9 +270,10 @@ double encode(char *input, char *outputFile, struct treeNode *histogram) {
     return (double)oFileSize / iFileSize;
 }
 
-unsigned char binToAscii(unsigned char *array, struct treeNode *histogram) {
+unsigned char binToAscii(unsigned char *array, struct treeNode *histogram, int *double_representation) {
   int i;
   int j;
+  int zeroes = 0;
   unsigned char result = 0;
 
   for(i = 0; array[i + 1] != '\0'; i++);
@@ -284,11 +286,22 @@ unsigned char binToAscii(unsigned char *array, struct treeNode *histogram) {
       j++;
     }
   }
-  if(histogram[result].zeroes == 0) {
-    for(j = 0; array[j] == '0'; j++) {
-      histogram[result].zeroes++;
-    }
+  for(j = 0; array[j] == '0'; j++) {
+    zeroes++;
   }
+  if(zeroes != 0 && histogram[result].zeroes == 0) {
+    histogram[result].zeroes = zeroes;
+    printf("\n%d -> %d zeroes", result, histogram[result].zeroes);
+  } else if(histogram[result].zeroes != zeroes){
+    printf("\nDouble representation of binary");
+    printf("\n%d -> %d zeroes", result, zeroes);
+    *double_representation = zeroes;
+  }
+  //if(histogram[result].zeroes == 0) {
+  //  for(j = 0; array[j] == '0'; j++) {
+  //    histogram[result].zeroes++;
+  //  }
+  //}
 
   return result;
 }
@@ -297,7 +310,7 @@ void generateKey(struct treeNode *histogram) {
   int i;
   for(i = 0; i < 256; i++) {
     if (histogram[i].freq != 0)
-      printf("%d:%ld:%d:", histogram[i].c, histogram[i].freq, histogram[i].zeroes);
+      printf("%d:%d:%d:", histogram[i].c, histogram[i].freq, histogram[i].zeroes);
   }
 }
 
@@ -311,14 +324,15 @@ void keyToHistogram(char *key, struct treeNode *histogram) {
 
 }
 
-void decode(struct treeNode *root, char *inputFile, char *outputFile, struct treeNode *histogram) {
+void decode(struct treeNode *root, char *inputFile, char *outputFile, struct treeNode *histogram, int *double_representation) {
   struct treeNode *tmp = root;
   FILE *iFile, *oFile;
   unsigned char buffer;
   unsigned char buffer_arr[9];
   int i;
+  int file_size;
   memset(buffer_arr, 0, sizeof(buffer_arr));
-  iFile = fopen(inputFile, "rb");
+  iFile = fopen(inputFile, "r");
   oFile = fopen(outputFile, "w");
 
   if(iFile == NULL) {
@@ -328,7 +342,14 @@ void decode(struct treeNode *root, char *inputFile, char *outputFile, struct tre
     fprintf(stderr, "Error: Can't open output file - decode()\n");
   }
 
-   while(fread(&buffer, 1, 1, iFile) == 1) {
+  fseek(iFile, 0, SEEK_END);
+  file_size = ftell(iFile);
+  rewind(iFile);
+
+  while(fread(&buffer, 1, 1, iFile) == 1) {
+    if(ftell(iFile) == file_size && double_representation != -1) {
+      histogram[buffer].zeroes = *double_representation;
+    }
     asciiToBin(buffer, buffer_arr, histogram);
       for(i = 0; buffer_arr[i] != '\0'; i++) {
         if(buffer_arr[i] == '0' && tmp->left != NULL) {

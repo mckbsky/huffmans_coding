@@ -8,11 +8,11 @@
 
 /*!
  * \struct treeNode
- * \brief Struktura wƒôz≈Ça drzewa
+ * \brief Struktura wÍz≥a drzewa
  *
- * Strukura zawiera pola c dla kodowanego znaku, freq dla ilo≈õci jej wystƒÖpie≈Ñ,
- * zeroes, wykorzystywanƒÖ do zapisu ilo≈õci zer w kodach znak√≥w i pola wska≈ºnikowe
- * left i right dla potomstwa danego wƒôz≈Ça.
+ * Strukura zawiera pola c dla kodowanego znaku, freq dla iloúci jej wystπpieÒ,
+ * zeroes, wykorzystywanπ do zapisu iloúci zer w kodach znakÛw i pola wskaønikowe
+ * left i right dla potomstwa danego wÍz≥a.
  */
 
 struct treeNode {
@@ -26,9 +26,9 @@ struct treeNode {
  * \struct list_node
  * \brief Typ bazowy listy dwukierunkowej
  *
- * Wykorzystywana jako bufer do zapisu kod√≥w przy przechodzeniu przez drzewo.
- * Zawiera pole code przechowujƒÖce znak '0' lub '1' w zale≈ºno≈õci od kierunku
- * odwiedzania wƒôz≈Ç√≥w
+ * Wykorzystywana jako bufer do zapisu kodÛw przy przechodzeniu przez drzewo.
+ * Zawiera pole code przechowujπce znak '0' lub '1' w zaleønoúci od kierunku
+ * odwiedzania wÍz≥Ûw
  */
 
 struct list_node {
@@ -38,9 +38,9 @@ struct list_node {
 
 /*!
  * \struct list_pointers
- * \brief Struktura wska≈∫nik√≥w do listy
+ * \brief Struktura wskaünikÛw do listy
  *
- * Tworzymy listƒô dwustronnƒÖ, abt u≈Çatwiƒá odczyt kod√≥w
+ * Tworzymy listÍ dwustronnπ, abt u≥atwiÊ odczyt kodÛw
  */
 
 struct list_pointers {
@@ -49,19 +49,19 @@ struct list_pointers {
 
 /*!
  * \var char **codes
- * \brief Kody ka≈ºdego ze znak√≥w
+ * \brief Kody kaødego ze znakÛw
  *
- * Tablica wska≈∫nik√≥w na tablice zawierajƒÖce kody dla znak√≥w ascii
- * wystƒôpujƒÖcych w histogramie
+ * Tablica wskaünikÛw na tablice zawierajπce kody dla znakÛw ascii
+ * wystÍpujπcych w histogramie
  */
 
 extern char **codes;
 
 /*!
  * \fn bool createHistogram(char *inputFile, struct treeNode *histogram)
- * \brief Funkcja tworzƒÖca histogram
+ * \brief Funkcja tworzπca histogram
  *
- * Funkcja przyjmuje dwa parametry: char *inputFile - nazwa pliku wej≈õciowego,
+ * Funkcja przyjmuje dwa parametry: char *inputFile - nazwa pliku wejúciowego,
  * struct treeNode *histogram - tablica
  */
 
@@ -78,15 +78,15 @@ void quickSort(struct treeNode *histogram, int begin, int end, int type);
 
 /*!
  * \fn void quickSort(struct treeNode *histogram, int begin, int end, int type)
- * \brief Funkcja sortujƒÖca histogram
+ * \brief Funkcja sortujπca histogram
  *
  * Funkcja przyjmuje cztery parametry: struct treeNode *histogram - tablica do posortowania
- * int begin - poczƒÖtkowy kraniec sortowania
- * int end - ko≈Ñcowy kraniec sortowania
+ * int begin - poczπtkowy kraniec sortowania
+ * int end - koÒcowy kraniec sortowania
  * int type - znienna przyjmujaca 0 lub 1 w zaleznosci co sortujemy (0 - int freq, 1 - unsigned char c)
  */
 
-long *getHistogram(struct treeNode *histogram, int i, int type);
+int *getHistogram(struct treeNode *histogram, int i, int type);
 
 /*!
  * \fn struct treeNode* generateTree(struct treeNode *root, struct treeNode *histogram)
@@ -99,12 +99,12 @@ struct treeNode* generateTree(struct treeNode *root, struct treeNode *histogram)
 
 /*!
  * \fn void createCodes(struct list_pointers *list, struct treeNode *root)
- * \brief Funkcja generujaca kody dla ka≈ºdego znaku
+ * \brief Funkcja generujaca kody dla kaødego znaku
  *
- * Funkcja przyjmuje dwa parametry: struct list_pointers *list - wska≈∫nik na pierwszy element listy
- * struct treeNode *root - wska≈∫nik na korze≈Ñ drzewa
- * Funkcja przechodzi rekurencyjnie przez drzewo i z ka≈ºdym wywo≈Çaniem dopisuje 0 lub 1 do
- * nowego elementu listy, a≈º do doj≈õcia do ko≈Ñca drzewa gdzie wywo≈Çywana jest funkcja saveCode
+ * Funkcja przyjmuje dwa parametry: struct list_pointers *list - wskaünik na pierwszy element listy
+ * struct treeNode *root - wskaünik na korzeÒ drzewa
+ * Funkcja przechodzi rekurencyjnie przez drzewo i z kaødym wywo≥aniem dopisuje 0 lub 1 do
+ * nowego elementu listy, aø do dojúcia do koÒca drzewa gdzie wywo≥ywana jest funkcja saveCode
  */
 
 void createCodes(struct list_pointers *list, struct treeNode *root);
@@ -120,10 +120,10 @@ void saveCode(struct list_pointers *list, char c);
 
 /*!
  * \fn void createList(struct list_pointers *list)
- * \brief Funkcja towrzƒÖca liste
+ * \brief Funkcja towrzπca liste
  *
  * Mariusz
- * Funkcja przyjmuje wska≈∫nik na liste ?
+ * Funkcja przyjmuje wskaünik na liste ?
  * Tworzenie pierwszego elemtnu listy
  */
 
@@ -140,7 +140,7 @@ void insertListNode(struct list_pointers *list);
 
 /*!
  * \fn void deleteListNode(struct list_pointers **list)
- * \brief Funkcja usuwajƒÖca element listy
+ * \brief Funkcja usuwajπca element listy
  *
  * Mariusz
  * Funkcja przyjmuje ??
@@ -156,11 +156,11 @@ void deleteListNode(struct list_pointers **list);
  * Maciek
  */
 
-double encode(char *input, char *outputFile, struct treeNode *histogram);
+double encode(char *input, char *outputFile, struct treeNode *histogram, int *double_representation);
 
 /*!
  * \fn unsigned char binToAscii(unsigned char *array, struct treeNode *histogram)
- * \brief Funkcja zamieniajƒÖca kody binarne na znaki ASCII
+ * \brief Funkcja zamieniajπca kody binarne na znaki ASCII
  *
  * Mariusz
  * Funkcja przyjmuje dwa parametry: unsigned char *array - tablica 8 kodow binarnych
@@ -168,7 +168,7 @@ double encode(char *input, char *outputFile, struct treeNode *histogram);
  * Funkcja zwraca gotowy znak ASCII
  */
 
-unsigned char binToAscii(unsigned char *array, struct treeNode *histogram);
+unsigned char binToAscii(unsigned char *array, struct treeNode *histogram, int *double_representation);
 
 /*!
  * \fn
@@ -197,7 +197,7 @@ void keyToHistogram(char *key, struct treeNode *histogram);
  * Maciek
  */
 
-void decode(struct treeNode *root, char *inputFile, char *outputFile, struct treeNode *histogram);
+void decode(struct treeNode *root, char *inputFile, char *outputFile, struct treeNode *histogram, int *double_representation);
 
 /*!
  * \fn void asciiToBin(unsigned char c, unsigned char *buffer, struct treeNode *histogram)

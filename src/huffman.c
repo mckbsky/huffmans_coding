@@ -13,6 +13,7 @@ int main(int argc, char **argv) {
   }
 
   if(argc == 4 && (strcmp(argv[1], "-e") == 0 || strcmp(argv[1], "-s") == 0 || strcmp(argv[1], "-a") == 0)) {
+    int double_representation = -1;
     struct treeNode histogram[256];
     printf("SAP: %d, argv[2]: %s, argv[3]: %s\n", argc, argv[2], argv[3]);
     char *buffer;
@@ -36,7 +37,7 @@ int main(int argc, char **argv) {
     printf("Number of occurrences of chars in histogram:\n");
     for(i = 0; i < 256; i++) {
       if (histogram[i].freq != 0)
-        printf("%c -> %ld\n", histogram[i].c, histogram[i].freq);
+        printf("%c -> %d\n", histogram[i].c, histogram[i].freq);
     }
 
     quickSort(histogram, 0, 255, 0);
@@ -57,12 +58,12 @@ int main(int argc, char **argv) {
     }
     createCodes(list, root);
 
-    //printf("\nCompression ratio = %.2lf\n", encode(buffer, argv[3], histogram));
+    printf("\nCompression ratio = %.2lf\n", encode(buffer, argv[3], histogram, &double_representation));
 
     //generateKey(histogram);
 
     if(strcmp(argv[1], "-a") == 0) {
-      decode(root, argv[3], "decoded.txt", histogram);
+      decode(root, argv[3], "decoded.txt", histogram, &double_representation);
     }
 
     for(i = 0; i < 256; i++) {
@@ -76,6 +77,7 @@ int main(int argc, char **argv) {
   }
   else if(argc == 4 && strcmp(argv[1], "-d") == 0) {
     struct treeNode histogram[256];
+    int double_representation = -1;
     //keyToHistogram(argv[3], histogram);
     quickSort(histogram, 0, 255, 0);
     struct treeNode *root = NULL;
@@ -83,7 +85,7 @@ int main(int argc, char **argv) {
     if(root == NULL)
       return 0;
     quickSort(histogram, 0, 255, 1);
-    decode(root, argv[3], "decoded.txt", histogram);
+    decode(root, argv[3], "decoded.txt", histogram, &double_representation);
   }
 
   // printf("Number of occurrences of chars in histogram:\n");
