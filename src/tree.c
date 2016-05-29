@@ -179,7 +179,7 @@ void createCodes(struct list_pointers *list, struct treeNode *root) {
   deleteListNode(&list);
 }
 
-void saveCode(struct list_pointers *list, char c) {
+void saveCode(struct list_pointers *list, unsigned char c) {
   struct list_node *tmp = list->tail->prev;
   unsigned int i;
   for(i = 0; tmp != NULL; i++) {
@@ -349,7 +349,6 @@ void decode(struct treeNode *root, char *inputFile, char *outputFile, struct tre
   unsigned char buffer;
   unsigned char buffer_arr[9];
   int i;
-  int j = 0;
   int file_size;
   memset(buffer_arr, 0, sizeof(buffer_arr));
   iFile = fopen(inputFile, "rb");
@@ -367,7 +366,6 @@ void decode(struct treeNode *root, char *inputFile, char *outputFile, struct tre
   fseek(iFile, 0, SEEK_SET);
 
   while(fread(&buffer, 1, 1, iFile) == 1) {
-    j++;
     if(ftell(iFile) == file_size && *double_representation != -1) {
       histogram[buffer].zeroes = *double_representation;
     }
