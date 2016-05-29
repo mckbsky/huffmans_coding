@@ -74,6 +74,84 @@ void quickSort(struct treeNode *histogram, int begin, int end, int type) {
   }
 }
 
+void quickSortChar(struct treeNode *histogram, int begin, int end) {
+    int i = begin;
+    int j = end;
+    int x;
+
+    x = histogram[(i + j) / 2].c;
+
+    do {
+        while(histogram[i].c < x) {
+            i++;
+        }
+        while(histogram[j].c > x) {
+            j--;
+        }
+        if(i <= j) {
+          unsigned char tmp = histogram[i].c;
+          histogram[i].c = histogram[j].c;
+          histogram[j].c = tmp;
+
+          int tmp2 = histogram[i].freq;
+          histogram[i].freq = histogram[j].freq;
+          histogram[j].freq = tmp2;
+
+          tmp2 = histogram[i].zeroes;
+          histogram[i].zeroes = histogram[j].zeroes;
+          histogram[j].zeroes = tmp2;
+
+          i++; j--;
+        }
+    }
+    while(i <=j);
+
+    if(begin < j) {
+        quickSortChar(histogram, begin, j);
+    }
+    if(i < end) {
+        quickSortChar(histogram, i, end);
+    }
+}
+
+void quickSortFreq(struct treeNode *histogram, int begin, int end) {
+    int i = begin;
+    int j = end;
+    int x = histogram[(i + j) / 2].freq;
+
+    do {
+        while(histogram[i].freq > x) {
+            i++;
+        }
+        while(histogram[j].freq < x) {
+            j--;
+        }
+        if(i <= j) {
+            int tmp = histogram[i].freq;
+            histogram[i].freq = histogram[j].freq;
+            histogram[j].freq = tmp;
+
+            unsigned char tmp2 = histogram[i].c;
+            histogram[i].c = histogram[j].c;
+            histogram[j].c = tmp2;
+
+            tmp = histogram[i].zeroes;
+            histogram[i].zeroes = histogram[j].zeroes;
+            histogram[j].zeroes = tmp;
+
+            i++; j--;
+        }
+    }
+    while(i <= j);
+
+    if(begin < j) {
+        quickSortFreq(histogram, begin, j);
+    }
+    if(i < end) {
+        quickSortFreq(histogram, i, end);
+    }
+}
+
 int *getHistogram(struct treeNode *histogram, int i, int type) {
   if(type == 0) {
     return &histogram[i].freq;
@@ -295,22 +373,41 @@ unsigned char binToAscii(unsigned char *array, struct treeNode *histogram, int *
   return result;
 }
 
-void generateKey(struct treeNode *histogram) {
+void generateKey(struct treeNode *histogram, int double_representation) {
   int i;
+  printf("%d:", double_representation);
   for(i = 0; i < 256; i++) {
-    if (histogram[i].freq != 0)
+    if (histogram[i].freq != 0 || histogram[i].zeroes != 0)
       printf("%d:%d:%d:", histogram[i].c, histogram[i].freq, histogram[i].zeroes);
   }
+  printf("\b");
 }
 
-void keyToHistogram(char *key, struct treeNode *histogram) {
+void keyToHistogram(char *key, struct treeNode *histogram, int *double_representation) {
   int i;
+  char *pch;
   for(i = 0; i < 256; i++) {
-    histogram[i].c = (char)i;
+    histogram[i].c = i;
     histogram[i].freq = 0;
     histogram[i].zeroes = 0;
   }
-
+  pch = strtok(key, ":");
+  *double_representation = atoi(pch);
+  pch = strtok(NULL, ":");
+  while (pch != NULL) {
+    i = atoi(pch);
+    pch = strtok(NULL, ":");
+    histogram[i].freq = atoi(pch);
+    pch = strtok(NULL, ":");
+    histogram[i].zeroes = atoi(pch);
+    pch = strtok(NULL, ":");
+  }
+  printf("\nHIST:\n");
+  for(i = 0; i < 256; i++) {
+    if(histogram[i].freq != 0 || histogram[i].zeroes) {
+      printf("%d %d %d\n", histogram[i].c, histogram[i].freq, histogram[i].zeroes);
+    }
+  }
 }
 
 void decode(struct treeNode *root, char *inputFile, char *outputFile, struct treeNode *histogram, int *double_representation) {

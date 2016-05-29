@@ -46,7 +46,7 @@ int main(int argc, char **argv) {
     if(root == NULL)
       return 0;
 
-    quickSort(histogram, 0, 255, 1);
+    quickSortChar(histogram, 0, 255);
 
     struct list_pointers *list = NULL;
     list = (struct list_pointers *)malloc(sizeof(struct list_pointers));
@@ -67,7 +67,7 @@ int main(int argc, char **argv) {
 
     printf("\nCompression ratio = %.2lf\n", encode(buffer, argv[3], histogram, &double_representation));
 
-    //generateKey(histogram);
+    generateKey(histogram, double_representation);
 
     if(strcmp(argv[1], "-a") == 0) {
       decode(root, argv[3], "decoded.txt", histogram, &double_representation);
@@ -85,14 +85,34 @@ int main(int argc, char **argv) {
   else if(argc == 4 && strcmp(argv[1], "-d") == 0) {
     struct treeNode histogram[256];
     int double_representation = -1;
-    //keyToHistogram(argv[3], histogram);
+    keyToHistogram(argv[3], histogram, &double_representation);
+    printf("\nHIST po key to hist:\n");
+    for(i = 0; i < 256; i++) {
+      if(histogram[i].freq != 0 || histogram[i].zeroes) {
+        printf("%d %d %d %d\n",i, histogram[i].c, histogram[i].freq, histogram[i].zeroes);
+      }
+    }
     quickSort(histogram, 0, 255, 0);
+
+    printf("\nHIST po pierwszym sortowaniu:\n");
+    for(i = 0; i < 256; i++) {
+      if(histogram[i].freq != 0 || histogram[i].zeroes) {
+        printf("%d %d %d\n", histogram[i].c, histogram[i].freq, histogram[i].zeroes);
+      }
+    }
+
     struct treeNode *root = NULL;
     root = generateTree(root, histogram);
     if(root == NULL)
       return 0;
-    quickSort(histogram, 0, 255, 1);
-    decode(root, argv[3], "decoded.txt", histogram, &double_representation);
+    quickSortChar(histogram, 0, 255);
+    printf("\nHIST po drugim sort:\n");
+    for(i = 0; i < 256; i++) {
+      if(histogram[i].freq != 0 || histogram[i].zeroes) {
+        printf(" %d %d %d %d\n",i,  histogram[i].c, histogram[i].freq, histogram[i].zeroes);
+      }
+    }
+    decode(root, argv[2], "decoded.txt", histogram, &double_representation);
   }
 
   // printf("Number of occurrences of chars in histogram:\n");

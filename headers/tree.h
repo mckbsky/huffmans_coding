@@ -75,6 +75,7 @@ bool createHistogram(char *inputFile, struct treeNode *histogram);
  */
 
 void quickSort(struct treeNode *histogram, int begin, int end, int type);
+void quickSortChar(struct treeNode *histogram, int begin, int end);
 
 /*!
  * \fn void quickSort(struct treeNode *histogram, int begin, int end, int type)
@@ -177,7 +178,7 @@ unsigned char binToAscii(unsigned char *array, struct treeNode *histogram, int *
  * Maciek
  */
 
-void generateKey(struct treeNode *histogram);
+void generateKey(struct treeNode *histogram, int double_representation);
 
 /*!
  * \fn void keyToHistogram(char *key, struct treeNode *histogram)
@@ -188,7 +189,7 @@ void generateKey(struct treeNode *histogram);
  * struct treeNode *histogram - tablica
  */
 
-void keyToHistogram(char *key, struct treeNode *histogram);
+void keyToHistogram(char *key, struct treeNode *histogram, int *double_representation);
 
 /*!
  * \fn
