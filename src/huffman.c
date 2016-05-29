@@ -58,6 +58,13 @@ int main(int argc, char **argv) {
     }
     createCodes(list, root);
 
+    printf("\nCodes: ");
+    for(i = 0; i < 256; i++) {
+     if(codes[i] != NULL) {
+       printf("\n%d: %s", i, codes[i]);
+     }
+    }
+
     printf("\nCompression ratio = %.2lf\n", encode(buffer, argv[3], histogram, &double_representation));
 
     //generateKey(histogram);
@@ -94,12 +101,7 @@ int main(int argc, char **argv) {
   //     printf("%c -> %d\n", histogram[i].c, histogram[i].freq);
   // }
 
-  // printf("\nCodes: ");
-  // for(i = 0; i < 256; i++) {
-  //   if(codes[i] != NULL) {
-  //     printf("\n%c: %s", i, codes[i]);
-  //   }
-  // }
+
 
 
   //decode(root, "encoded.bin", "decoded.txt", histogram);

@@ -95,23 +95,21 @@ struct treeNode* generateTree(struct treeNode *root, struct treeNode *histogram)
   }
 
   while(n >= 0) {
-    struct treeNode *node = (struct treeNode *)malloc(sizeof(struct treeNode));
-    node->c = 0;
+    struct treeNode *node = (struct treeNode *)calloc(1, sizeof(struct treeNode));
 
     if(root) {
     if(n == 0) {
-        node->left = (struct treeNode *)malloc(sizeof(struct treeNode));
+        node->left = (struct treeNode *)calloc(1, sizeof(struct treeNode));
         node->left->c = histogram[n].c;
         node->right = root;
         root = node;
       } else {
-        node->left = (struct treeNode *)malloc(sizeof(struct treeNode));
+        node->left = (struct treeNode *)calloc(1, sizeof(struct treeNode));
         node->left->c = histogram[n - 1].c;
-        node->right = (struct treeNode *)malloc(sizeof(struct treeNode));
+        node->right = (struct treeNode *)calloc(1, sizeof(struct treeNode));
         node->right->c = histogram[n].c;
 
-        struct treeNode *new_root = (struct treeNode *)malloc(sizeof(struct treeNode));
-        new_root->c = 0;
+        struct treeNode *new_root = (struct treeNode *)calloc(1, sizeof(struct treeNode));
         new_root->left = node;
         new_root->right = root;
         root = new_root;
@@ -122,9 +120,9 @@ struct treeNode* generateTree(struct treeNode *root, struct treeNode *histogram)
       root = node;
     }
     else {
-      node->left = (struct treeNode *)malloc(sizeof(struct treeNode));
+      node->left = (struct treeNode *)calloc(1, sizeof(struct treeNode));
       node->left->c = histogram[n - 1].c;
-      node->right = (struct treeNode *)malloc(sizeof(struct treeNode));
+      node->right = (struct treeNode *)calloc(1, sizeof(struct treeNode));
       node->right->c = histogram[n].c;
       root = node;
     }
@@ -321,9 +319,10 @@ void decode(struct treeNode *root, char *inputFile, char *outputFile, struct tre
   unsigned char buffer;
   unsigned char buffer_arr[9];
   int i;
+  int j = 0;
   int file_size;
   memset(buffer_arr, 0, sizeof(buffer_arr));
-  iFile = fopen(inputFile, "r");
+  iFile = fopen(inputFile, "rb");
   oFile = fopen(outputFile, "w");
 
   if(iFile == NULL) {
@@ -335,9 +334,12 @@ void decode(struct treeNode *root, char *inputFile, char *outputFile, struct tre
 
   fseek(iFile, 0, SEEK_END);
   file_size = ftell(iFile);
-  rewind(iFile);
+  fseek(iFile, 0, SEEK_SET);
+  printf("\nFILE SIZE: %d", file_size);
+  printf("\nFILE BEGIN: %lu\n", ftell(iFile));
 
   while(fread(&buffer, 1, 1, iFile) == 1) {
+    j++;
     if(ftell(iFile) == file_size && *double_representation != -1) {
       histogram[buffer].zeroes = *double_representation;
     }
@@ -349,14 +351,15 @@ void decode(struct treeNode *root, char *inputFile, char *outputFile, struct tre
         else if(buffer_arr[i] == '1' && tmp->right != NULL) {
           tmp = tmp->right;
         }
-        if(tmp->c != 0) {
+        if(tmp->left == NULL && tmp->right == NULL) {
           fprintf(oFile, "%c", tmp->c);
           tmp = root;
         }
       }
       memset(buffer_arr, 0, sizeof(buffer_arr));
   }
-
+  printf("\nBUFFER: %d", buffer);
+  printf("\nJ: %d", j);
   if(fclose(iFile))
     fprintf(stderr, "Error: Can't close input file - decode()\n");
   if(fclose(oFile))
