@@ -74,8 +74,8 @@ bool createHistogram(char *inputFile, struct treeNode *histogram);
  * Maciek
  */
 
-void quickSort(struct treeNode *histogram, int begin, int end, int type);
 void quickSortChar(struct treeNode *histogram, int begin, int end);
+void quickSortFreq(struct treeNode *histogram, int begin, int end);
 
 /*!
  * \fn void quickSort(struct treeNode *histogram, int begin, int end, int type)
@@ -86,8 +86,6 @@ void quickSortChar(struct treeNode *histogram, int begin, int end);
  * int end - koñcowy kraniec sortowania
  * int type - znienna przyjmujaca 0 lub 1 w zaleznosci co sortujemy (0 - int freq, 1 - unsigned char c)
  */
-
-int *getHistogram(struct treeNode *histogram, int i, int type);
 
 /*!
  * \fn struct treeNode* generateTree(struct treeNode *root, struct treeNode *histogram)

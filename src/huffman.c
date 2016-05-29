@@ -40,7 +40,7 @@ int main(int argc, char **argv) {
         printf("%c -> %d\n", histogram[i].c, histogram[i].freq);
     }
 
-    quickSort(histogram, 0, 255, 0);
+    quickSortFreq(histogram, 0, 255);
     struct treeNode *root = NULL;
     root = generateTree(root, histogram);
     if(root == NULL)
@@ -92,7 +92,7 @@ int main(int argc, char **argv) {
         printf("%d %d %d %d\n",i, histogram[i].c, histogram[i].freq, histogram[i].zeroes);
       }
     }
-    quickSort(histogram, 0, 255, 0);
+    quickSortFreq(histogram, 0, 255);
 
     printf("\nHIST po pierwszym sortowaniu:\n");
     for(i = 0; i < 256; i++) {
