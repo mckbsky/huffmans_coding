@@ -97,37 +97,29 @@ struct treeNode* generateTree(struct treeNode *root, struct treeNode *histogram)
   while(n >= 0) {
     struct treeNode *node = (struct treeNode *)malloc(sizeof(struct treeNode));
     node->c = 0;
-    node->freq = histogram[n].freq + histogram[n - 1].freq;
 
     if(root) {
     if(n == 0) {
         node->left = (struct treeNode *)malloc(sizeof(struct treeNode));
-        node->left->freq = histogram[n].freq;
         node->left->c = histogram[n].c;
         node->right = root;
         root = node;
-        root->freq = root->left->freq + root->right->freq;
       } else {
         node->left = (struct treeNode *)malloc(sizeof(struct treeNode));
-        node->left->freq = histogram[n- 1].freq;
         node->left->c = histogram[n - 1].c;
         node->right = (struct treeNode *)malloc(sizeof(struct treeNode));
-        node->right->freq = histogram[n].freq;
         node->right->c = histogram[n].c;
-        node->freq = node->left->freq + node->right->freq;
 
         struct treeNode *new_root = (struct treeNode *)malloc(sizeof(struct treeNode));
         new_root->c = 0;
         new_root->left = node;
         new_root->right = root;
         root = new_root;
-        root->freq = root->left->freq + root->right->freq;
       }
     }
     else if(n == 0){
       node->c = histogram[n].c;
       root = node;
-      root->freq = histogram[n].freq;
     }
     else {
       node->left = (struct treeNode *)malloc(sizeof(struct treeNode));
@@ -138,7 +130,6 @@ struct treeNode* generateTree(struct treeNode *root, struct treeNode *histogram)
     }
     n -= 2;
   }
-  //printf("Weight of tree: %ld", root->freq);
   return root;
 }
 
