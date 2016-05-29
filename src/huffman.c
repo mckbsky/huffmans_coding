@@ -11,6 +11,7 @@ int main(int argc, char **argv) {
     printf("-d [input] [output] [key] - decodes your input file and saves it to output file. It uses key generated with either '-s' or '-e'\n");
     printf("-a [input] [output] - perform encoding and decoding -- used for debugging purposes\n");
     printf("-authors - prints authors of this application\n");
+    return 0;
   }
 
   if(argc == 4 && (strcmp(argv[1], "-e") == 0 || strcmp(argv[1], "-s") == 0 || strcmp(argv[1], "-a") == 0)) {
@@ -78,8 +79,7 @@ int main(int argc, char **argv) {
     remove("temp.txt");
 
     printf("Process completed after seconds\n");
-  }
-  else if(argc == 4 && strcmp(argv[1], "-d") == 0) { //decoding
+  } else if(argc == 4 && strcmp(argv[1], "-d") == 0) { //decoding
     struct treeNode histogram[256];
     int double_representation = -1;
 
@@ -94,6 +94,12 @@ int main(int argc, char **argv) {
     decode(root, argv[2], "decoded.txt", histogram, &double_representation);
 
     printf("Process completed after seconds\n");
+  } else if(argc == 2 && strcmp(argv[1], "-authors") == 0) {
+    printf("Authors:\n");
+    printf("Maciej Brzeczkowski <maciej.brzeczkowski@protonmail.com>\n");
+    printf("Mariusz Lewczuk\n");
+  } else {
+    printf("Incorrect arguments");
   }
 
   return 0;
