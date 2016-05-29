@@ -338,7 +338,7 @@ void decode(struct treeNode *root, char *inputFile, char *outputFile, struct tre
   rewind(iFile);
 
   while(fread(&buffer, 1, 1, iFile) == 1) {
-    if(ftell(iFile) == file_size && double_representation != -1) {
+    if(ftell(iFile) == file_size && *double_representation != -1) {
       histogram[buffer].zeroes = *double_representation;
     }
     asciiToBin(buffer, buffer_arr, histogram);
