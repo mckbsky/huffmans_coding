@@ -1,4 +1,5 @@
 #include "../headers/tree.h"
+#include <time.h>
 
 char **codes;
 
@@ -19,8 +20,12 @@ int main(int argc, char **argv) {
     int double_representation = -1;
     struct treeNode histogram[256];
     char *buffer;
+    clock_t startt, resultt;
 
     if(strcmp(argv[1], "-s") == 0) {
+
+      startt = clock();
+
       FILE *file;
       file = fopen("temp.txt", "w");
       while(fprintf(file, "%s", argv[2]) == 1);
@@ -28,6 +33,9 @@ int main(int argc, char **argv) {
       strcpy(buffer, "temp.txt");
       fclose(file);
     } else {
+
+      startt = clock();
+
       buffer = (char *)malloc(strlen(argv[2]));
       strcpy(buffer, argv[2]);
     }
@@ -65,8 +73,16 @@ int main(int argc, char **argv) {
 
     generateKey(histogram, double_representation);
 
+    resultt = clock() - startt;
+
+
     if(strcmp(argv[1], "-a") == 0) {
+      printf("Algorithm for -a before decoding took %f seconds.\n",((float)resultt)/CLOCKS_PER_SEC);
       decode(root, argv[3], "decoded.txt", histogram, &double_representation);
+      resultt = clock() - startt;
+      printf("Algorithm for -a after decoding took %f seconds.\n",((float)resultt)/CLOCKS_PER_SEC);
+    }else{
+      printf("Algorithm for encoding your text took %f seconds.\n",((float)resultt)/CLOCKS_PER_SEC);
     }
 
     for(i = 0; i < 256; i++) {
@@ -78,8 +94,12 @@ int main(int argc, char **argv) {
     removeTree(root);
     remove("temp.txt");
 
-    printf("Process completed after seconds\n");
+
   } else if(argc == 4 && strcmp(argv[1], "-d") == 0) { //decoding
+
+    clock_t startt, resultt;
+    startt = clock();
+
     struct treeNode histogram[256];
     int double_representation = -1;
 
@@ -93,7 +113,8 @@ int main(int argc, char **argv) {
 
     decode(root, argv[2], "decoded.txt", histogram, &double_representation);
 
-    printf("Process completed after seconds\n");
+    resultt = clock() - startt;
+    printf("Algorithm for decoding your text took %f seconds.\n",((float)resultt)/CLOCKS_PER_SEC);
   } else if(argc == 2 && strcmp(argv[1], "-authors") == 0) {
     printf("Authors:\n");
     printf("Maciej Brzeczkowski <maciej.brzeczkowski@protonmail.com>\n");
