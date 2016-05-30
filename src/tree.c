@@ -423,8 +423,9 @@ void asciiToBin(unsigned char c, unsigned char *buffer, struct treeNode *histogr
 }
 
 void removeTree(struct treeNode *root) {
-  if(root->c != 0) {
+  if(root->left == NULL && root->right == NULL) {
     free(root);
+    root = NULL;
     return;
   }
   removeTree(root->right);
