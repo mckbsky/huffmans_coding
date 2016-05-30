@@ -112,7 +112,7 @@ int main(int argc, char **argv) {
     quickSortChar(histogram, 0, 255);
 
     decode(root, argv[2], "decoded.txt", histogram, &double_representation);
-
+    removeTree(root);
     resultt = clock() - startt;
     printf("Algorithm for decoding your text took %f seconds.\n",((float)resultt)/CLOCKS_PER_SEC);
   } else if(argc == 2 && strcmp(argv[1], "-authors") == 0) {
