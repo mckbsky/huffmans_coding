@@ -95,7 +95,7 @@ int main(int argc, char **argv) {
     remove("temp.txt");
 
 
-  } else if(argc == 4 && strcmp(argv[1], "-d") == 0) { //decoding
+  } else if(argc == 5 && strcmp(argv[1], "-d") == 0) { //decoding
 
     clock_t startt, resultt;
     startt = clock();
@@ -103,7 +103,7 @@ int main(int argc, char **argv) {
     struct treeNode histogram[256];
     int double_representation = -1;
 
-    keyToHistogram(argv[3], histogram, &double_representation);
+    keyToHistogram(argv[4], histogram, &double_representation);
     quickSortFreq(histogram, 0, 255);
     struct treeNode *root = NULL;
     root = generateTree(root, histogram);
@@ -111,7 +111,7 @@ int main(int argc, char **argv) {
       return 0;
     quickSortChar(histogram, 0, 255);
 
-    decode(root, argv[2], "decoded.txt", histogram, &double_representation);
+    decode(root, argv[2], argv[3], histogram, &double_representation);
     removeTree(root);
     resultt = clock() - startt;
     printf("Algorithm for decoding your text took %f seconds.\n",((float)resultt)/CLOCKS_PER_SEC);
