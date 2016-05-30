@@ -159,7 +159,7 @@ struct treeNode* generateTree(struct treeNode *root, struct treeNode *histogram)
 }
 
 void createCodes(struct list_pointers *list, struct treeNode *root) {
-  if(root->c != 0 && list->head == list->tail) {
+  if(root->left == NULL && root->right == NULL && list->head == list->tail) {
     insertListNode(list);
     list->head->code = '0';
   }
