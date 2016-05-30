@@ -13,7 +13,7 @@
 				<Option compiler="gcc" />
 				<Option parameters="-e lorem_ipsum.txt out.txt" />
 				<Compiler>
-					<Add option="-g" />
+					<Add option="-O2" />
 				</Compiler>
 			</Target>
 			<Target title="Release">
