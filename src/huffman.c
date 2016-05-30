@@ -73,16 +73,15 @@ int main(int argc, char **argv) {
 
     generateKey(histogram, double_representation);
 
-    resultt = clock() - startt;
+
 
 
     if(strcmp(argv[1], "-a") == 0) {
+      resultt = clock() - startt;
       printf("Algorithm for -a before decoding took %f seconds.\n",((float)resultt)/CLOCKS_PER_SEC);
       decode(root, argv[3], "decoded.txt", histogram, &double_representation);
       resultt = clock() - startt;
       printf("Algorithm for -a after decoding took %f seconds.\n",((float)resultt)/CLOCKS_PER_SEC);
-    }else{
-      printf("Algorithm for encoding your text took %f seconds.\n",((float)resultt)/CLOCKS_PER_SEC);
     }
 
     for(i = 0; i < 256; i++) {
@@ -93,7 +92,8 @@ int main(int argc, char **argv) {
     free(buffer);
     removeTree(root);
     remove("temp.txt");
-
+    resultt = clock() - startt;
+    printf("Algorithm for your text took %f seconds.\n",((float)resultt)/CLOCKS_PER_SEC);
 
   } else if(argc == 5 && strcmp(argv[1], "-d") == 0) { //decoding
 
