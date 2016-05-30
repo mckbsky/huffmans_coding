@@ -40,3 +40,17 @@
 1464186055 source:/home/drkp/workspace/huffmans_coding/src/tree.c
 	"../headers/tree.h"
 
+1464625525 source:/home/drkp/Desktop/huffmans_coding/src/huffman.c
+	"../headers/tree.h"
+	<time.h>
+
+1464602141 /home/drkp/Desktop/huffmans_coding/headers/tree.h
+	<stdio.h>
+	<stdbool.h>
+	<stdlib.h>
+	<math.h>
+	<string.h>
+
+1464625264 source:/home/drkp/Desktop/huffmans_coding/src/tree.c
+	"../headers/tree.h"
+
