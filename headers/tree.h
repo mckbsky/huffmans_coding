@@ -10,16 +10,16 @@
  * \struct treeNode
  * \brief Struktura węzła drzewa
  *
- * Strukura zawiera pola c dla kodowanego znaku, freq dla ilości jej wystąpień,
- * zeroes, wykorzystywaną do zapisu ilości zer w kodach znaków i pola wskaźnikowe
- * left i right dla potomstwa danego węzła.
+ * Strukura bazowa pojedynczego węzła drzewa. Wykorzystywana do generowania
+ * drzewa oraz histogramu.
  */
 
 struct treeNode {
-  unsigned char c;
-  int freq;
-  int zeroes;
-  struct treeNode *left, *right;
+  unsigned char c; /**< kod ASCII znaku */
+  int freq; /**< ilość wystąpień danego znaku */
+  int zeroes; /**< ilośc zer do wypełnienia przy zamianie kodu ASCII bo kodu binarnego */
+  struct treeNode *left; /**< adres lewego potomka węzła */
+  struct treeNode *right; /**< adres prawego potomka węzła */
 };
 
 /*!
@@ -27,24 +27,25 @@ struct treeNode {
  * \brief Typ bazowy listy dwukierunkowej
  *
  * Wykorzystywana jako bufer do zapisu kodów przy przechodzeniu przez drzewo.
- * Zawiera pole code przechowujące znak '0' lub '1' w zale¿noœci od kierunku
- * odwiedzania węzłów
  */
 
 struct list_node {
-  char code;
-  struct list_node *prev, *next;
+  char code; /**< Pole zawierające kod '0' bądz '1' zależności od kierunku
+                  przechodzenia przez drzewo */
+  struct list_node *prev; /**< Adres poprzedniego elementu listy */
+  struct list_node *next; /**< Adres następnego elementu listy */
 };
 
 /*!
  * \struct list_pointers
  * \brief Struktura wskaźników do listy
  *
- * Tworzymy listę dwustronną, aby ułatwić odczyt kodów
+ * Tworzymy listę dwustronną, aby ułatwić odczyt kodów.
  */
 
 struct list_pointers {
-  struct list_node *head, *tail;
+  struct list_node *head; /**< Adres czoła listy */
+  struct list_node *tail; /**< Adres ogona listy */
 };
 
 /*!
@@ -261,8 +262,8 @@ void decode(struct treeNode *root, char *inputFile, char *outputFile, struct tre
  * Funkcja przyjmuje trzy parametry: unsigned char c - znak pobrany z pliku wejściowego
  * unsigned char *buffer - buffer na kod binarny
  * struct treeNode *histogram - histogram
- * Celem funkcji jest zamiana kodu ASCII na kod binarny. Uzupełnia ona również kod zerami zgodnie
- * z polem histogram[c].zeroes.
+ * Celem funkcji jest zamiana kodu zakodowanego w postaci kodów ASCII na kod binarny. Uzupełnia ona również kod
+ * zerami zgodnie z polem histogram[c].zeroes.
  */
 
 void asciiToBin(unsigned char c, unsigned char *buffer, struct treeNode *histogram);
