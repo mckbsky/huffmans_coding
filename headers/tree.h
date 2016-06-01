@@ -53,7 +53,7 @@ struct list_pointers {
  * \brief Kody każdego ze znaków
  *
  * Tablica wskaźników na tablice zawierające kody dla znaków ascii
- * występujących w histogramie
+ * występujących w histogramie.
  */
 
 extern char **codes;
@@ -62,36 +62,41 @@ extern char **codes;
  * \fn bool createHistogram(char *inputFile, struct treeNode *histogram)
  * \brief Funkcja tworząca histogram
  *
- * Funkcja przyjmuje dwa parametry: char *inputFile - nazwa pliku wejściowego,
- * struct treeNode *histogram - tablica typu strukturalnego z informacjami
+ * \param char *inputFile - nazwa pliku wejściowego,
+ * \param struct treeNode *histogram  - tablica typu strukturalnego z informacjami
  * o danym znaku, ilości jego wystąpień i liczbie zer do wypełnienia dla kodu.
- * Zwraca wartość bool zależną od powodzenia działania funkcji.
+ * \return Wartość bool zależną od powodzenia działania funkcji.
+ *
+ * Funkcja generuje histogram zliczając ilość wystąpień danego znaku w
+ * pliku wejściowym i zapisuje tą informację do tablicy histogramu.
  */
 
 bool createHistogram(char *inputFile, struct treeNode *histogram);
 
 /*!
- * \fn void quickSort(struct treeNode *histogram, int begin, int end)
+ * \fn void quickSortChar(struct treeNode *histogram, int begin, int end)
  * \brief Funkcja sortująca histogram
  *
- * Funkcja przyjmuje trzy parametry: struct treeNode *histogram - tablica do posortowania
- * int begin - początkowy kraniec sortowania
- * int end - koñcowy kraniec sortowania
+ * \param struct treeNode *histogram - tablica do posortowania
+ * \param int begin - początkowy kraniec sortowania
+ * \param int end - końcowy kraniec sortowania
  *
- * Funkcja sortuje rosnąco po kodach ASCII znaków.
+ * Funkcja sortuje rosnąco po kodach ASCII znaków celem ułatwienia znajdowania
+ * danego znaku podczas generowania jego kodu.
  */
 
  void quickSortChar(struct treeNode *histogram, int begin, int end);
 
  /*!
- * \fn void quickSort(struct treeNode *histogram, int begin, int end)
+ * \fn void quickSortFreq(struct treeNode *histogram, int begin, int end)
  * \brief Funkcja sortująca histogram
  *
- * Funkcja przyjmuje trzy parametry: struct treeNode *histogram - tablica do posortowania
- * int begin - początkowy kraniec sortowania
- * int end - koñcowy kraniec sortowania
+ * \param struct treeNode *histogram - tablica do posortowania
+ * \param int begin - początkowy kraniec sortowania
+ * \param int end - końcowy kraniec sortowania
  *
- * Funkcja sortuje malejąco po ilości wystąpień danego znaku.
+ * Funkcja sortuje malejąco po ilości wystąpień danego znaku. Wykorzystywana
+ * do przygotowania histogramu przed generowaniem drzewa.
  */
 
  void quickSortFreq(struct treeNode *histogram, int begin, int end);
@@ -100,10 +105,14 @@ bool createHistogram(char *inputFile, struct treeNode *histogram);
  * \fn struct treeNode* generateTree(struct treeNode *root, struct treeNode *histogram)
  * \brief Funkcja tworząca drzewo na powstawie histogramu.
  *
+ * \param struct treeNode *root - adres korzenia drzewa
+ * \param struct treeNode *histogram - tablica histogramu
+ * \return struct treeNode * - adres korzenia wygenerowanego drzewa.
+ *
  * Funkcja przyjmuje wskaźnik na korzeń drzewa i tablicę histogramu posortowaną
  * malejąco po ilościach wystąpień. W pierwszym kroku znajduje ostatni element
  * histogramu mający ilość wystąpień większą od zera. Następnie pobiera ten element
- * oraz element przedostatni, tworzy dla nich węzły i rodzica i szuka drzewa, do
+ * oraz element przedostatni, tworzy dla nich węzły i rodzica, a następnie szuka drzewa, do
  * którego mogłaby podłączyć powstałe drzewo. Jeśli znajdzie wskaźnik na drzewo,
  * funcja złączy te drzewa tworząc nowego rodzica, którego lewy wskaźnik wskazuje
  * na nowo powstałe drzewo, a prawy na drzewo, do którego chcemy się podłączyć.
