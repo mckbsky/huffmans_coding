@@ -15,11 +15,11 @@
  */
 
 struct treeNode {
-  unsigned char c; /**< kod ASCII znaku */
-  int freq; /**< ilość wystąpień danego znaku */
-  int zeroes; /**< ilośc zer do wypełnienia przy zamianie kodu ASCII bo kodu binarnego */
-  struct treeNode *left; /**< adres lewego potomka węzła */
-  struct treeNode *right; /**< adres prawego potomka węzła */
+  unsigned char c; /*!< kod ASCII znaku */
+  int freq; /*!< ilość wystąpień danego znaku */
+  int zeroes; /*!< ilośc zer do wypełnienia przy zamianie kodu ASCII bo kodu binarnego */
+  struct treeNode *left; /*!< adres lewego potomka węzła */
+  struct treeNode *right; /*!< adres prawego potomka węzła */
 };
 
 /*!
@@ -85,7 +85,7 @@ bool createHistogram(char *inputFile, struct treeNode *histogram);
  * danego znaku podczas generowania jego kodu.
  */
 
- void quickSortChar(struct treeNode *histogram, int begin, int end);
+void quickSortChar(struct treeNode *histogram, int begin, int end);
 
  /*!
  * \fn void quickSortFreq(struct treeNode *histogram, int begin, int end)
@@ -99,7 +99,7 @@ bool createHistogram(char *inputFile, struct treeNode *histogram);
  * do przygotowania histogramu przed generowaniem drzewa.
  */
 
- void quickSortFreq(struct treeNode *histogram, int begin, int end);
+void quickSortFreq(struct treeNode *histogram, int begin, int end);
 
 /*!
  * \fn struct treeNode* generateTree(struct treeNode *root, struct treeNode *histogram)
@@ -129,8 +129,9 @@ struct treeNode* generateTree(struct treeNode *root, struct treeNode *histogram)
  * \fn void createCodes(struct list_pointers *list, struct treeNode *root)
  * \brief Funkcja generujaca kody dla każdego znaku
  *
- * Funkcja przyjmuje dwa parametry: struct list_pointers *list - wskaźnik na pierwszy element listy
- * struct treeNode *root - wskaźnik na korzeń drzewa
+ * \param struct treeNode *root - wskaźnik na korzeń drzewa
+ * \param struct list_pointers *list - wskaźnik do struktury wskaźników na listę
+ *
  * Funkcja przechodzi rekurencyjnie przez drzewo i z każdym wywołaniem tworzy nowy element listy,
  * do którego zapisuje 0 lub 1 w zależności od kierunku przechodzenia przez drzewo (0 - w lewo, 1 - w prawo),
  * aż do dojścia do liścia gdzie wywoływana jest funkcja saveCode().
@@ -142,9 +143,11 @@ void createCodes(struct list_pointers *list, struct treeNode *root);
  * \fn saveCode(struct list_pointers *list, unsigned char c)
  * \brief Zapis kodu dla danego znaku do tablicy kodów
  *
- * Fukcja przyjmuje dwa parametry: wskaźnik na listę, oraz znak ASCII. Przy wywołaniu
- * spisuje kod z buffera, którym jest lista i zapisuje go do tablicy int **codes, przydzielając
- * przy dym pamięć dynamicznie.
+ * \param struct list_pointers *list - wskaźnik do struktury wskaźników na listę
+ * \param unsigned char c -  znak ASCII
+ *
+ * Przy wywołaniu spisuje kod z buffera, którym jest lista i zapisuje go do
+ * tablicy int **codes, przydzielając przy tym pamięć dynamicznie.
  */
 
 void saveCode(struct list_pointers *list, unsigned char c);
@@ -153,8 +156,9 @@ void saveCode(struct list_pointers *list, unsigned char c);
  * \fn void createList(struct list_pointers *list)
  * \brief Funkcja tworząca listę
  *
- * Funkcja przyjmuje strukturę wskaźników na listę.
- * Tworzy pierwszy element listy i ustawia wskaźniki head i tail na nowo powstały element, oraz
+ * \param struct list_pointers *list - wskaźnik do struktury wskaźników na listę
+ *
+ * Funkcja tworzy pierwszy element listy i ustawia wskaźniki head i tail na nowo powstały element, oraz
  * wskaźniki next i prev na NULL.
  */
 
@@ -163,6 +167,8 @@ void createList(struct list_pointers *list);
 /*!
  * \fn insertListNode(struct list_pointers *list)
  * \brief Dodanie elementu do listy
+ *
+ * \param struct list_pointers *list - wskaźnik do struktury wskaźników na listę
  *
  * Jeśli lista nie jest pusta, funkcja dodaje nowy element listy do jej czoła.
  */
@@ -173,9 +179,10 @@ void insertListNode(struct list_pointers *list);
  * \fn void deleteListNode(struct list_pointers **list)
  * \brief Funkcja usuwająca element listy
  *
- * Mariusz
- * Funkcja przyjmuje podówójny wskaźnik na listę.
- * Usuwa ostatnio dodany do listy element pod warunkiem, że lista nie jest
+ * \param struct list_pointers **list - podwójny wskaźnik do struktury wskaźników
+ * na listę
+ *
+ * Funckja usuwa ostatnio dodany do listy element pod warunkiem, że lista nie jest
  * pusta.
  */
 
@@ -185,18 +192,17 @@ void deleteListNode(struct list_pointers **list);
  * \fn encode(char *input, char *outputFile, struct treeNode *histogram, int *double_representation)
  * \brief Funkcja kodująca
  *
- * Fukncja przyjmuje 4 parametry.
- * char *inputFile - plik wejściowy
- * char *outputFile - plik wyjściowy
- * struct treeNode *histogram - histogram
- * int *double_representation - informacja o podwójnej reprezentacji ostatniego znaku
+ * \param char *inputFile - nazwa pliku wejściowego
+ * \param char *outputFile - nazwa pliku wyjściowego
+ * \param struct treeNode *histogram - tablica histogramu
+ * \param int *double_representation - informacja o podwójnej reprezentacji ostatniego znaku
+ * \return double - poziom kopresji jako stosunek rozmiaru pliku wyjściowego do wejściowego
  *
- * Funkcja pobiera z pliku wejściowego znak, znajduje jego kod w teblicy int **codes i zapisuje
- * do buffera (tablica dziewięcio elementowa). Jeśli kod nie wypełni wszystkich pól buffera, pobierany
+ * Funkcja pobiera z pliku wejściowego znak, znajduje jego kod w tablicy int **codes i zapisuje
+ * do buffera unsigned char [9]. Jeśli kod nie wypełni wszystkich pól buffera, pobierany
  * jest następny znak. Jeśli buffer jest pełny jest on zamieniany na kod ASCII i zapisywany do pliku
  * wyjściowego. Pętla trwa aż do pobrania wszystkich znaków z pliku wejściowego.
- * Funkcja zwraca poziom kopresji jako stosunek rozmiaru wyjściowego do wejściowego w formacie
- * double.
+ *
  */
 
 double encode(char *input, char *outputFile, struct treeNode *histogram, int *double_representation);
@@ -205,12 +211,18 @@ double encode(char *input, char *outputFile, struct treeNode *histogram, int *do
  * \fn unsigned char binToAscii(unsigned char *array, struct treeNode *histogram, int *double_representation)
  * \brief Funkcja zamieniająca kody binarne na znaki ASCII
  *
- * Funkcja przyjmuje trzy parametry: unsigned char *array - tablica z ośmio-bitową liczbą binarną
- * struct treeNode *histogram - zmienna zawierajaca ilość zer w znaku
- * int *double_representation - zmienna zawierająca ilość zer w przypadku wystąpienia niezgodności
+ * \param unsigned char *array - tablica z ośmio-bitową liczbą binarną
+ * \param struct treeNode *histogram - tablica histogramu, z której pobierana jest wartość
+ * histogram[].zeroes - zmienna zawierajaca ilość zer do wypełnienia w znaku
+ * \param int *double_representation - wkaźnik na zmienną zawierającą ilość zer w przypadku wystąpienia niezgodności
  * przy ostatnim znaku, gdy zakodowany kod jest dłuższy niż 1 bajt, a ostani znak można zapisać
  * przy użyciu mniej niż 8 bitów.
- * Funkcja zwraca gotowy znak ASCII w formacie unsigned char
+ * \return unsigned char - znak w kodzie ASCII
+ *
+ * Funkcja zamienia kod binarny na kod ASCII zapisując przy tym informację
+ * o ilości zer do wypełnienia w polu 'zeroes' histogramu, oraz o podwójnej
+ * reprezentacji o ile wystąpiła. W przypadku nie wystąpienia sytuacji z
+ * podwójną reprezentacją jej wartość pozostaje domyślna (-1).
  */
 
 unsigned char binToAscii(unsigned char *array, struct treeNode *histogram, int *double_representation);
@@ -268,9 +280,10 @@ void decode(struct treeNode *root, char *inputFile, char *outputFile, struct tre
  * \fn void asciiToBin(unsigned char c, unsigned char *buffer, struct treeNode *histogram, int *double_representation)
  * \brief Funkcja zamieniajaca pobrany z pliku znak ASCII na kod binarny
  *
- * Funkcja przyjmuje trzy parametry: unsigned char c - znak pobrany z pliku wejściowego
- * unsigned char *buffer - buffer na kod binarny
- * struct treeNode *histogram - histogram
+ * \param unsigned char c - znak pobrany z pliku wejściowego
+ * \param unsigned char *buffer - buffer na kod binarny
+ * \param struct treeNode *histogram - tablica histogramu
+ *
  * Celem funkcji jest zamiana kodu zakodowanego w postaci kodów ASCII na kod binarny. Uzupełnia ona również kod
  * zerami zgodnie z polem histogram[c].zeroes.
  */
@@ -281,7 +294,10 @@ void asciiToBin(unsigned char c, unsigned char *buffer, struct treeNode *histogr
  * \fn removeTree(struct treeNode *root)
  * \brief Funkcja usuwająca drzewo
  *
- * Funkcja przyjmuje wskaźnik na korzeń drzewa. Przechodzi je ona rekurencyjnie usuwając wszystkie wężły.
+ * \param removeTree(struct treeNode *root) - wskaźnik na korzeń drzewa.
+ *
+ * Funkcja przechodzi rekurencyjnie przez drzewo usuwając wszystkie wężły i
+ * ustawiając adresy węzłów na NULL.
  */
 
 void removeTree(struct treeNode *root);
