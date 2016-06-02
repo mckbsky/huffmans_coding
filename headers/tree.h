@@ -208,7 +208,7 @@ void deleteListNode(struct list_pointers **list);
 double encode(char *input, char *outputFile, struct treeNode *histogram, int *double_representation);
 
 /*!
- * \fn unsigned char binToAscii(unsigned char *array, struct treeNode *histogram, int *double_representation)
+ * \fn unsigned char binToAscii(unsigned char *binary, struct treeNode *histogram, int *double_representation)
  * \brief Funkcja zamieniająca kody binarne na znaki ASCII
  *
  * \param unsigned char *binary - tablica z ośmio-bitową liczbą binarną
