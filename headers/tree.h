@@ -211,7 +211,7 @@ double encode(char *input, char *outputFile, struct treeNode *histogram, int *do
  * \fn unsigned char binToAscii(unsigned char *array, struct treeNode *histogram, int *double_representation)
  * \brief Funkcja zamieniająca kody binarne na znaki ASCII
  *
- * \param unsigned char *array - tablica z ośmio-bitową liczbą binarną
+ * \param unsigned char *binary - tablica z ośmio-bitową liczbą binarną
  * \param struct treeNode *histogram - tablica histogramu, z której pobierana jest wartość
  * histogram[].zeroes - zmienna zawierajaca ilość zer do wypełnienia w znaku
  * \param int *double_representation - wkaźnik na zmienną zawierającą ilość zer w przypadku wystąpienia niezgodności
@@ -225,18 +225,24 @@ double encode(char *input, char *outputFile, struct treeNode *histogram, int *do
  * podwójną reprezentacją jej wartość pozostaje domyślna (-1).
  */
 
-unsigned char binToAscii(unsigned char *array, struct treeNode *histogram, int *double_representation);
+unsigned char binToAscii(unsigned char *binary, struct treeNode *histogram, int *double_representation);
 
 /*!
- * \fn generateKey(struct treeNode *histogram, int double_representation)
+ * \fn void generateKey(struct treeNode *histogram, char *outputFile, int double_representation)
  * \brief Generacja klucza do dekodowania
+ *
+ * \param struct treeNode *histogram - tablica histogramu
+ * \param char *outputFile - ścieżka do zakodowanego pliku, na podstawie której
+ * generowany jest plik z kluczem
+ * \param int double_representation - informacja o podwójnej reprezentacji, która
+ * zapisywana jest do pliku z kluczem
  *
  * Funcja generuje klucz w formacie %dr:%c:%f:%z:%c:%f:%z... gdzie:
  * %dr - informacja o podwójnej reprezentacji ostatniego znaku
  * %c - znak ASCII
  * %f - ilośc wystąpień danego znaku
  * %z - ilość zer dla danego kodu
- *
+ * Nazwa pliku z kluczem jest to nazwa pliku zakodowanego z dopiskiem "_key"
  * Klucz jest wymagany do odkodowania uprzednio zakodowanego pliku.
  */
 
@@ -246,11 +252,12 @@ void generateKey(struct treeNode *histogram, char *outputFile, int double_repres
  * \fn void keyToHistogram(char *key, struct treeNode *histogram, int *double_representation)
  * \brief Funkcja odczytujaca klucz i zamieniajaca go na histogram
  *
- * Funkcja przyjmuje trzy parametry: char *key - klucz do odkodowania
- * struct treeNode *histogram - histogram
- * int *double_representation - informacja o podwójnej reprezentacji.
+ * \param char *key - klucz do odkodowania
+ * \param struct treeNode *histogram - tablica histogramu
+ * \param int *double_representation - informacja o podwójnej reprezentacji.
+ *
  * Funkcja pobierając kolejne tokeny z klucza tworzy histogram potrzebny
- * do zdekodowania pliku, oraz zapisuje informacje o podwójnej reprezentacji
+ * do zdekodowania pliku, oraz zapisuje informację o podwójnej reprezentacji.
  */
 
 void keyToHistogram(char *key, struct treeNode *histogram, int *double_representation);
@@ -259,12 +266,11 @@ void keyToHistogram(char *key, struct treeNode *histogram, int *double_represent
  * \fn void decode(struct treeNode *root, char *inputFile, char *outputFile, struct treeNode *histogram, int *double_representation)
  * \brief Funkcja dekodująca
  *
- * Fukncja przyjmuje 5 parametrów.
- * struct treeNode *root - korzeń drzewa
- * char *inputFile - plik wejściowy
- * char *outputFile - plik wyjściowy
- * struct treeNode *histogram - histogram
- * int *double_representation - informacja o podwójnej reprezentacji ostatniego znaku
+ * \param struct treeNode *root - wskaźnik na korzeń drzewa
+ * \param char *inputFile - nazwa pliku wejściowego
+ * \param char *outputFile - nazwa pliku wyjściowego
+ * \param struct treeNode *histogram - tablica histogramu
+ * \param int *double_representation - informacja o podwójnej reprezentacji ostatniego znaku
  *
  * Funkcja pobiera z zakodowanego pliku wejściowego znak ASCII, zamienia go do postaci binarnej, po czym
  * przeszukuje drzewo zgodnie z bitami liczby binarnej (0 - w lewo, 1 - w prawo), aż do znalezienia liścia.
@@ -277,7 +283,7 @@ void keyToHistogram(char *key, struct treeNode *histogram, int *double_represent
 void decode(struct treeNode *root, char *inputFile, char *outputFile, struct treeNode *histogram, int *double_representation);
 
 /*!
- * \fn void asciiToBin(unsigned char c, unsigned char *buffer, struct treeNode *histogram, int *double_representation)
+ * \fn void asciiToBin(unsigned char c, unsigned char *buffer, struct treeNode *histogram)
  * \brief Funkcja zamieniajaca pobrany z pliku znak ASCII na kod binarny
  *
  * \param unsigned char c - znak pobrany z pliku wejściowego

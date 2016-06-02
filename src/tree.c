@@ -284,23 +284,23 @@ double encode(char *input, char *outputFile, struct treeNode *histogram, int *do
   return (double)oFileSize / iFileSize;
 }
 
-unsigned char binToAscii(unsigned char *array, struct treeNode *histogram, int *double_representation) {
+unsigned char binToAscii(unsigned char *binary, struct treeNode *histogram, int *double_representation) {
   int i;
   int j;
   int zeroes = 0;
   unsigned char result = 0;
 
-  for(i = 0; array[i + 1] != '\0'; i++);
+  for(i = 0; binary[i + 1] != '\0'; i++);
 
   for(j = 0; i >= 0; i--) {
-    if(array[i] == '1') {
+    if(binary[i] == '1') {
       result += pow(2, j++);
     }
     else {
       j++;
     }
   }
-  for(j = 0; array[j] == '0'; j++) {
+  for(j = 0; binary[j] == '0'; j++) {
     zeroes++;
   }
   if(zeroes != 0 && histogram[result].zeroes == 0) {
