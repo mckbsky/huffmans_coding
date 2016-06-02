@@ -311,25 +311,58 @@ unsigned char binToAscii(unsigned char *array, struct treeNode *histogram, int *
   return result;
 }
 
-void generateKey(struct treeNode *histogram, int double_representation) {
+void generateKey(struct treeNode *histogram, char *outputFile, int double_representation) {
   int i;
-  printf("Your key for decoding is:\n\n");
-  printf("%d:", double_representation);
+  char *buffer = (char*)malloc(strlen(outputFile) + 4);
+
+  strcpy(buffer, outputFile);
+  strcat(buffer, "_key");
+
+  FILE *file;
+  file = fopen(buffer, "w");
+
+  if(file == NULL) {
+    fprintf(stderr, "Error: Can't open input file - genetateKey()\n");
+  }
+
+  fprintf(file, "%d:", double_representation);
   for(i = 0; i < 256; i++) {
     if (histogram[i].freq != 0 || histogram[i].zeroes != 0)
-      printf("%d:%d:%d:", histogram[i].c, histogram[i].freq, histogram[i].zeroes);
+      fprintf(file, "%d:%d:%d:", histogram[i].c, histogram[i].freq, histogram[i].zeroes);
   }
-  printf("\n\nSave it if you wish to decode your file later on.\n");
+  printf("Your decoding key was saved to: [%s]\n", buffer);
+
+  if(fclose(file))
+    fprintf(stderr, "Error: can't close input file - encode()\n");
+  free(buffer);
 }
 
-void keyToHistogram(char *key, struct treeNode *histogram, int *double_representation) {
+void keyToHistogram(char *key_file, struct treeNode *histogram, int *double_representation) {
   int i;
+  char buffer;
   char *pch;
+  char *key;
   for(i = 0; i < 256; i++) {
     histogram[i].c = i;
     histogram[i].freq = 0;
     histogram[i].zeroes = 0;
   }
+
+  FILE *file;
+  file = fopen(key_file, "r");
+  if(file == NULL) {
+    fprintf(stderr, "Error: Can't open input file - keyToHistogram()\n");
+  }
+
+  fseek(file, 0, SEEK_END);
+  key = (char *)malloc(ftell(file) * sizeof(char));
+  rewind(file);
+
+  i = 0;
+  while(fread(&buffer, 1, 1, file) == 1) {
+    key[i++] = buffer;
+  }
+
   pch = strtok(key, ":");
   *double_representation = atoi(pch);
   pch = strtok(NULL, ":");
@@ -341,6 +374,9 @@ void keyToHistogram(char *key, struct treeNode *histogram, int *double_represent
     histogram[i].zeroes = atoi(pch);
     pch = strtok(NULL, ":");
   }
+  if(fclose(file))
+    fprintf(stderr, "Error: can't close input file - keyToHistogram()\n");
+  free(key);
 }
 
 void decode(struct treeNode *root, char *inputFile, char *outputFile, struct treeNode *histogram, int *double_representation) {

@@ -240,7 +240,7 @@ unsigned char binToAscii(unsigned char *array, struct treeNode *histogram, int *
  * Klucz jest wymagany do odkodowania uprzednio zakodowanego pliku.
  */
 
-void generateKey(struct treeNode *histogram, int double_representation);
+void generateKey(struct treeNode *histogram, char *outputFile, int double_representation);
 
 /*!
  * \fn void keyToHistogram(char *key, struct treeNode *histogram, int *double_representation)

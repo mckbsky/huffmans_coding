@@ -62,19 +62,9 @@ int main(int argc, char **argv) {
     }
     createCodes(list, root);
 
-    /*printf("\nCodes: ");
-    for(i = 0; i < 256; i++) {
-     if(codes[i] != NULL) {
-       printf("\n%d: %s", i, codes[i]);
-     }
-    }*/
-
     printf("Compression ratio = %.2lf\n", encode(buffer, argv[3], histogram, &double_representation));
 
-    generateKey(histogram, double_representation);
-
-
-
+    generateKey(histogram, argv[3], double_representation);
 
     if(strcmp(argv[1], "-a") == 0) {
       resultt = clock() - startt;
