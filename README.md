@@ -18,8 +18,11 @@ Instrukcja uruchomienia
 Program uruchamiamy z poziomu linii komend, z jednym z następujących argumentów:
 
 -e [plik wejściowy] [plik wyjściowy] – koduje plik wejściowy, i zapisuje go do pliku wyjściowego
+
 -s [string] [plik wyjściowy] -koduje string I zapisuje go do pliku wyjściowego
+
 -d [plik wejściowy] [plik wyjściowy] [plik z kluczem] – dekoduje plik wejściowy przy pomocy klucza wygenerowanego argumentami ‘-e’ bądź ‘-s’ I zapisuje wynik do pliku wyjściowego
+
 -a [plik wejściowy] [plik wyjściowy] – wykonuje cały algorytm – tj. kodowanie pliku wejściowego, dekodowanie i zapis wyniku do pliku wyjściowego.
 
 Opis fragmentów implementacji
@@ -35,23 +38,22 @@ Ponadto został wykorzystany algorytm quicksort w celu posortowania histogramu.
 
 Zrzuty ekranu
 -------------
-MACIK
+<img src="https://github.com/mckbsky/huffmans_coding/blob/master/img/ss1.png" alt="ss1" align="center"/>
+
+<img src="https://github.com/mckbsky/huffmans_coding/blob/master/img/ss2.png" alt="ss2" align="center"/>
 
 Opis sposobu mierzenia wydajności programu
 ------------------------------------------
 
-MARIUSZ
-Wydajność programy mierzymy dwoma wartościami - miarą kompresji oraz pomiarem czasu.
-Kompresje mierzymy dzieląc rozmiar pliku skompresowanego przez plik wejściowy co zwraca nam dokładny poziom kompresji danych.
+Wydajność programy mierzymy dwoma wartościami - miarą kompresji oraz pomiarem czasu. Kompresje mierzymy dzieląc rozmiar pliku skompresowanego przez plik wejściowy co zwraca nam dokładny poziom kompresji danych.
 Czas mierzymy za pomocą biblioteki time.h i funkcji clock(), która zwraca aktualny tick procesora. Dzięki dzieleniu przez stałą "CLOCKS_PER_SEC" otrzymujemy czas w milisekundach.
 
 Wyniki przeprowadzonych testów
 ------------------------------
-MARIUSZ
+<img src="https://github.com/mckbsky/huffmans_coding/blob/master/img/wykresy.jpg" alt="Wykres" align="center"/>
 
 Wnioski
 -------
-MARIUSZ
 Algorytm Huffmana to bezstratny algorytm kompresji danych, który najlepiej sprawdza sie przy tekście.
 W tekscie dzięki niemu potrafimy uzyskać średnio do 26% kompresji, co więcej działa on szybko, kompresując plik o rozmiarze ~1MB w czasie 0,673s.
 W projekcie udało się, oprócz samej kompresji zrealizować również dekompresję oraz interfejs CLI.
@@ -61,8 +63,3 @@ Autorzy
 -------
 Maciej Brzęczkowski
 Mariusz Lewczuk
-
-
-
-
-
