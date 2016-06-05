@@ -38,9 +38,9 @@ Ponadto został wykorzystany algorytm quicksort w celu posortowania histogramu.
 
 Zrzuty ekranu
 -------------
-<img src="https://github.com/mckbsky/huffmans_coding/blob/master/img/ss1.png" alt="ss1" align="center"/>
+<img src="https://raw.githubusercontent.com/mckbsky/huffmans_coding/master/img/ss1.png" alt="ss1" align="center"/>
 
-<img src="https://github.com/mckbsky/huffmans_coding/blob/master/img/ss2.png" alt="ss2" align="center"/>
+<img src="https://raw.githubusercontent.com/mckbsky/huffmans_coding/master/img/ss2.png" align="center"/>
 
 Opis sposobu mierzenia wydajności programu
 ------------------------------------------
@@ -50,7 +50,7 @@ Czas mierzymy za pomocą biblioteki time.h i funkcji clock(), która zwraca aktu
 
 Wyniki przeprowadzonych testów
 ------------------------------
-<img src="https://github.com/mckbsky/huffmans_coding/blob/master/img/wykresy.jpg" alt="Wykres" align="center"/>
+<img src="https://raw.githubusercontent.com/mckbsky/huffmans_coding/master/img/wykresy.jpg" alt="Wykres" align="center"/>
 
 Wnioski
 -------
