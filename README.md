@@ -42,8 +42,8 @@ Opis sposobu mierzenia wydajności programu
 
 MARIUSZ
 Wydajność programy mierzymy dwoma wartościami - miarą kompresji oraz pomiarem czasu.
-Kompresje mierzymy w sposoób - dopisz ja nie jestem do końca tego pewien.
-Czas mierzymy za pomocą biblioteki time.h za pomocą funkcji clock(), która zwraca aktualny czas (tick) procesora oraz stałej "CLOCKS_PER_SEC", dzięki której otrzymujemy czas w milisekundach.
+Kompresje mierzymy dzieląc rozmiar pliku skompresowanego przez plik wejściowy co zwraca nam dokładny poziom kompresji danych.
+Czas mierzymy za pomocą biblioteki time.h i funkcji clock(), która zwraca aktualny tick procesora. Dzięki dzieleniu przez stałą "CLOCKS_PER_SEC" otrzymujemy czas w milisekundach.
 
 Wyniki przeprowadzonych testów
 ------------------------------
@@ -53,7 +53,9 @@ Wnioski
 -------
 MARIUSZ
 Algorytm Huffmana to bezstratny algorytm kompresji danych, który najlepiej sprawdza sie przy tekście.
-W tekscie dzięki niemu potrafimy uzyskać średnio do (tu wstawić wynik) % kompresji, co więcej jest on (stosunkowo?) szybki.
+W tekscie dzięki niemu potrafimy uzyskać średnio do 26% kompresji, co więcej działa on szybko, kompresując plik o rozmiarze ~1MB w czasie 0,673s.
+W projekcie udało się, oprócz samej kompresji zrealizować również dekompresję oraz interfejs CLI.
+Najważniejszym elementem dalszego rozwoju projektu jest rozszerzenie działania programu poza zakres kodów ASCII oraz więcej usprawnień interfejsu użytkownika.
 
 Autorzy
 -------

@@ -70,8 +70,6 @@ int main(int argc, char **argv) {
       resultt = clock() - startt;
       printf("Algorithm for -a before decoding took %f seconds.\n",((float)resultt)/CLOCKS_PER_SEC);
       decode(root, argv[3], "decoded.txt", histogram, &double_representation);
-      resultt = clock() - startt;
-      printf("Algorithm for -a after decoding took %f seconds.\n",((float)resultt)/CLOCKS_PER_SEC);
     }
 
     for(i = 0; i < 256; i++) {
