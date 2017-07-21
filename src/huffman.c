@@ -3,8 +3,7 @@
 
 char **codes;
 
-int main(int argc, char **argv) {
-  if(argc < 2) {
+void printHelp() {
     printf("Huffman's Coding\n");
     printf("Available Commands:\n");
     printf("-e [input] [output] - encodes your input file and saves it to output file\n");
@@ -12,6 +11,11 @@ int main(int argc, char **argv) {
     printf("-d [input] [output] [key] - decodes your input file and saves it to output file. It uses key generated with either '-s' or '-e'\n");
     printf("-a [input] [output] - perform encoding and decoding -- used for debugging purposes\n");
     printf("-authors - prints authors of this application\n");
+}
+
+int main(int argc, char **argv) {
+  if(argc < 2) {
+    printHelp();
     return 0;
   }
 
