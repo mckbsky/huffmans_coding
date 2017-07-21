@@ -4,17 +4,23 @@
 char **codes;
 
 void printHelp() {
-    printf("Huffman's Coding\n");
-    printf("Available Commands:\n");
-    printf("-e [input] [output] - encodes your input file and saves it to output file\n");
-    printf("-s [string] [output] - encodes your string and saves it to output file\n");
-    printf("-d [input] [output] [key] - decodes your input file and saves it to output file. It uses key generated with either '-s' or '-e'\n");
-    printf("-a [input] [output] - perform encoding and decoding -- used for debugging purposes\n");
-    printf("-authors - prints authors of this application\n");
+  printf("Huffman's Coding\n");
+  printf("Available Commands:\n");
+  printf("-e [input] [output] - encodes your input file and saves it to output file\n");
+  printf("-s [string] [output] - encodes your string and saves it to output file\n");
+  printf("-d [input] [output] [key] - decodes your input file and saves it to output file. It uses key generated with either '-s' or '-e'\n");
+  printf("-a [input] [output] - perform encoding and decoding -- used for debugging purposes\n");
+  printf("-authors - prints authors of this application\n");
+}
+
+void printAuthors() {
+  printf("Authors:\n");
+  printf("Maciej Brzeczkowski <maciej.brzeczkowski@protonmail.com>\n");
+  printf("Mariusz Lewczuk\n");
 }
 
 enum argument {
-  ENCODE, DECODE, STRING, ALL, AUTHORS
+  ENCODE, DECODE, STRING, ALL, AUTHORS, INVALID
 };
 
 enum argument checkArgument(char **argv) {
@@ -33,6 +39,7 @@ enum argument checkArgument(char **argv) {
   else if(strcmp(argv[1], "-authors") == 0) {
     return AUTHORS;
   }
+  return INVALID;
 }
 
 int main(int argc, char **argv) {
@@ -46,11 +53,10 @@ int main(int argc, char **argv) {
     int double_representation = -1;
     struct treeNode histogram[256];
     char *buffer;
-    clock_t startt, resultt;
+    clock_t startTime, resultTime;
 
     if(checkArgument(argv) == STRING) {
-
-      startt = clock();
+      startTime = clock();
 
       FILE *file;
       file = fopen("temp.txt", "w");
@@ -58,10 +64,9 @@ int main(int argc, char **argv) {
       buffer = (char *)malloc(strlen("temp.txt"));
       strcpy(buffer, "temp.txt");
       fclose(file);
-    } else {
-
-      startt = clock();
-
+    } 
+    else {
+      startTime = clock();
       buffer = (char *)malloc(strlen(argv[2]));
       strcpy(buffer, argv[2]);
     }
@@ -73,7 +78,7 @@ int main(int argc, char **argv) {
     quickSortFreq(histogram, 0, 255);
     struct treeNode *root = NULL;
     root = generateTree(root, histogram);
-    if(root == NULL)
+    if(NULL == root)
       return 0;
 
     quickSortChar(histogram, 0, 255);
@@ -92,9 +97,9 @@ int main(int argc, char **argv) {
 
     generateKey(histogram, argv[3], double_representation);
 
-    if(strcmp(argv[1], "-a") == 0) {
-      resultt = clock() - startt;
-      printf("Algorithm for -a before decoding took %f seconds.\n",((float)resultt)/CLOCKS_PER_SEC);
+    if(checkArgument(argv) == ALL) {
+      resultTime = clock() - startTime;
+      printf("Algorithm for -a before decoding took %f seconds.\n",((float)resultTime)/CLOCKS_PER_SEC);
       decode(root, argv[3], "decoded.txt", histogram, &double_representation);
     }
 
@@ -106,11 +111,11 @@ int main(int argc, char **argv) {
     free(buffer);
     removeTree(root);
     remove("temp.txt");
-    resultt = clock() - startt;
-    printf("Algorithm for your text took %f seconds.\n",((float)resultt)/CLOCKS_PER_SEC);
+    resultTime = clock() - startTime;
+    printf("Algorithm for your text took %f seconds.\n",((float)resultTime)/CLOCKS_PER_SEC);
 
-  } else if(argc == 5 && checkArgument(argv) == DECODE) {
-
+  } 
+  else if(argc == 5 && checkArgument(argv) == DECODE) {
     clock_t startt, resultt;
     startt = clock();
 
@@ -121,20 +126,22 @@ int main(int argc, char **argv) {
     quickSortFreq(histogram, 0, 255);
     struct treeNode *root = NULL;
     root = generateTree(root, histogram);
-    if(root == NULL)
+    if(NULL == root) {
+      fprintf(stderr, "%s\n", "Error creating tree");
       return 0;
+    }
     quickSortChar(histogram, 0, 255);
 
     decode(root, argv[2], argv[3], histogram, &double_representation);
     removeTree(root);
     resultt = clock() - startt;
     printf("Algorithm for decoding your text took %f seconds.\n",((float)resultt)/CLOCKS_PER_SEC);
-  } else if(argc == 2 && checkArgument(argv) == AUTHORS) {
-    printf("Authors:\n");
-    printf("Maciej Brzeczkowski <maciej.brzeczkowski@protonmail.com>\n");
-    printf("Mariusz Lewczuk\n");
-  } else {
-    printf("Incorrect arguments");
+  } 
+  else if(argc == 2 && checkArgument(argv) == AUTHORS) {
+    printAuthors();
+  } 
+  else {
+    fprintf(stderr, "%s\n", "Incorrect arguments");
   }
 
   return 0;
