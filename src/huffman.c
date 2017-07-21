@@ -13,20 +13,42 @@ void printHelp() {
     printf("-authors - prints authors of this application\n");
 }
 
+enum argument {
+  ENCODE, DECODE, STRING, ALL, AUTHORS
+};
+
+enum argument checkArgument(char **argv) {
+  if(strcmp(argv[1], "-e") == 0) {
+    return ENCODE;
+  }
+  else if(strcmp(argv[1], "-d") == 0) {
+    return DECODE;
+  }
+  else if(strcmp(argv[1], "-s") == 0) {
+    return STRING;
+  }
+  else if(strcmp(argv[1], "-a") == 0) {
+    return ALL;
+  }
+  else if(strcmp(argv[1], "-authors") == 0) {
+    return AUTHORS;
+  }
+}
+
 int main(int argc, char **argv) {
   if(argc < 2) {
     printHelp();
     return 0;
   }
 
-  if(argc == 4 && (strcmp(argv[1], "-e") == 0 || strcmp(argv[1], "-s") == 0 || strcmp(argv[1], "-a") == 0)) {
+  if(argc == 4 && (checkArgument(argv) == ENCODE || checkArgument(argv) == STRING || checkArgument(argv) == ALL)) {
     int i;
     int double_representation = -1;
     struct treeNode histogram[256];
     char *buffer;
     clock_t startt, resultt;
 
-    if(strcmp(argv[1], "-s") == 0) {
+    if(checkArgument(argv) == STRING) {
 
       startt = clock();
 
@@ -87,7 +109,7 @@ int main(int argc, char **argv) {
     resultt = clock() - startt;
     printf("Algorithm for your text took %f seconds.\n",((float)resultt)/CLOCKS_PER_SEC);
 
-  } else if(argc == 5 && strcmp(argv[1], "-d") == 0) { //decoding
+  } else if(argc == 5 && checkArgument(argv) == DECODE) {
 
     clock_t startt, resultt;
     startt = clock();
@@ -107,7 +129,7 @@ int main(int argc, char **argv) {
     removeTree(root);
     resultt = clock() - startt;
     printf("Algorithm for decoding your text took %f seconds.\n",((float)resultt)/CLOCKS_PER_SEC);
-  } else if(argc == 2 && strcmp(argv[1], "-authors") == 0) {
+  } else if(argc == 2 && checkArgument(argv) == AUTHORS) {
     printf("Authors:\n");
     printf("Maciej Brzeczkowski <maciej.brzeczkowski@protonmail.com>\n");
     printf("Mariusz Lewczuk\n");
