@@ -8,3 +8,5 @@
 *.bmp
 *.bin
 huffman
+*_key
+__pycache__
