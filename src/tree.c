@@ -1,159 +1,184 @@
 #include "../headers/tree.h"
 
-bool createHistogram(char *inputFile, struct treeNode *histogram) {
-  FILE *file;
-  char buffer;
-  file = fopen(inputFile, "r");
-
-  if(file == NULL) {
-    fprintf(stderr, "Error: Can't open input file - createHistogram()\n");
-    return false;
-  }
-
+int fileSize(FILE* file) {
   fseek(file, 0, SEEK_END);
-  if(ftell(file) == 0) {
-    fprintf(stderr, "Error: empty input file\n");
-    return false;
-  } else {
-    rewind(file);
-  }
+  int size = ftell(file);
+  rewind(file);
+  return size;
+}
 
+void prepareHistogram(struct treeNode *histogram) {
   int i;
-  for(i = 0; i < 256; i++) {
+  for(i = 0; i < ASCII_TABLE_SIZE; i++) {
     histogram[i].c = (char)i;
     histogram[i].freq = 0;
     histogram[i].zeroes = 0;
   }
+}
 
-  while(fscanf(file, "%c", &buffer) == 1) {
-    histogram[(int)buffer].freq++;
+void fillHistogram(FILE *file, struct treeNode *histogram) {
+  char character;
+  while(fscanf(file, "%c", &character) == 1) {
+    histogram[(int)character].freq++;
   }
+}
+
+bool createHistogram(char *inputFile, struct treeNode *histogram) {
+  FILE *file;
+  file = fopen(inputFile, "r");
+
+  if(NULL == file) {
+    fprintf(stderr, "Error: Can't open input file - createHistogram()\n");
+    return false;
+  }
+
+  if(fileSize(file) == 0) {
+    fprintf(stderr, "Error: empty input file\n");
+    return false;
+  }
+
+  prepareHistogram(histogram);
+  fillHistogram(file, histogram);
 
   if(fclose(file)) {
     fprintf(stderr, "Error: Can't close input file - createHistogram()\n");
     return false;
   }
+
   return true;
 }
 
 void quickSortChar(struct treeNode *histogram, int begin, int end) {
-    int i = begin;
-    int j = end;
-    int x;
+  int i = begin;
+  int j = end;
+  int middle;
 
-    x = histogram[(i + j) / 2].c;
+  middle = histogram[(i + j) / 2].c;
 
-    do {
-      while(histogram[i].c < x) {
-        i++;
-      }
-      while(histogram[j].c > x) {
-        j--;
-      }
-      if(i <= j) {
-        unsigned char tmp = histogram[i].c;
-        histogram[i].c = histogram[j].c;
-        histogram[j].c = tmp;
-
-        int tmp2 = histogram[i].freq;
-        histogram[i].freq = histogram[j].freq;
-        histogram[j].freq = tmp2;
-
-        tmp2 = histogram[i].zeroes;
-        histogram[i].zeroes = histogram[j].zeroes;
-        histogram[j].zeroes = tmp2;
-
-        i++; j--;
-      }
+  do {
+    while(histogram[i].c < middle) {
+      i++;
     }
-    while(i <=j);
+    while(histogram[j].c > middle) {
+      j--;
+    }
+    if(i <= j) {
+      struct treeNode swap = histogram[i];
+      histogram[i] = histogram[j];
+      histogram[j] = swap;
 
-    if(begin < j) {
-        quickSortChar(histogram, begin, j);
+      i++; j--;
     }
-    if(i < end) {
-        quickSortChar(histogram, i, end);
-    }
+  }
+  while(i <=j);
+
+  if(begin < j) {
+    quickSortChar(histogram, begin, j);
+  }
+  if(i < end) {
+    quickSortChar(histogram, i, end);
+  }
 }
 
 void quickSortFreq(struct treeNode *histogram, int begin, int end) {
-    int i = begin;
-    int j = end;
-    int x = histogram[(i + j) / 2].freq;
+  int i = begin;
+  int j = end;
+  int middle = histogram[(i + j) / 2].freq;
 
-    do {
-      while(histogram[i].freq > x) {
-        i++;
-      }
-      while(histogram[j].freq < x) {
-        j--;
-      }
-      if(i <= j) {
-        int tmp = histogram[i].freq;
-        histogram[i].freq = histogram[j].freq;
-        histogram[j].freq = tmp;
-
-        unsigned char tmp2 = histogram[i].c;
-        histogram[i].c = histogram[j].c;
-        histogram[j].c = tmp2;
-
-        tmp = histogram[i].zeroes;
-        histogram[i].zeroes = histogram[j].zeroes;
-        histogram[j].zeroes = tmp;
-
-        i++; j--;
-      }
+  do {
+    while(histogram[i].freq > middle) {
+      i++;
     }
-    while(i <= j);
+    while(histogram[j].freq < middle) {
+      j--;
+    }
+    if(i <= j) {
+      struct treeNode swap = histogram[i];
+      histogram[i] = histogram[j];
+      histogram[j] = swap;
 
-    if(begin < j) {
-        quickSortFreq(histogram, begin, j);
+      i++; j--;
     }
-    if(i < end) {
-        quickSortFreq(histogram, i, end);
-    }
+  }
+  while(i <= j);
+
+  if(begin < j) {
+    quickSortFreq(histogram, begin, j);
+  }
+  if(i < end) {
+    quickSortFreq(histogram, i, end);
+  }
+}
+
+int findHistogramSize(struct treeNode *histogram) {
+  int size;
+  for(size = 0; size < ASCII_TABLE_SIZE; ++size) {
+    if(histogram[size + 1].freq == 0)
+      return size;
+  }
+  return 0;
+}
+
+struct treeNode* addLeaf(struct treeNode *histogram, int index) {
+  struct treeNode *node = (struct treeNode *)calloc(1, sizeof(struct treeNode));
+  node->c = histogram[index].c;
+  return node;
+}
+
+struct treeNode* addTwoLeaves(struct treeNode *histogram, int index) {
+  struct treeNode *node = (struct treeNode *)calloc(1, sizeof(struct treeNode));
+  node->left = (struct treeNode *)calloc(1, sizeof(struct treeNode));
+  node->left->c = histogram[index - 1].c;
+  node->right = (struct treeNode *)calloc(1, sizeof(struct treeNode));
+  node->right->c = histogram[index].c;
+  return node;
+}
+
+struct treeNode* addLeafToLeftBranch(struct treeNode *histogram,
+                                     struct treeNode *root, int index) {
+  struct treeNode *node = (struct treeNode *)calloc(1, sizeof(struct treeNode));
+  node->left = (struct treeNode *)calloc(1, sizeof(struct treeNode));
+  node->left->c = histogram[index].c;
+  node->right = root;
+  return node;
+}
+
+struct treeNode* addTwoLeavesAndCreateNewRoot(struct treeNode *histogram,
+                                              struct treeNode *root,
+                                              int index) {
+  struct treeNode *node = (struct treeNode *)calloc(1, sizeof(struct treeNode));
+  node->left = (struct treeNode *)calloc(1, sizeof(struct treeNode));
+  node->left->c = histogram[index - 1].c;
+  node->right = (struct treeNode *)calloc(1, sizeof(struct treeNode));
+  node->right->c = histogram[index].c;
+
+  struct treeNode *newRoot = (struct treeNode *)calloc(1, sizeof(struct treeNode));
+  newRoot->left = node;
+  newRoot->right = root;
+  return newRoot;
 }
 
 struct treeNode* generateTree(struct treeNode *root, struct treeNode *histogram) {
-  int n;
-  for(n= 0; n < 256; n++) {
-    if(histogram[n + 1].freq == 0)
-      break;
-  }
+  int index = findHistogramSize(histogram);
 
-  while(n >= 0) {
-    struct treeNode *node = (struct treeNode *)calloc(1, sizeof(struct treeNode));
-
-    if(root) {
-    if(n == 0) {
-      node->left = (struct treeNode *)calloc(1, sizeof(struct treeNode));
-      node->left->c = histogram[n].c;
-      node->right = root;
-      root = node;
-    } else {
-      node->left = (struct treeNode *)calloc(1, sizeof(struct treeNode));
-      node->left->c = histogram[n - 1].c;
-      node->right = (struct treeNode *)calloc(1, sizeof(struct treeNode));
-      node->right->c = histogram[n].c;
-
-      struct treeNode *new_root = (struct treeNode *)calloc(1, sizeof(struct treeNode));
-      new_root->left = node;
-      new_root->right = root;
-      root = new_root;
+  while(index >= 0) {
+    if(NULL == root) {
+      if(index == 0) {
+        root = addLeaf(histogram, index);
+      }
+      else {
+        root = addTwoLeaves(histogram, index);
       }
     }
-    else if(n == 0){
-      node->c = histogram[n].c;
-      root = node;
+    else if(NULL != root) {
+      if(index == 0) {
+        root = addLeafToLeftBranch(histogram, root, index);
+      }
+      else {
+        root = addTwoLeavesAndCreateNewRoot(histogram, root, index);
+      }
     }
-    else {
-      node->left = (struct treeNode *)calloc(1, sizeof(struct treeNode));
-      node->left->c = histogram[n - 1].c;
-      node->right = (struct treeNode *)calloc(1, sizeof(struct treeNode));
-      node->right->c = histogram[n].c;
-      root = node;
-    }
-    n -= 2;
+    index -= NUMBER_OF_NODES;
   }
   return root;
 }
@@ -351,7 +376,7 @@ void keyToHistogram(char *key_file, struct treeNode *histogram, int *double_repr
   FILE *file;
   file = fopen(key_file, "r");
   if(file == NULL) {
-    fprintf(stderr, "Error: Can't open input file - keyToHistogram()\n");
+    fprintf(stderr, "Error: Can't open key file - %s\n", key_file);
   }
 
   fseek(file, 0, SEEK_END);
@@ -375,7 +400,7 @@ void keyToHistogram(char *key_file, struct treeNode *histogram, int *double_repr
     pch = strtok(NULL, ":");
   }
   if(fclose(file))
-    fprintf(stderr, "Error: can't close input file - keyToHistogram()\n");
+    fprintf(stderr, "Error: can't close key file - %s\n", key_file);
   free(key);
 }
 

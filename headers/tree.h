@@ -5,6 +5,8 @@
 #include <stdlib.h>
 #include <math.h>
 #include <string.h>
+#define ASCII_TABLE_SIZE 256
+#define NUMBER_OF_NODES 2
 
 /*!
  * \struct treeNode

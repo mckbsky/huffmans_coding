@@ -1,5 +1,6 @@
 #include "../headers/tree.h"
 #include <time.h>
+#include <errno.h>
 
 char **codes;
 
@@ -10,7 +11,7 @@ void printHelp() {
   printf("-s [string] [output] - encodes your string and saves it to output file\n");
   printf("-d [input] [output] [key] - decodes your input file and saves it to output file. It uses key generated with either '-s' or '-e'\n");
   printf("-a [input] [output] - perform encoding and decoding -- used for debugging purposes\n");
-  printf("-authors - prints authors of this application\n");
+  printf("--authors - prints authors of this application\n");
 }
 
 void printAuthors() {
@@ -36,7 +37,7 @@ enum argument checkArgument(char **argv) {
   else if(strcmp(argv[1], "-a") == 0) {
     return ALL;
   }
-  else if(strcmp(argv[1], "-authors") == 0) {
+  else if(strcmp(argv[1], "--authors") == 0) {
     return AUTHORS;
   }
   return INVALID;
@@ -51,27 +52,26 @@ int main(int argc, char **argv) {
   if(argc == 4 && (checkArgument(argv) == ENCODE || checkArgument(argv) == STRING || checkArgument(argv) == ALL)) {
     int i;
     int double_representation = -1;
-    struct treeNode histogram[256];
+    struct treeNode histogram[ASCII_TABLE_SIZE];
     char *buffer;
     clock_t startTime, resultTime;
+    startTime = clock();
 
     if(checkArgument(argv) == STRING) {
-      startTime = clock();
-
       FILE *file;
       file = fopen("temp.txt", "w");
       while(fprintf(file, "%s", argv[2]) == 1);
       buffer = (char *)malloc(strlen("temp.txt"));
       strcpy(buffer, "temp.txt");
       fclose(file);
-    } 
+    }
     else {
-      startTime = clock();
       buffer = (char *)malloc(strlen(argv[2]));
       strcpy(buffer, argv[2]);
     }
 
     if(!createHistogram(buffer, histogram)) {
+      fprintf(stderr, "Error creating histogram\n");
       return 0;
     }
 
@@ -93,7 +93,8 @@ int main(int argc, char **argv) {
     }
     createCodes(list, root);
 
-    printf("Compression ratio = %.2lf\n", encode(buffer, argv[3], histogram, &double_representation));
+    double encodeTime = encode(buffer, argv[3], histogram, &double_representation);
+    printf("Compression ratio = %.2lf\n", encodeTime);
 
     generateKey(histogram, argv[3], double_representation);
 
@@ -114,7 +115,7 @@ int main(int argc, char **argv) {
     resultTime = clock() - startTime;
     printf("Algorithm for your text took %f seconds.\n",((float)resultTime)/CLOCKS_PER_SEC);
 
-  } 
+  }
   else if(argc == 5 && checkArgument(argv) == DECODE) {
     clock_t startt, resultt;
     startt = clock();
@@ -127,7 +128,7 @@ int main(int argc, char **argv) {
     struct treeNode *root = NULL;
     root = generateTree(root, histogram);
     if(NULL == root) {
-      fprintf(stderr, "%s\n", "Error creating tree");
+      fprintf(stderr, "Error creating tree\n");
       return 0;
     }
     quickSortChar(histogram, 0, 255);
@@ -136,12 +137,13 @@ int main(int argc, char **argv) {
     removeTree(root);
     resultt = clock() - startt;
     printf("Algorithm for decoding your text took %f seconds.\n",((float)resultt)/CLOCKS_PER_SEC);
-  } 
+  }
   else if(argc == 2 && checkArgument(argv) == AUTHORS) {
     printAuthors();
-  } 
+  }
   else {
-    fprintf(stderr, "%s\n", "Incorrect arguments");
+    fprintf(stderr, "Incorrect arguments\n");
+    return -EINVAL;
   }
 
   return 0;

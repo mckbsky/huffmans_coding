@@ -8,7 +8,7 @@ OBJDIR=./obj/
 all: huffman
 
 huffman: $(OBJ)
-	$(CC) -o $@ $^ -lm
+	$(CC) -O2 -o $@ $^ -lm
 
 clear:
 	rm *.o
