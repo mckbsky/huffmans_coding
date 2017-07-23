@@ -83,8 +83,8 @@ int main(int argc, char **argv) {
 
     quickSortChar(histogram, 0, 255);
 
-    struct list_pointers *list = NULL;
-    list = (struct list_pointers *)malloc(sizeof(struct list_pointers));
+    struct listPointers *list = NULL;
+    list = (struct listPointers *)malloc(sizeof(struct listPointers));
     createList(list);
 
     codes = (char**)malloc(256 * sizeof(char *));

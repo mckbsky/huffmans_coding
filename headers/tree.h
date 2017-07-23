@@ -7,6 +7,9 @@
 #include <string.h>
 #define ASCII_TABLE_SIZE 256
 #define NUMBER_OF_NODES 2
+#define CODE_LEFT '0'
+#define CODE_RIGHT '1'
+#define BYTE_SIZE 8
 
 /*!
  * \struct treeNode
@@ -25,17 +28,17 @@ struct treeNode {
 };
 
 /*!
- * \struct list_node
+ * \struct listNode
  * \brief Typ bazowy listy dwukierunkowej
  *
  * Wykorzystywana jako bufer do zapisu kodów przy przechodzeniu przez drzewo.
  */
 
-struct list_node {
+struct listNode {
   char code; /**< Pole zawierające kod '0' bądz '1' zależności od kierunku
                   przechodzenia przez drzewo */
-  struct list_node *prev; /**< Adres poprzedniego elementu listy */
-  struct list_node *next; /**< Adres następnego elementu listy */
+  struct listNode *prev; /**< Adres poprzedniego elementu listy */
+  struct listNode *next; /**< Adres następnego elementu listy */
 };
 
 /*!
@@ -45,9 +48,9 @@ struct list_node {
  * Tworzymy listę dwustronną, aby ułatwić odczyt kodów.
  */
 
-struct list_pointers {
-  struct list_node *head; /**< Adres czoła listy */
-  struct list_node *tail; /**< Adres ogona listy */
+struct listPointers {
+  struct listNode *head; /**< Adres czoła listy */
+  struct listNode *tail; /**< Adres ogona listy */
 };
 
 /*!
@@ -139,7 +142,7 @@ struct treeNode* generateTree(struct treeNode *root, struct treeNode *histogram)
  * aż do dojścia do liścia gdzie wywoływana jest funkcja saveCode().
  */
 
-void createCodes(struct list_pointers *list, struct treeNode *root);
+void createCodes(struct listPointers *list, struct treeNode *root);
 
 /*!
  * \fn saveCode(struct list_pointers *list, unsigned char c)
@@ -152,7 +155,7 @@ void createCodes(struct list_pointers *list, struct treeNode *root);
  * tablicy int **codes, przydzielając przy tym pamięć dynamicznie.
  */
 
-void saveCode(struct list_pointers *list, unsigned char c);
+void saveCode(struct listPointers *list, unsigned char c);
 
 /*!
  * \fn void createList(struct list_pointers *list)
@@ -164,7 +167,7 @@ void saveCode(struct list_pointers *list, unsigned char c);
  * wskaźniki next i prev na NULL.
  */
 
-void createList(struct list_pointers *list);
+void createList(struct listPointers *list);
 
 /*!
  * \fn insertListNode(struct list_pointers *list)
@@ -175,7 +178,7 @@ void createList(struct list_pointers *list);
  * Jeśli lista nie jest pusta, funkcja dodaje nowy element listy do jej czoła.
  */
 
-void insertListNode(struct list_pointers *list);
+void insertListNode(struct listPointers *list);
 
 /*!
  * \fn void deleteListNode(struct list_pointers **list)
@@ -188,7 +191,7 @@ void insertListNode(struct list_pointers *list);
  * pusta.
  */
 
-void deleteListNode(struct list_pointers **list);
+void deleteListNode(struct listPointers **list);
 
 /*!
  * \fn encode(char *input, char *outputFile, struct treeNode *histogram, int *double_representation)

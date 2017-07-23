@@ -183,10 +183,10 @@ struct treeNode* generateTree(struct treeNode *root, struct treeNode *histogram)
   return root;
 }
 
-void createCodes(struct list_pointers *list, struct treeNode *root) {
+void createCodes(struct listPointers *list, struct treeNode *root) {
   if(root->left == NULL && root->right == NULL && list->head == list->tail) {
     insertListNode(list);
-    list->head->code = '0';
+    list->head->code = CODE_LEFT;
   }
 
   if(root->c != 0) {
@@ -196,16 +196,16 @@ void createCodes(struct list_pointers *list, struct treeNode *root) {
   }
 
   insertListNode(list);
-  list->head->code = '1';
+  list->head->code = CODE_RIGHT;
   createCodes(list, root->right);
   insertListNode(list);
-  list->head->code = '0';
+  list->head->code = CODE_LEFT;
   createCodes(list, root->left);
   deleteListNode(&list);
 }
 
-void saveCode(struct list_pointers *list, unsigned char c) {
-  struct list_node *tmp = list->tail->prev;
+void saveCode(struct listPointers *list, unsigned char c) {
+  struct listNode *tmp = list->tail->prev;
   unsigned int i;
   for(i = 0; tmp != NULL; i++) {
     codes[(int)c] = (char *)realloc(codes[(int)c], (i + 2) * sizeof(char));
@@ -215,78 +215,79 @@ void saveCode(struct list_pointers *list, unsigned char c) {
   }
 }
 
-void createList(struct list_pointers *list) {
-  struct list_node *new_node = (struct list_node *)malloc(sizeof(struct list_node));
+void createList(struct listPointers *list) {
+  struct listNode *new_node = (struct listNode *)malloc(sizeof(struct listNode));
   if (new_node != NULL) {
-    new_node->code = 2;
     new_node->next = new_node->prev = NULL;
     list->head = list->tail = new_node;
   }
 }
 
-void insertListNode(struct list_pointers *list) {
+void insertListNode(struct listPointers *list) {
   if(list) {
-    struct list_node *new_node = (struct list_node*)malloc(sizeof(struct list_node));
+    struct listNode *new_node = (struct listNode*)malloc(sizeof(struct listNode));
     if(new_node) {
       new_node->prev = NULL;
       new_node->next = list->head;
       list->head->prev = new_node;
       list->head = new_node;
-      }
+    }
   }
   else {
     fprintf(stderr, "Error: Empty list, can't add new element\n");
   }
 }
 
-void deleteListNode(struct list_pointers **list) {
+void deleteListNode(struct listPointers **list) {
   if((*list)->head == NULL) {
     fprintf(stderr, "Can't delete node from empty list\n");
     return;
   }
-  struct list_node* deleted_node = (*list)->head;
+  struct listNode* deleted_node = (*list)->head;
   (*list)->head = deleted_node->next;
   free(deleted_node);
 }
 
-double encode(char *input, char *outputFile, struct treeNode *histogram, int *double_representation) {
-  FILE *iFile, *oFile;
-  unsigned char buffer;
-  unsigned char buffer_arr[9];
-  long iFileSize = 0, oFileSize = 0;
-  memset(buffer_arr, 0, sizeof(buffer_arr));
+double encode(char *inputFileName, char *outputFileName,
+              struct treeNode *histogram, int *double_representation) {
+  FILE *inputFile = fopen(inputFileName, "r");
+  FILE *outputFile = fopen(outputFileName, "wb");
+  long inputFileSize = 0, outputFileSize = 0;
+
+  if(inputFile == NULL) {
+    fprintf(stderr, "Error: Can't open input file - %s\n", inputFileName);
+  }
+  if(outputFile == NULL) {
+    fprintf(stderr, "Error: Can't open output file - %s\n", outputFileName);
+  }
+
   int i = 1;
   int j = 0;
-  iFile = fopen(input, "r");
-  oFile = fopen(outputFile, "wb");
 
-  if(iFile == NULL) {
-    fprintf(stderr, "Error: Can't open input file - encode()\n");
-  }
-  if(oFile == NULL) {
-    fprintf(stderr, "Error: Can't open output file - encode()\n");
-  }
+  unsigned char parsedChar;
+  unsigned char buffer_arr[9];
+  memset(buffer_arr, 0, sizeof(buffer_arr));
 
-  while(fscanf(iFile,"%c", &buffer) == 1) {
-    iFileSize++;
-    while(1) {
-      if(codes[(int)buffer][j] != '\0') {
-        buffer_arr[i - 1] = codes[(int)buffer][j];
+  while(fscanf(inputFile,"%c", &parsedChar) == 1) {
+    inputFileSize++;
+    while(true) {
+      if(codes[(int)parsedChar][j] != '\0') {
+        buffer_arr[i - 1] = codes[(int)parsedChar][j];
         i++; j++;
       }
       else {
-        if(fscanf(iFile,"%c", &buffer) == 1) {
-          iFileSize++;
+        if(fscanf(inputFile,"%c", &parsedChar) == 1) {
+          inputFileSize++;
           j = 0;
         }
         else {
           break;
         }
       }
-      if (i == 9) {
+      if (i > BYTE_SIZE) {
         unsigned char tmp = binToAscii(buffer_arr, histogram, double_representation);
-        fwrite(&tmp, 1, 1, oFile);
-        oFileSize++;
+        fwrite(&tmp, 1, 1, outputFile);
+        outputFileSize++;
         memset(buffer_arr, 0, sizeof(buffer_arr));
         i = 1;
         continue;
@@ -294,22 +295,25 @@ double encode(char *input, char *outputFile, struct treeNode *histogram, int *do
     }
   }
 
-  if( i != 9) {
+  if(i < BYTE_SIZE) {
     unsigned char tmp = binToAscii(buffer_arr, histogram, double_representation);
-    fwrite(&tmp, 1, 1, oFile);
-    oFileSize++;
+    fwrite(&tmp, 1, 1, outputFile);
+    outputFileSize++;
   }
 
-  if(fclose(iFile))
+  if(fclose(inputFile)) {
     fprintf(stderr, "Error: can't close input file - encode()\n");
-  if(fclose(oFile))
+  }
+  if(fclose(outputFile)) {
     fprintf(stderr, "Error: can't close output file - encode()\n");
+  }
 
-  printf("Encoding of [%s] successful!\n", input);
-  return (double)oFileSize / iFileSize;
+  printf("Encoding of [%s] successful!\n", inputFileName);
+  return (double)outputFileSize / inputFileSize;
 }
 
-unsigned char binToAscii(unsigned char *binary, struct treeNode *histogram, int *double_representation) {
+unsigned char binToAscii(unsigned char *binary, struct treeNode *histogram,
+                         int *double_representation) {
   int i;
   int j;
   int zeroes = 0;
@@ -318,16 +322,18 @@ unsigned char binToAscii(unsigned char *binary, struct treeNode *histogram, int 
   for(i = 0; binary[i + 1] != '\0'; i++);
 
   for(j = 0; i >= 0; i--) {
-    if(binary[i] == '1') {
+    if(binary[i] == CODE_RIGHT) {
       result += pow(2, j++);
     }
     else {
       j++;
     }
   }
-  for(j = 0; binary[j] == '0'; j++) {
+
+  for(j = 0; binary[j] == CODE_LEFT; j++) {
     zeroes++;
   }
+
   if(zeroes != 0 && histogram[result].zeroes == 0) {
     histogram[result].zeroes = zeroes;
   } else if(histogram[result].zeroes != zeroes){
@@ -336,45 +342,41 @@ unsigned char binToAscii(unsigned char *binary, struct treeNode *histogram, int 
   return result;
 }
 
-void generateKey(struct treeNode *histogram, char *outputFile, int double_representation) {
-  int i;
-  char *buffer = (char*)malloc(strlen(outputFile) + 4);
+void generateKey(struct treeNode *histogram, char *outputFile,
+                 int double_representation) {
+  char *keyFileName = (char*)malloc(strlen(outputFile) + 4);
 
-  strcpy(buffer, outputFile);
-  strcat(buffer, "_key");
+  strcpy(keyFileName, outputFile);
+  strcat(keyFileName, "_key");
 
   FILE *file;
-  file = fopen(buffer, "w");
+  file = fopen(keyFileName, "w");
 
   if(file == NULL) {
-    fprintf(stderr, "Error: Can't open input file - genetateKey()\n");
+    fprintf(stderr, "Error: Can't open input file - %s\n", keyFileName);
   }
 
   fprintf(file, "%d:", double_representation);
-  for(i = 0; i < 256; i++) {
+  int i;
+  for(i = 0; i < ASCII_TABLE_SIZE; i++) {
     if (histogram[i].freq != 0 || histogram[i].zeroes != 0)
       fprintf(file, "%d:%d:%d:", histogram[i].c, histogram[i].freq, histogram[i].zeroes);
   }
-  printf("Your decoding key was saved to: [%s]\n", buffer);
+  printf("Your decoding key was saved to: [%s]\n", keyFileName);
 
   if(fclose(file))
     fprintf(stderr, "Error: can't close input file - encode()\n");
-  free(buffer);
+  free(keyFileName);
 }
 
 void keyToHistogram(char *key_file, struct treeNode *histogram, int *double_representation) {
-  int i;
   char buffer;
   char *pch;
   char *key;
-  for(i = 0; i < 256; i++) {
-    histogram[i].c = i;
-    histogram[i].freq = 0;
-    histogram[i].zeroes = 0;
-  }
 
-  FILE *file;
-  file = fopen(key_file, "r");
+  prepareHistogram(histogram);
+
+  FILE *file = fopen(key_file, "r");
   if(file == NULL) {
     fprintf(stderr, "Error: Can't open key file - %s\n", key_file);
   }
@@ -383,7 +385,7 @@ void keyToHistogram(char *key_file, struct treeNode *histogram, int *double_repr
   key = (char *)malloc(ftell(file) * sizeof(char));
   rewind(file);
 
-  i = 0;
+  int i = 0;
   while(fread(&buffer, 1, 1, file) == 1) {
     key[i++] = buffer;
   }
@@ -399,8 +401,11 @@ void keyToHistogram(char *key_file, struct treeNode *histogram, int *double_repr
     histogram[i].zeroes = atoi(pch);
     pch = strtok(NULL, ":");
   }
-  if(fclose(file))
+
+  if(fclose(file)) {
     fprintf(stderr, "Error: can't close key file - %s\n", key_file);
+  }
+
   free(key);
 }
 
