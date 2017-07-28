@@ -1,6 +1,12 @@
 #include "../headers/tree.h"
-#include <time.h>
+#include "../headers/list.h"
+
 #include <errno.h>
+#include <stdbool.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
 
 char **codes;
 
@@ -21,21 +27,28 @@ void printAuthors() {
 }
 
 enum argument {
-  ENCODE, DECODE, STRING, ALL, AUTHORS, INVALID
+  ENCODE, DECODE, STRING, ALL, HELP, AUTHORS, INVALID
 };
 
-enum argument checkArgument(char **argv) {
-  if(strcmp(argv[1], "-e") == 0) {
-    return ENCODE;
+enum argument checkArgument(int argc, char **argv) {
+  if(argc < 2) {
+    return HELP;
   }
-  else if(strcmp(argv[1], "-d") == 0) {
-    return DECODE;
+  else if(argc == 4) {
+    if(strcmp(argv[1], "-e") == 0) {
+     return ENCODE;
+    }
+    else if(strcmp(argv[1], "-s") == 0) {
+      return STRING;
+    }
+    else if(strcmp(argv[1], "-a") == 0) {
+      return ALL;
+    }
   }
-  else if(strcmp(argv[1], "-s") == 0) {
-    return STRING;
-  }
-  else if(strcmp(argv[1], "-a") == 0) {
-    return ALL;
+  else if(argc == 5) {
+    if(strcmp(argv[1], "-d") == 0) {
+      return DECODE;
+    }
   }
   else if(strcmp(argv[1], "--authors") == 0) {
     return AUTHORS;
@@ -43,21 +56,43 @@ enum argument checkArgument(char **argv) {
   return INVALID;
 }
 
+void doDecode(char *input, char *output, char *key) {
+    struct treeNode histogram[ASCII_TABLE_SIZE];
+    int codeCollision = -1;
+
+    keyToHistogram(key, histogram, &codeCollision);
+    quickSortFreq(histogram, 0, ASCII_TABLE_SIZE - 1);
+
+    struct treeNode *root = NULL;
+    root = generateTree(root, histogram);
+    if(NULL == root) {
+      fprintf(stderr, "Error creating tree\n");
+      return;
+    }
+
+    quickSortChar(histogram, 0, ASCII_TABLE_SIZE - 1);
+
+    decode(root, input, output, histogram, &codeCollision);
+    removeTree(root);
+}
+
 int main(int argc, char **argv) {
-  if(argc < 2) {
+  enum argument arg = checkArgument(argc, argv);
+  clock_t startTime, resultTime;
+  startTime = clock();
+
+  if(arg == HELP) {
     printHelp();
-    return 0;
+    return EXIT_SUCCESS;
   }
 
-  if(argc == 4 && (checkArgument(argv) == ENCODE || checkArgument(argv) == STRING || checkArgument(argv) == ALL)) {
+  if(arg == ENCODE || arg == STRING || arg == ALL) {
     int i;
-    int double_representation = -1;
+    int codeCollision = -1;
     struct treeNode histogram[ASCII_TABLE_SIZE];
     char *buffer;
-    clock_t startTime, resultTime;
-    startTime = clock();
 
-    if(checkArgument(argv) == STRING) {
+    if(arg == STRING) {
       FILE *file;
       file = fopen("temp.txt", "w");
       while(fprintf(file, "%s", argv[2]) == 1);
@@ -93,15 +128,15 @@ int main(int argc, char **argv) {
     }
     createCodes(list, root);
 
-    double encodeTime = encode(buffer, argv[3], histogram, &double_representation);
+    double encodeTime = encode(buffer, argv[3], histogram, &codeCollision);
     printf("Compression ratio = %.2lf\n", encodeTime);
 
-    generateKey(histogram, argv[3], double_representation);
+    generateKey(histogram, argv[3], codeCollision);
 
-    if(checkArgument(argv) == ALL) {
+    if(arg == ALL) {
       resultTime = clock() - startTime;
       printf("Algorithm for -a before decoding took %f seconds.\n",((float)resultTime)/CLOCKS_PER_SEC);
-      decode(root, argv[3], "decoded.txt", histogram, &double_representation);
+      decode(root, argv[3], "decoded.txt", histogram, &codeCollision);
     }
 
     for(i = 0; i < 256; i++) {
@@ -116,30 +151,15 @@ int main(int argc, char **argv) {
     printf("Algorithm for your text took %f seconds.\n",((float)resultTime)/CLOCKS_PER_SEC);
 
   }
-  else if(argc == 5 && checkArgument(argv) == DECODE) {
-    clock_t startt, resultt;
-    startt = clock();
-
-    struct treeNode histogram[256];
-    int double_representation = -1;
-
-    keyToHistogram(argv[4], histogram, &double_representation);
-    quickSortFreq(histogram, 0, 255);
-    struct treeNode *root = NULL;
-    root = generateTree(root, histogram);
-    if(NULL == root) {
-      fprintf(stderr, "Error creating tree\n");
-      return 0;
-    }
-    quickSortChar(histogram, 0, 255);
-
-    decode(root, argv[2], argv[3], histogram, &double_representation);
-    removeTree(root);
-    resultt = clock() - startt;
-    printf("Algorithm for decoding your text took %f seconds.\n",((float)resultt)/CLOCKS_PER_SEC);
+  else if(arg == DECODE) {
+    startTime = clock();
+    doDecode(argv[2], argv[3], argv[4]);
+    resultTime = clock() - startTime;
+    printf("Algorithm for decoding your text took %f seconds.\n",((float)resultTime)/CLOCKS_PER_SEC);
   }
-  else if(argc == 2 && checkArgument(argv) == AUTHORS) {
+  else if(arg == AUTHORS) {
     printAuthors();
+    return EXIT_SUCCESS;
   }
   else {
     fprintf(stderr, "Incorrect arguments\n");
