@@ -11,4 +11,4 @@ huffman: $(OBJ)
 	$(CC) -O2 -o $@ $^ -lm
 
 clear:
-	rm *.o
+	rm $(OBJ)
