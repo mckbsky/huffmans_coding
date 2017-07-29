@@ -9,6 +9,7 @@
 #include <time.h>
 
 char **codes;
+enum argument arg;
 
 void printHelp() {
   printf("Huffman's Coding\n");
@@ -76,21 +77,12 @@ void doDecode(char *input, char *output, char *key) {
     removeTree(root);
 }
 
-int main(int argc, char **argv) {
-  enum argument arg = checkArgument(argc, argv);
-  clock_t startTime, resultTime;
-  startTime = clock();
-
-  if(arg == HELP) {
-    printHelp();
-    return EXIT_SUCCESS;
-  }
-
-  if(arg == ENCODE || arg == STRING || arg == ALL) {
-    int i;
+void doEncode(char **argv) {
     int codeCollision = -1;
     struct treeNode histogram[ASCII_TABLE_SIZE];
+    struct listPointers *list = NULL;
     char *buffer;
+    int i;
 
     if(arg == STRING) {
       FILE *file;
@@ -107,23 +99,23 @@ int main(int argc, char **argv) {
 
     if(!createHistogram(buffer, histogram)) {
       fprintf(stderr, "Error creating histogram\n");
-      return 0;
+      return;
     }
 
-    quickSortFreq(histogram, 0, 255);
+    quickSortFreq(histogram, 0, ASCII_TABLE_SIZE - 1);
     struct treeNode *root = NULL;
     root = generateTree(root, histogram);
-    if(NULL == root)
-      return 0;
+    if(NULL == root) {
+      fprintf(stderr, "Error generating tree\n");
+    }
 
-    quickSortChar(histogram, 0, 255);
+    quickSortChar(histogram, 0, ASCII_TABLE_SIZE - 1);
 
-    struct listPointers *list = NULL;
     list = (struct listPointers *)malloc(sizeof(struct listPointers));
     createList(list);
 
-    codes = (char**)malloc(256 * sizeof(char *));
-    for(i = 0; i < 256; i++) {
+    codes = (char**)malloc(ASCII_TABLE_SIZE * sizeof(char *));
+    for(i = 0; i < ASCII_TABLE_SIZE; i++) {
       codes[i] = NULL;
     }
     createCodes(list, root);
@@ -134,12 +126,10 @@ int main(int argc, char **argv) {
     generateKey(histogram, argv[3], codeCollision);
 
     if(arg == ALL) {
-      resultTime = clock() - startTime;
-      printf("Algorithm for -a before decoding took %f seconds.\n",((float)resultTime)/CLOCKS_PER_SEC);
       decode(root, argv[3], "decoded.txt", histogram, &codeCollision);
     }
 
-    for(i = 0; i < 256; i++) {
+    for(i = 0; i < ASCII_TABLE_SIZE; i++) {
       free(codes[i]);
     }
 
@@ -147,24 +137,34 @@ int main(int argc, char **argv) {
     free(buffer);
     removeTree(root);
     remove("temp.txt");
-    resultTime = clock() - startTime;
-    printf("Algorithm for your text took %f seconds.\n",((float)resultTime)/CLOCKS_PER_SEC);
+}
 
+int main(int argc, char **argv) {
+  arg = checkArgument(argc, argv);
+  clock_t startTime, resultTime;
+  startTime = clock();
+
+  if(arg == HELP) {
+    printHelp();
+    return EXIT_SUCCESS;
+  }
+  else if(arg == ENCODE || arg == STRING || arg == ALL) {
+    doEncode(argv);
   }
   else if(arg == DECODE) {
-    startTime = clock();
     doDecode(argv[2], argv[3], argv[4]);
-    resultTime = clock() - startTime;
-    printf("Algorithm for decoding your text took %f seconds.\n",((float)resultTime)/CLOCKS_PER_SEC);
   }
   else if(arg == AUTHORS) {
     printAuthors();
     return EXIT_SUCCESS;
   }
-  else {
+  else if(arg == INVALID) {
     fprintf(stderr, "Incorrect arguments\n");
     return -EINVAL;
   }
 
-  return 0;
+  resultTime = clock() - startTime;
+  printf("Algorithm took %f seconds.\n",((float)resultTime)/CLOCKS_PER_SEC);
+
+  return EXIT_SUCCESS;
 }
