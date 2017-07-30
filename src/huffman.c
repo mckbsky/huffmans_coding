@@ -73,49 +73,57 @@ void doDecode(char *input, char *output, char *key) {
     removeTree(root);
 }
 
-void doEncode(char **argv) {
-    int codeCollision = -1;
-    struct treeNode histogram[ASCII_TABLE_SIZE];
-    struct listPointers *list = NULL;
+void freeMemory(struct treeNode *root) {
+  int i;
+  for(i = 0; i < ASCII_TABLE_SIZE; i++) {
+    free(codes[i]);
+  }
+  free(codes);
+  removeTree(root);
+}
+
+void createCodeTable(struct treeNode *root) {
+    struct listPointers list;
     int i;
 
-    if(!createHistogram(argv[2], histogram, arg)) {
-      fprintf(stderr, "Error creating histogram\n");
-      return;
-    }
-
-    quickSortFreq(histogram, 0, ASCII_TABLE_SIZE - 1);
-    struct treeNode *root = NULL;
-    root = generateTree(root, histogram);
-    if(NULL == root) {
-      fprintf(stderr, "Error generating tree\n");
-    }
-
-    quickSortChar(histogram, 0, ASCII_TABLE_SIZE - 1);
-
-    list = (struct listPointers *)malloc(sizeof(struct listPointers));
-    createList(list);
+    createList(&list);
 
     codes = (char**)malloc(ASCII_TABLE_SIZE * sizeof(char *));
     for(i = 0; i < ASCII_TABLE_SIZE; i++) {
       codes[i] = NULL;
     }
-    createCodes(list, root);
+    createCodes(&list, root);
+}
 
-    double encodeTime = encode(argv[2], argv[3], histogram, &codeCollision, arg);
-    printf("Compression ratio = %.2lf\n", encodeTime);
+double doEncode(char **argv) {
+    int codeCollision = -1;
+    struct treeNode histogram[ASCII_TABLE_SIZE];
+    struct treeNode *root = NULL;
+    double encodeTime;
 
+    if(!createHistogram(argv[2], histogram, arg)) {
+      fprintf(stderr, "Error creating histogram\n");
+      return -1.0;
+    }
+
+    quickSortFreq(histogram, 0, ASCII_TABLE_SIZE - 1);
+    root = generateTree(root, histogram);
+    if(NULL == root) {
+      fprintf(stderr, "Error generating tree\n");
+    }
+    quickSortChar(histogram, 0, ASCII_TABLE_SIZE - 1);
+
+    createCodeTable(root);
+
+    encodeTime = encode(argv[2], argv[3], histogram, &codeCollision, arg);
     generateKey(histogram, argv[3], codeCollision);
 
     if(arg == ALL) {
       decode(root, argv[3], "decoded.txt", histogram, &codeCollision);
     }
 
-    for(i = 0; i < ASCII_TABLE_SIZE; i++) {
-      free(codes[i]);
-    }
-    free(codes);
-    removeTree(root);
+    freeMemory(root);
+    return encodeTime;
 }
 
 int main(int argc, char **argv) {
@@ -128,7 +136,8 @@ int main(int argc, char **argv) {
     return EXIT_SUCCESS;
   }
   else if(arg == ENCODE || arg == STRING || arg == ALL) {
-    doEncode(argv);
+    double encodeTime = doEncode(argv);
+    printf("Compression ratio = %.2lf\n", encodeTime);
   }
   else if(arg == DECODE) {
     doDecode(argv[2], argv[3], argv[4]);
