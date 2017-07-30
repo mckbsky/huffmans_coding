@@ -223,10 +223,15 @@ void createCodes(struct listPointers *list, struct treeNode *root) {
 void saveCode(struct listPointers *list, unsigned char c) {
   struct listNode *tmp = list->tail->prev;
   unsigned int i;
+  size_t allocatedChunks = 0;
+
   for(i = 0; tmp != NULL; i++) {
-    codes[(int)c] = (char *)realloc(codes[(int)c], (i + 2) * sizeof(char));
-    codes[(int)c][i] = tmp->code;
-    codes[(int)c][i + 1] = '\0';
+    if(i + 2 >= allocatedChunks) {
+      allocatedChunks += 10;
+      codes[c] = (char *)realloc(codes[c], (allocatedChunks) * sizeof(char));
+    }
+    codes[c][i] = tmp->code;
+    codes[c][i + 1] = '\0';
     tmp = tmp->prev;
   }
 }
