@@ -27,10 +27,6 @@ void printAuthors() {
   printf("Mariusz Lewczuk\n");
 }
 
-enum argument {
-  ENCODE, DECODE, STRING, ALL, HELP, AUTHORS, INVALID
-};
-
 enum argument checkArgument(int argc, char **argv) {
   if(argc < 2) {
     return HELP;
@@ -81,23 +77,9 @@ void doEncode(char **argv) {
     int codeCollision = -1;
     struct treeNode histogram[ASCII_TABLE_SIZE];
     struct listPointers *list = NULL;
-    char *buffer;
     int i;
 
-    if(arg == STRING) {
-      FILE *file;
-      file = fopen("temp.txt", "w");
-      while(fprintf(file, "%s", argv[2]) == 1);
-      buffer = (char *)malloc(strlen("temp.txt"));
-      strcpy(buffer, "temp.txt");
-      fclose(file);
-    }
-    else {
-      buffer = (char *)malloc(strlen(argv[2]));
-      strcpy(buffer, argv[2]);
-    }
-
-    if(!createHistogram(buffer, histogram)) {
+    if(!createHistogram(argv[2], histogram, arg)) {
       fprintf(stderr, "Error creating histogram\n");
       return;
     }
@@ -120,7 +102,7 @@ void doEncode(char **argv) {
     }
     createCodes(list, root);
 
-    double encodeTime = encode(buffer, argv[3], histogram, &codeCollision);
+    double encodeTime = encode(argv[2], argv[3], histogram, &codeCollision, arg);
     printf("Compression ratio = %.2lf\n", encodeTime);
 
     generateKey(histogram, argv[3], codeCollision);
@@ -132,11 +114,8 @@ void doEncode(char **argv) {
     for(i = 0; i < ASCII_TABLE_SIZE; i++) {
       free(codes[i]);
     }
-
     free(codes);
-    free(buffer);
     removeTree(root);
-    remove("temp.txt");
 }
 
 int main(int argc, char **argv) {

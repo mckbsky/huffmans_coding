@@ -1,5 +1,6 @@
 #include "../headers/tree.h"
 
+#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -28,9 +29,19 @@ void fillHistogram(FILE *file, struct treeNode *histogram) {
   }
 }
 
-bool createHistogram(char *inputFile, struct treeNode *histogram) {
-  FILE *file;
-  file = fopen(inputFile, "r");
+bool createHistogram(char *inputFile, struct treeNode *histogram,
+                     enum argument arg) {
+  FILE *file = NULL;
+
+  if(arg == ENCODE || arg == ALL) {
+    file = fopen(inputFile, "r");
+  }
+  else if(arg == STRING) {
+    file = fmemopen((void *)inputFile, strlen(inputFile), "r");
+  }
+  else {
+    return false;
+  }
 
   if(NULL == file) {
     fprintf(stderr, "Error: Can't open input file - createHistogram()\n");
@@ -221,10 +232,21 @@ void saveCode(struct listPointers *list, unsigned char c) {
 }
 
 double encode(char *inputFileName, char *outputFileName,
-              struct treeNode *histogram, int *double_representation) {
-  FILE *inputFile = fopen(inputFileName, "r");
+              struct treeNode *histogram, int *codeCollision,
+              enum argument arg) {
+  FILE *inputFile = NULL;
   FILE *outputFile = fopen(outputFileName, "wb");
   long inputFileSize = 0, outputFileSize = 0;
+
+  if(arg == ENCODE || arg == ALL) {
+    inputFile = fopen(inputFileName, "r");
+  }
+  else if(arg == STRING) {
+    inputFile = fmemopen((void *)inputFileName, strlen(inputFileName), "r");
+  }
+  else {
+    return -EINVAL;
+  }
 
   if(inputFile == NULL) {
     fprintf(stderr, "Error: Can't open input file - %s\n", inputFileName);
@@ -257,7 +279,7 @@ double encode(char *inputFileName, char *outputFileName,
         }
       }
       if (i > BYTE_SIZE) {
-        unsigned char tmp = binToAscii(buffer_arr, histogram, double_representation);
+        unsigned char tmp = binToAscii(buffer_arr, histogram, codeCollision);
         fwrite(&tmp, 1, 1, outputFile);
         outputFileSize++;
         memset(buffer_arr, 0, sizeof(buffer_arr));
@@ -268,7 +290,7 @@ double encode(char *inputFileName, char *outputFileName,
   }
 
   if(i < BYTE_SIZE) {
-    unsigned char tmp = binToAscii(buffer_arr, histogram, double_representation);
+    unsigned char tmp = binToAscii(buffer_arr, histogram, codeCollision);
     fwrite(&tmp, 1, 1, outputFile);
     outputFileSize++;
   }
@@ -285,7 +307,7 @@ double encode(char *inputFileName, char *outputFileName,
 }
 
 unsigned char binToAscii(unsigned char *binary, struct treeNode *histogram,
-                         int *double_representation) {
+                         int *codeCollision) {
   int i;
   int j;
   int zeroes = 0;
@@ -309,13 +331,13 @@ unsigned char binToAscii(unsigned char *binary, struct treeNode *histogram,
   if(zeroes != 0 && histogram[result].zeroes == 0) {
     histogram[result].zeroes = zeroes;
   } else if(histogram[result].zeroes != zeroes){
-    *double_representation = zeroes;
+    *codeCollision = zeroes;
   }
   return result;
 }
 
 void generateKey(struct treeNode *histogram, char *outputFile,
-                 int double_representation) {
+                 int codeCollision) {
   char *keyFileName = (char*)malloc(strlen(outputFile) + 4);
 
   strcpy(keyFileName, outputFile);
@@ -328,7 +350,7 @@ void generateKey(struct treeNode *histogram, char *outputFile,
     fprintf(stderr, "Error: Can't open input file - %s\n", keyFileName);
   }
 
-  fprintf(file, "%d:", double_representation);
+  fprintf(file, "%d:", codeCollision);
   int i;
   for(i = 0; i < ASCII_TABLE_SIZE; i++) {
     if (histogram[i].freq != 0 || histogram[i].zeroes != 0)
@@ -341,7 +363,7 @@ void generateKey(struct treeNode *histogram, char *outputFile,
   free(keyFileName);
 }
 
-void keyToHistogram(char *key_file, struct treeNode *histogram, int *double_representation) {
+void keyToHistogram(char *key_file, struct treeNode *histogram, int *codeCollision) {
   char buffer;
   char *pch;
   char *key;
@@ -363,7 +385,7 @@ void keyToHistogram(char *key_file, struct treeNode *histogram, int *double_repr
   }
 
   pch = strtok(key, ":");
-  *double_representation = atoi(pch);
+  *codeCollision = atoi(pch);
   pch = strtok(NULL, ":");
   while (pch != NULL) {
     i = atoi(pch);
@@ -381,7 +403,7 @@ void keyToHistogram(char *key_file, struct treeNode *histogram, int *double_repr
   free(key);
 }
 
-void decode(struct treeNode *root, char *inputFile, char *outputFile, struct treeNode *histogram, int *double_representation) {
+void decode(struct treeNode *root, char *inputFile, char *outputFile, struct treeNode *histogram, int *codeCollision) {
   struct treeNode *tmp = root;
   FILE *iFile, *oFile;
   unsigned char buffer;
@@ -404,8 +426,8 @@ void decode(struct treeNode *root, char *inputFile, char *outputFile, struct tre
   fseek(iFile, 0, SEEK_SET);
 
   while(fread(&buffer, 1, 1, iFile) == 1) {
-    if(ftell(iFile) == file_size && *double_representation != -1) {
-      histogram[buffer].zeroes = *double_representation;
+    if(ftell(iFile) == file_size && *codeCollision != -1) {
+      histogram[buffer].zeroes = *codeCollision;
     }
     asciiToBin(buffer, buffer_arr, histogram);
       for(i = 0; buffer_arr[i] != '\0'; i++) {

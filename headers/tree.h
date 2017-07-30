@@ -10,6 +10,10 @@
 #define CODE_RIGHT '1'
 #define BYTE_SIZE 8
 
+enum argument {
+  ENCODE, DECODE, STRING, ALL, HELP, AUTHORS, INVALID
+};
+
 /*!
  * \struct treeNode
  * \brief Struktura węzła drzewa
@@ -49,7 +53,7 @@ extern char **codes;
  * pliku wejściowym i zapisuje tą informację do tablicy histogramu.
  */
 
-bool createHistogram(char *inputFile, struct treeNode *histogram);
+bool createHistogram(char *inputFile, struct treeNode *histogram, enum argument arg);
 
 /*!
  * \fn void quickSortChar(struct treeNode *histogram, int begin, int end)
@@ -131,13 +135,13 @@ void createCodes(struct listPointers *list, struct treeNode *root);
 void saveCode(struct listPointers *list, unsigned char c);
 
 /*!
- * \fn encode(char *input, char *outputFile, struct treeNode *histogram, int *double_representation)
+ * \fn encode(char *input, char *outputFile, struct treeNode *histogram, int *codeCollision)
  * \brief Funkcja kodująca
  *
  * \param char *inputFile - nazwa pliku wejściowego
  * \param char *outputFile - nazwa pliku wyjściowego
  * \param struct treeNode *histogram - tablica histogramu
- * \param int *double_representation - informacja o podwójnej reprezentacji ostatniego znaku
+ * \param int *codeCollision - informacja o podwójnej reprezentacji ostatniego znaku
  * \return double - poziom kopresji jako stosunek rozmiaru pliku wyjściowego do wejściowego
  *
  * Funkcja pobiera z pliku wejściowego znak, znajduje jego kod w tablicy int **codes i zapisuje
@@ -147,16 +151,16 @@ void saveCode(struct listPointers *list, unsigned char c);
  *
  */
 
-double encode(char *input, char *outputFile, struct treeNode *histogram, int *double_representation);
+double encode(char *input, char *outputFile, struct treeNode *histogram, int *codeCollision, enum argument arg);
 
 /*!
- * \fn unsigned char binToAscii(unsigned char *binary, struct treeNode *histogram, int *double_representation)
+ * \fn unsigned char binToAscii(unsigned char *binary, struct treeNode *histogram, int *codeCollision)
  * \brief Funkcja zamieniająca kody binarne na znaki ASCII
  *
  * \param unsigned char *binary - tablica z ośmio-bitową liczbą binarną
  * \param struct treeNode *histogram - tablica histogramu, z której pobierana jest wartość
  * histogram[].zeroes - zmienna zawierajaca ilość zer do wypełnienia w znaku
- * \param int *double_representation - wkaźnik na zmienną zawierającą ilość zer w przypadku wystąpienia niezgodności
+ * \param int *codeCollision - wkaźnik na zmienną zawierającą ilość zer w przypadku wystąpienia niezgodności
  * przy ostatnim znaku, gdy zakodowany kod jest dłuższy niż 1 bajt, a ostani znak można zapisać
  * przy użyciu mniej niż 8 bitów.
  * \return unsigned char - znak w kodzie ASCII
@@ -167,16 +171,16 @@ double encode(char *input, char *outputFile, struct treeNode *histogram, int *do
  * podwójną reprezentacją jej wartość pozostaje domyślna (-1).
  */
 
-unsigned char binToAscii(unsigned char *binary, struct treeNode *histogram, int *double_representation);
+unsigned char binToAscii(unsigned char *binary, struct treeNode *histogram, int *codeCollision);
 
 /*!
- * \fn void generateKey(struct treeNode *histogram, char *outputFile, int double_representation)
+ * \fn void generateKey(struct treeNode *histogram, char *outputFile, int codeCollision)
  * \brief Generacja klucza do dekodowania
  *
  * \param struct treeNode *histogram - tablica histogramu
  * \param char *outputFile - ścieżka do zakodowanego pliku, na podstawie której
  * generowany jest plik z kluczem
- * \param int double_representation - informacja o podwójnej reprezentacji, która
+ * \param int codeCollision - informacja o podwójnej reprezentacji, która
  * zapisywana jest do pliku z kluczem
  *
  * Funcja generuje klucz w formacie %dr:%c:%f:%z:%c:%f:%z... gdzie:
@@ -188,41 +192,41 @@ unsigned char binToAscii(unsigned char *binary, struct treeNode *histogram, int 
  * Klucz jest wymagany do odkodowania uprzednio zakodowanego pliku.
  */
 
-void generateKey(struct treeNode *histogram, char *outputFile, int double_representation);
+void generateKey(struct treeNode *histogram, char *outputFile, int codeCollision);
 
 /*!
- * \fn void keyToHistogram(char *key, struct treeNode *histogram, int *double_representation)
+ * \fn void keyToHistogram(char *key, struct treeNode *histogram, int *codeCollision)
  * \brief Funkcja odczytujaca klucz i zamieniajaca go na histogram
  *
  * \param char *key - klucz do odkodowania
  * \param struct treeNode *histogram - tablica histogramu
- * \param int *double_representation - informacja o podwójnej reprezentacji.
+ * \param int *codeCollision - informacja o podwójnej reprezentacji.
  *
  * Funkcja pobierając kolejne tokeny z klucza tworzy histogram potrzebny
  * do zdekodowania pliku, oraz zapisuje informację o podwójnej reprezentacji.
  */
 
-void keyToHistogram(char *key, struct treeNode *histogram, int *double_representation);
+void keyToHistogram(char *key, struct treeNode *histogram, int *codeCollision);
 
 /*!
- * \fn void decode(struct treeNode *root, char *inputFile, char *outputFile, struct treeNode *histogram, int *double_representation)
+ * \fn void decode(struct treeNode *root, char *inputFile, char *outputFile, struct treeNode *histogram, int *codeCollision)
  * \brief Funkcja dekodująca
  *
  * \param struct treeNode *root - wskaźnik na korzeń drzewa
  * \param char *inputFile - nazwa pliku wejściowego
  * \param char *outputFile - nazwa pliku wyjściowego
  * \param struct treeNode *histogram - tablica histogramu
- * \param int *double_representation - informacja o podwójnej reprezentacji ostatniego znaku
+ * \param int *codeCollision - informacja o podwójnej reprezentacji ostatniego znaku
  *
  * Funkcja pobiera z zakodowanego pliku wejściowego znak ASCII, zamienia go do postaci binarnej, po czym
  * przeszukuje drzewo zgodnie z bitami liczby binarnej (0 - w lewo, 1 - w prawo), aż do znalezienia liścia.
  * Jeśli został znaleziony liść, jego pole c zostaje zapisane do pliku wyjściowego, a wskaźnik drzewa zostaje
  * ustawiony na korzeń. Jeśli cały buffer z liczbą binarną został odczytany, zostaje pobrany kolejny znak
  * z pliku wejściowego i zamieniany do postaci binarnej. Jeśli natomiast odczytany jest ostatni znak, i pole
- * double_representation jest różne od -1, to jego zawartość jest wpisywana w pole zer dla pobranego znaku.
+ * codeCollision jest różne od -1, to jego zawartość jest wpisywana w pole zer dla pobranego znaku.
  */
 
-void decode(struct treeNode *root, char *inputFile, char *outputFile, struct treeNode *histogram, int *double_representation);
+void decode(struct treeNode *root, char *inputFile, char *outputFile, struct treeNode *histogram, int *codeCollision);
 
 /*!
  * \fn void asciiToBin(unsigned char c, unsigned char *buffer, struct treeNode *histogram)
