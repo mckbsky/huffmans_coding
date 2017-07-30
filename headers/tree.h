@@ -9,6 +9,7 @@
 #define CODE_LEFT '0'
 #define CODE_RIGHT '1'
 #define BYTE_SIZE 8
+#define IS_ASCII(c)  ((c & ~0xFF) == 0)
 
 enum argument {
   ENCODE, DECODE, STRING, ALL, HELP, AUTHORS, INVALID

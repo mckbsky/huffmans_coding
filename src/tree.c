@@ -270,6 +270,10 @@ double encode(char *inputFileName, char *outputFileName,
   memset(buffer_arr, 0, sizeof(buffer_arr));
 
   while(fscanf(inputFile,"%c", &parsedChar) == 1) {
+    if(!IS_ASCII(parsedChar)) {
+      fprintf(stderr, "Found non-ASCII character -> %c (%d), exiting... ", parsedChar, parsedChar);
+      return -1.0;
+    }
     inputFileSize++;
     while(true) {
       if(codes[(int)parsedChar][j] != '\0') {
