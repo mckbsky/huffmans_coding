@@ -1,14 +1,12 @@
 CC=clang
-CFLAGS=-Wall -Wextra
-OUT=huffman.out
+CFLAGS=-Wall -Wextra -O2
 SRC=$(wildcard src/*.c)
 OBJ = $(SRC:.c=.o)
-OBJDIR=./obj/
 
 all: huffman
 
 huffman: $(OBJ)
-	$(CC) -O2 -o $@ $^ -lm
+	$(CC) -o $@ $^ -lm
 
 clear:
 	rm $(OBJ)
