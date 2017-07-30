@@ -56,6 +56,7 @@ def testHuffmanDecoding():
     line = file.readline()
 
     os.remove(outputFile)
+    os.remove(outputFile + '_key')
     os.remove(decodedFile)
 
     assert line == testString
@@ -65,3 +66,8 @@ def testAuthors():
     bashCommand = './huffman --authors'
     returnCode = subprocess.call(bashCommand, shell=True)
     assert returnCode == 0
+
+def testMakeClear():
+    child = subprocess.Popen('make clear')
+    streamData = child.communicate()[0]
+    assert child.returncode == 0
