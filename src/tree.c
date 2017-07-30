@@ -255,9 +255,11 @@ double encode(char *inputFileName, char *outputFileName,
 
   if(inputFile == NULL) {
     fprintf(stderr, "Error: Can't open input file - %s\n", inputFileName);
+    return -EIO;
   }
   if(outputFile == NULL) {
     fprintf(stderr, "Error: Can't open output file - %s\n", outputFileName);
+    return -EIO;
   }
 
   int i = 1;
