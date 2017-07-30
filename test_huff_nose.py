@@ -68,6 +68,6 @@ def testAuthors():
     assert returnCode == 0
 
 def testMakeClear():
-    child = subprocess.Popen('make clear')
+    child = subprocess.Popen('make clear', shell=True)
     streamData = child.communicate()[0]
     assert child.returncode == 0
