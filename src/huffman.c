@@ -1,5 +1,6 @@
 #include "../headers/tree.h"
 #include "../headers/list.h"
+#include "../headers/quicksort.h"
 
 #include <errno.h>
 #include <stdbool.h>
