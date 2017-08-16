@@ -463,33 +463,33 @@ void decode(struct treeNode *root, char *inputFile, char *outputFile, struct tre
   printf("Decoding of file [%s] successful!\n", inputFile);
 }
 
-void asciiToBin(unsigned char c, unsigned char *buffer, struct treeNode *histogram) {
+void asciiToBin(unsigned char ascii, unsigned char *binary, struct treeNode *histogram) {
   int i;
   int j = 0;
-  int k = histogram[c].zeroes;
+  int zeroes = histogram[ascii].zeroes;
 
-  for(i = 7; c != 0; i--) {
-    if((c & 1) == 0) {
-        buffer[i] = '0';
+  for(i = BYTE_SIZE - 1; ascii != 0; --i) {
+    if((ascii & 1) == 0) {
+        binary[i] = '0';
     }
     else {
-      buffer[i] = '1';
+      binary[i] = '1';
     }
-      c = c >> 1;
+    ascii >>= 1;
   }
-  i++;
+  i += 1;
 
   if(i != 0) {
-    if(k > 0) {
-      for(; k > 0; i--) {
-        buffer[i - 1] = '0';
-        k--;
+    if(zeroes > 0) {
+      for(; zeroes > 0; --zeroes) {
+        binary[(i--) - 1] = '0';
       }
     }
-    while(buffer[i] != '\0') {
-      buffer[j++] = buffer[i++];
+
+    while(binary[i] != '\0') {
+      binary[j++] = binary[i++];
     }
-    buffer[j] = '\0';
+    binary[j] = '\0';
   }
 }
 
