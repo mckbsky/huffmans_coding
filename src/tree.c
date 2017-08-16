@@ -319,32 +319,29 @@ double encode(char *inputFileName, char *outputFileName,
 
 unsigned char binToAscii(unsigned char *binary, struct treeNode *histogram,
                          int *codeCollision) {
-  int i;
-  int j;
+  int i, j;
   int zeroes = 0;
-  unsigned char result = 0;
+  unsigned char ascii = 0;
 
-  for(i = 0; binary[i + 1] != '\0'; i++);
+  for(i = 0; binary[i + 1] != '\0'; ++i);
 
-  for(j = 0; i >= 0; i--) {
-    if(binary[i] == CODE_RIGHT) {
-      result += pow(2, j++);
+  for(j = 0; i >= 0; --i) {
+    if(binary[i] == '1') {
+      ascii += pow(2, j);
     }
-    else {
-      j++;
-    }
+    j += 1;
   }
 
-  for(j = 0; binary[j] == CODE_LEFT; j++) {
-    zeroes++;
+  for(j = 0; binary[j] == '0'; ++j) {
+    zeroes += 1;
   }
 
-  if(zeroes != 0 && histogram[result].zeroes == 0) {
-    histogram[result].zeroes = zeroes;
-  } else if(histogram[result].zeroes != zeroes){
+  if(zeroes != 0 && histogram[ascii].zeroes == 0) {
+    histogram[ascii].zeroes = zeroes;
+  } else if(histogram[ascii].zeroes != zeroes){
     *codeCollision = zeroes;
   }
-  return result;
+  return ascii;
 }
 
 void generateKey(struct treeNode *histogram, char *outputFile,
