@@ -16,7 +16,7 @@ int fileSize(FILE* file) {
 void prepareHistogram(struct treeNode *histogram) {
   int i;
   for(i = 0; i < ASCII_TABLE_SIZE; i++) {
-    histogram[i].c = (char)i;
+    histogram[i].c = i;
     histogram[i].freq = 0;
     histogram[i].zeroes = 0;
   }
