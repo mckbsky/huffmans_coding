@@ -344,28 +344,32 @@ unsigned char binToAscii(unsigned char *binary, struct treeNode *histogram,
 
 void generateKey(struct treeNode *histogram, char *outputFile,
                  int codeCollision) {
-  char *keyFileName = (char*)malloc(strlen(outputFile) + 4);
+
+  const char* postfix = "_key";
+  char *keyFileName = (char*)malloc(strlen(outputFile) + strlen(postfix));
 
   strcpy(keyFileName, outputFile);
-  strcat(keyFileName, "_key");
+  strcat(keyFileName, postfix);
 
-  FILE *file;
-  file = fopen(keyFileName, "w");
+  FILE *file = fopen(keyFileName, "w");
 
   if(file == NULL) {
     fprintf(stderr, "Error: Can't open input file - %s\n", keyFileName);
+    return;
   }
 
   fprintf(file, "%d:", codeCollision);
   int i;
-  for(i = 0; i < ASCII_TABLE_SIZE; i++) {
+  for(i = 0; i < ASCII_TABLE_SIZE; ++i) {
     if (histogram[i].freq != 0 || histogram[i].zeroes != 0)
       fprintf(file, "%d:%d:%d:", histogram[i].c, histogram[i].freq, histogram[i].zeroes);
   }
   printf("Your decoding key was saved to: [%s]\n", keyFileName);
 
-  if(fclose(file))
+  if(fclose(file)) {
     fprintf(stderr, "Error: can't close input file - encode()\n");
+  }
+
   free(keyFileName);
 }
 
