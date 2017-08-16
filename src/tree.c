@@ -373,41 +373,43 @@ void generateKey(struct treeNode *histogram, char *outputFile,
   free(keyFileName);
 }
 
-void keyToHistogram(char *key_file, struct treeNode *histogram, int *codeCollision) {
-  char buffer;
-  char *pch;
+void keyToHistogram(char *keyFileName, struct treeNode *histogram, int *codeCollision) {
+  char *token;
   char *key;
 
   prepareHistogram(histogram);
 
-  FILE *file = fopen(key_file, "r");
+  FILE *file = fopen(keyFileName, "r");
   if(file == NULL) {
-    fprintf(stderr, "Error: Can't open key file - %s\n", key_file);
+    fprintf(stderr, "Error: Can't open key file - %s\n", keyFileName);
+    return;
   }
 
-  fseek(file, 0, SEEK_END);
-  key = (char *)malloc(ftell(file) * sizeof(char));
-  rewind(file);
+  int keyFileSize = fileSize(file);
+  key = (char *)malloc(keyFileSize);
 
   int i = 0;
+  char buffer;
   while(fread(&buffer, 1, 1, file) == 1) {
     key[i++] = buffer;
   }
 
-  pch = strtok(key, ":");
-  *codeCollision = atoi(pch);
-  pch = strtok(NULL, ":");
-  while (pch != NULL) {
-    i = atoi(pch);
-    pch = strtok(NULL, ":");
-    histogram[i].freq = atoi(pch);
-    pch = strtok(NULL, ":");
-    histogram[i].zeroes = atoi(pch);
-    pch = strtok(NULL, ":");
+  const char* delimeter = ":";
+
+  token = strtok(key, delimeter);
+  *codeCollision = atoi(token);
+  token = strtok(NULL, delimeter);
+  while (token != NULL) {
+    i = atoi(token);
+    token = strtok(NULL, delimeter);
+    histogram[i].freq = atoi(token);
+    token = strtok(NULL, delimeter);
+    histogram[i].zeroes = atoi(token);
+    token = strtok(NULL, delimeter);
   }
 
   if(fclose(file)) {
-    fprintf(stderr, "Error: can't close key file - %s\n", key_file);
+    fprintf(stderr, "Error: can't close key file - %s\n", keyFileName);
   }
 
   free(key);
