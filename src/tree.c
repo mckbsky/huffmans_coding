@@ -266,8 +266,7 @@ double encode(char *inputFileName, char *outputFileName,
   int j = 0;
 
   unsigned char parsedChar;
-  unsigned char buffer_arr[9];
-  memset(buffer_arr, 0, sizeof(buffer_arr));
+  unsigned char byte[BYTE_SIZE + 1] = {0};
 
   while(fscanf(inputFile,"%c", &parsedChar) == 1) {
     if(!IS_ASCII(parsedChar)) {
@@ -276,8 +275,8 @@ double encode(char *inputFileName, char *outputFileName,
     }
     inputFileSize++;
     while(true) {
-      if(codes[(int)parsedChar][j] != '\0') {
-        buffer_arr[i - 1] = codes[(int)parsedChar][j];
+      if(codes[parsedChar][j] != '\0') {
+        byte[i - 1] = codes[parsedChar][j];
         i++; j++;
       }
       else {
@@ -290,20 +289,19 @@ double encode(char *inputFileName, char *outputFileName,
         }
       }
       if (i > BYTE_SIZE) {
-        unsigned char tmp = binToAscii(buffer_arr, histogram, codeCollision);
+        unsigned char tmp = binToAscii(byte, histogram, codeCollision);
         fwrite(&tmp, 1, 1, outputFile);
         outputFileSize++;
-        memset(buffer_arr, 0, sizeof(buffer_arr));
+        memset(byte, 0, sizeof(byte));
         i = 1;
         continue;
       }
     }
-  }
-
-  if(i < BYTE_SIZE) {
-    unsigned char tmp = binToAscii(buffer_arr, histogram, codeCollision);
-    fwrite(&tmp, 1, 1, outputFile);
-    outputFileSize++;
+    if(i < BYTE_SIZE) {
+      unsigned char tmp = binToAscii(byte, histogram, codeCollision);
+      fwrite(&tmp, 1, 1, outputFile);
+      outputFileSize++;
+    }
   }
 
   if(fclose(inputFile)) {
