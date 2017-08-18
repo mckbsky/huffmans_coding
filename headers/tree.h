@@ -75,7 +75,7 @@ struct treeNode* generateTree(struct treeNode *root, struct treeNode *histogram)
  * aż do dojścia do liścia gdzie wywoływana jest funkcja saveCode().
  */
 
-void createCodes(struct listPointers *list, struct treeNode *root);
+void createCodes(struct treeNode *root, struct listPointers *list);
 
 /*!
  * \fn saveCode(struct list_pointers *list, unsigned char c)
@@ -210,6 +210,8 @@ void asciiToBin(unsigned char c, unsigned char *buffer, struct treeNode *histogr
 
 void removeTree(struct treeNode *root);
 
-bool foundLeaf(struct treeNode *root);
+bool isLeaf(struct treeNode *root);
 
-#endif //tree.h
+bool isSingleLeafTree(struct treeNode *root, struct listPointers *list);
+
+#endif

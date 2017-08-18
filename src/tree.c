@@ -70,13 +70,13 @@ struct treeNode* generateTree(struct treeNode *root, struct treeNode *histogram)
   return root;
 }
 
-void createCodes(struct listPointers *list, struct treeNode *root) {
-  if(root->left == NULL && root->right == NULL && list->head == list->tail) {
+void createCodes(struct treeNode *root, struct listPointers *list) {
+  if(isSingleLeafTree(root, list)) {
     insertListNode(list);
     list->head->code = CODE_LEFT;
   }
 
-  if(foundLeaf(root)) {
+  if(isLeaf(root)) {
     saveCode(list, root->c);
     deleteListNode(&list);
     return;
@@ -84,14 +84,18 @@ void createCodes(struct listPointers *list, struct treeNode *root) {
 
   insertListNode(list);
   list->head->code = CODE_RIGHT;
-  createCodes(list, root->right);
+  createCodes(root->right, list);
   insertListNode(list);
   list->head->code = CODE_LEFT;
-  createCodes(list, root->left);
+  createCodes(root->left, list);
   deleteListNode(&list);
 }
 
-bool foundLeaf(struct treeNode *root) {
+bool isSingleLeafTree(struct treeNode *root, struct listPointers *list) {
+  return root->left == NULL && root->right == NULL && list->head == list->tail;
+}
+
+bool isLeaf(struct treeNode *root) {
   return root->c != 0;
 }
 

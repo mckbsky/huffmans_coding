@@ -113,7 +113,7 @@ void createCodeTable(struct treeNode *root) {
   for(i = 0; i < ASCII_TABLE_SIZE; i++) {
     codes[i] = NULL;
   }
-  createCodes(&list, root);
+  createCodes(root, &list);
 }
 
 void freeMemory(struct treeNode *root) {
