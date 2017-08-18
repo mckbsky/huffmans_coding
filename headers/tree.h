@@ -3,6 +3,8 @@
 
 #include <stdbool.h>
 #include "../headers/list.h"
+#include "../headers/argument.h"
+#include "../headers/histogram.h"
 
 #define ASCII_TABLE_SIZE 256
 #define NUMBER_OF_NODES 2
@@ -10,10 +12,6 @@
 #define CODE_RIGHT '1'
 #define BYTE_SIZE 8
 #define IS_ASCII(c)  ((c & ~0xFF) == 0)
-
-enum argument {
-  ENCODE, DECODE, STRING, ALL, HELP, AUTHORS, INVALID
-};
 
 /*!
  * \struct treeNode
@@ -40,49 +38,6 @@ struct treeNode {
  */
 
 extern char **codes;
-
-/*!
- * \fn bool createHistogram(char *inputFile, struct treeNode *histogram)
- * \brief Funkcja tworząca histogram
- *
- * \param char *inputFile - nazwa pliku wejściowego,
- * \param struct treeNode *histogram  - tablica typu strukturalnego z informacjami
- * o danym znaku, ilości jego wystąpień i liczbie zer do wypełnienia dla kodu.
- * \return Wartość bool zależną od powodzenia działania funkcji.
- *
- * Funkcja generuje histogram zliczając ilość wystąpień danego znaku w
- * pliku wejściowym i zapisuje tą informację do tablicy histogramu.
- */
-
-bool createHistogram(char *inputFile, struct treeNode *histogram, enum argument arg);
-
-/*!
- * \fn void quickSortChar(struct treeNode *histogram, int begin, int end)
- * \brief Funkcja sortująca histogram
- *
- * \param struct treeNode *histogram - tablica do posortowania
- * \param int begin - początkowy kraniec sortowania
- * \param int end - końcowy kraniec sortowania
- *
- * Funkcja sortuje rosnąco po kodach ASCII znaków celem ułatwienia znajdowania
- * danego znaku podczas generowania jego kodu.
- */
-
-void quickSortChar(struct treeNode *histogram, int begin, int end);
-
- /*!
- * \fn void quickSortFreq(struct treeNode *histogram, int begin, int end)
- * \brief Funkcja sortująca histogram
- *
- * \param struct treeNode *histogram - tablica do posortowania
- * \param int begin - początkowy kraniec sortowania
- * \param int end - końcowy kraniec sortowania
- *
- * Funkcja sortuje malejąco po ilości wystąpień danego znaku. Wykorzystywana
- * do przygotowania histogramu przed generowaniem drzewa.
- */
-
-void quickSortFreq(struct treeNode *histogram, int begin, int end);
 
 /*!
  * \fn struct treeNode* generateTree(struct treeNode *root, struct treeNode *histogram)
@@ -254,5 +209,7 @@ void asciiToBin(unsigned char c, unsigned char *buffer, struct treeNode *histogr
  */
 
 void removeTree(struct treeNode *root);
+
+bool foundLeaf(struct treeNode *root);
 
 #endif //tree.h
