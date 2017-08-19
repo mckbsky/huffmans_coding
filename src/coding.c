@@ -111,53 +111,52 @@ unsigned char binToAscii(unsigned char *binary, struct treeNode *histogram,
   return ascii;
 }
 
-void decode(struct treeNode *root, char *inputFile, char *outputFile, struct treeNode *histogram, int *codeCollision) {
+void decode(struct treeNode *root, char *inputFileName, char *outputFileName, struct treeNode *histogram, int *codeCollision) {
   struct treeNode *tmp = root;
-  FILE *iFile, *oFile;
-  unsigned char buffer;
-  unsigned char buffer_arr[9];
-  int i;
-  int file_size;
-  memset(buffer_arr, 0, sizeof(buffer_arr));
-  iFile = fopen(inputFile, "rb");
-  oFile = fopen(outputFile, "w");
+  FILE *inputFile, *outputFile;
 
-  if(iFile == NULL) {
-    fprintf(stderr, "Error: Can't open input file - decode()\n");
+  inputFile = fopen(inputFileName, "rb");
+  outputFile = fopen(outputFileName, "w");
+
+  if(inputFile == NULL) {
+    fprintf(stderr, "Error: Can't open input file - %s\n", inputFileName);
   }
-  if(oFile == NULL) {
-    fprintf(stderr, "Error: Can't open output file - decode()\n");
+  if(outputFile == NULL) {
+    fprintf(stderr, "Error: Can't open output file - %s\n", outputFileName);
   }
 
-  fseek(iFile, 0, SEEK_END);
-  file_size = ftell(iFile);
-  fseek(iFile, 0, SEEK_SET);
+  int inputFileSize;
+  inputFileSize = fileSize(inputFile);
 
-  while(fread(&buffer, 1, 1, iFile) == 1) {
-    if(ftell(iFile) == file_size && *codeCollision != -1) {
-      histogram[buffer].zeroes = *codeCollision;
+  unsigned char parsedChar;
+  unsigned char binary[BYTE_SIZE + 1] = {0};
+  while(fread(&parsedChar, 1, 1, inputFile) == 1) {
+    if(ftell(inputFile) == inputFileSize && *codeCollision != -1) {
+      histogram[parsedChar].zeroes = *codeCollision;
     }
-    asciiToBin(buffer, buffer_arr, histogram);
-      for(i = 0; buffer_arr[i] != '\0'; i++) {
-        if(buffer_arr[i] == '0' && tmp->left != NULL) {
-          tmp = tmp->left;
-        }
-        else if(buffer_arr[i] == '1' && tmp->right != NULL) {
-          tmp = tmp->right;
-        }
-        if(tmp->left == NULL && tmp->right == NULL) {
-          fprintf(oFile, "%c", tmp->c);
-          tmp = root;
-        }
+    asciiToBin(parsedChar, binary, histogram);
+    int i;
+    for(i = 0; binary[i] != '\0'; ++i) {
+      if(binary[i] == '0' && tmp->left != NULL) {
+        tmp = tmp->left;
       }
-      memset(buffer_arr, 0, sizeof(buffer_arr));
+      else if(binary[i] == '1' && tmp->right != NULL) {
+        tmp = tmp->right;
+      }
+      if(tmp->left == NULL && tmp->right == NULL) {
+        fprintf(outputFile, "%c", tmp->c);
+        tmp = root;
+      }
+    }
+    memset(binary, 0, sizeof(binary));
   }
-  if(fclose(iFile))
-    fprintf(stderr, "Error: Can't close input file - decode()\n");
-  if(fclose(oFile))
-    fprintf(stderr, "Error: Can't close output file - decode()\n");
 
-  printf("Decoding of file [%s] successful!\n", inputFile);
+  if(fclose(inputFile))
+    fprintf(stderr, "Error: Can't close input file - %s\n", outputFileName);
+  if(fclose(outputFile))
+    fprintf(stderr, "Error: Can't close output file - %s\n", outputFileName);
+
+  printf("Decoding of file [%s] successful!\n", inputFileName);
 }
 
 void asciiToBin(unsigned char ascii, unsigned char *binary, struct treeNode *histogram) {
