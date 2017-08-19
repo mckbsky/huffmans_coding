@@ -63,7 +63,6 @@ double encode(char *inputFileName, char *outputFileName,
         outputFileSize++;
         memset(byte, 0, sizeof(byte));
         i = 1;
-        continue;
       }
     }
     if(i < BYTE_SIZE) {
