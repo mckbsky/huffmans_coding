@@ -49,20 +49,20 @@ struct treeNode* generateTree(struct treeNode *root, struct treeNode *histogram)
   int index = findHistogramSize(histogram);
 
   while(index >= 0) {
-    if(NULL == root) {
-      if(index == 0) {
-        root = addLeaf(histogram, index);
-      }
-      else {
-        root = addTwoLeaves(histogram, index);
-      }
-    }
-    else if(NULL != root) {
+    if(NULL != root) {
       if(index == 0) {
         root = addLeafToLeftBranch(histogram, root, index);
       }
       else {
         root = addTwoLeavesAndCreateNewRoot(histogram, root, index);
+      }
+    }
+    else {
+      if(index == 0) {
+        root = addLeaf(histogram, index);
+      }
+      else {
+        root = addTwoLeaves(histogram, index);
       }
     }
     index -= NUMBER_OF_NODES;
