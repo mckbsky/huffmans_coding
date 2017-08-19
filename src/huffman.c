@@ -4,6 +4,7 @@
 #include "../headers/huffman.h"
 #include "../headers/histogram.h"
 #include "../headers/argument.h"
+#include "../headers/coding.h"
 
 #include <errno.h>
 #include <stdbool.h>
