@@ -1,7 +1,7 @@
 #ifndef ARGUMENT_H
 #define ARGUMENT_H
 
-enum argument {
+enum Argument {
   ENCODE, DECODE, STRING, ALL, HELP, AUTHORS, INVALID
 };
 
