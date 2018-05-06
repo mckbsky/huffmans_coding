@@ -4,7 +4,6 @@
 *.o
 /obj/
 *.out
-*.txt
 *.bmp
 *.bin
 huffman

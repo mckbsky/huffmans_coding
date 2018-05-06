@@ -120,3 +120,7 @@ void Tree::saveCode(List *list, unsigned char c) {
         tmp = tmp->getPrev();
     }
 }
+
+void Tree::setRoot(Node *node) {
+    this->root = node;
+}

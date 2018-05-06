@@ -36,6 +36,8 @@ public:
 
     Node *getRoot();
 
+    void setRoot(Node *node);
+
     bool isLeaf(Node *root);
 
     bool isSingleLeafTree(Node *root, List *list);

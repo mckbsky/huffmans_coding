@@ -108,7 +108,7 @@ unsigned char Encoder::binToAscii(unsigned char *binary, Histogram *histogram, i
 
 void Encoder::generateKey(Histogram *histogram, char *outputFile, int codeCollision) {
     auto postfix = "_key";
-    auto *keyFileName = (char *) malloc(strlen(outputFile) + strlen(postfix));
+    auto keyFileName = (char *) malloc(strlen(outputFile) + strlen(postfix));
 
     strcpy(keyFileName, outputFile);
     strcat(keyFileName, postfix);

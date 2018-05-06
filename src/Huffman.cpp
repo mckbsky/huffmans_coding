@@ -1,11 +1,13 @@
 #include "Huffman.hpp"
 #include <HistogramSorter.hpp>
+#include <qt/QtWidgets/qapplication.h>
 
 #include <cerrno>
 #include <iostream>
 #include <Encoder.hpp>
 #include <Decoder.hpp>
 #include <cstring>
+#include <Window.hpp>
 
 int main(int argc, char **argv) {
     auto *huffman = new Huffman();
@@ -13,7 +15,12 @@ int main(int argc, char **argv) {
     clock_t startTime, resultTime;
     startTime = clock();
 
-    if (arg == HELP) {
+    if (arg == GUI) {
+        QApplication application(argc, argv);
+        auto *window = new Window();
+        window->show();
+        return QApplication::exec();
+    } else if (arg == HELP) {
         huffman->printHelp();
         return EXIT_SUCCESS;
     } else if (arg == ENCODE || arg == STRING || arg == ALL) {
@@ -38,7 +45,7 @@ int main(int argc, char **argv) {
 
 enum Argument Huffman::checkArgument(int argc, char **argv) {
     if (argc < 2) {
-        return HELP;
+        return GUI;
     } else if (argc == 4) {
         if (strcmp(argv[1], "-e") == 0) {
             return ENCODE;
@@ -85,6 +92,7 @@ double Huffman::doEncode(char **argv, Argument arg) {
     if (nullptr == root) {
         std::cerr << "Error generating tree" << std::endl;
     }
+    tree->setRoot(root);
 
     sorter.sortCharacters(histogram, 0, ASCII_TABLE_SIZE - 1);
     createCodeTable(tree);
