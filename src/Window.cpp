@@ -3,11 +3,12 @@
 #include <QtWidgets/QTextEdit>
 #include <QtWidgets/QLineEdit>
 #include <QtWidgets/QPushButton>
+#include <QtWidgets/QMenuBar>
 
 Window::Window() {
-    this->widget = new QWidget();
     initWindow();
     initMainVBox();
+    initMenu();
 }
 
 void Window::initMainVBox() {
@@ -20,6 +21,7 @@ void Window::initMainVBox() {
 }
 
 void Window::initWindow() {
+    this->widget = new QWidget();
     setCentralWidget(widget);
     setWindowTitle("Kodowanie Huffmana");
     resize(800, 600);
@@ -65,4 +67,23 @@ QLayout *Window::initButtonLayer() {
     boxLayout->addWidget(encodeButton);
     boxLayout->addWidget(decodeButton);
     return boxLayout;
+}
+
+void Window::initMenu() {
+    auto mainMenu = menuBar();
+    initFileMenu(mainMenu);
+    initHelpMenu(mainMenu);
+}
+
+void Window::initFileMenu(QMenuBar *mainMenu) {
+    auto fileMenu = mainMenu->addMenu("Plik");
+    fileMenu->addMenu("Import");
+    fileMenu->addMenu("Export");
+    fileMenu->addMenu("Wyjscie");
+}
+
+void Window::initHelpMenu(QMenuBar *mainMenu) {
+    auto helpMenu = mainMenu->addMenu("Pomoc");
+    helpMenu->addMenu("O programie");
+    helpMenu->addMenu("Autorzy");
 }
