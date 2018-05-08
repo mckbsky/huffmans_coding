@@ -4,6 +4,9 @@
 #include <QtWidgets/QLineEdit>
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QMenuBar>
+#include <QtWidgets/QMessageBox>
+#include <QtCore/QCoreApplication>
+#include <QtWidgets/QFileDialog>
 
 Window::Window() {
     initWindow();
@@ -77,13 +80,37 @@ void Window::initMenu() {
 
 void Window::initFileMenu(QMenuBar *mainMenu) {
     auto fileMenu = mainMenu->addMenu("Plik");
-    fileMenu->addMenu("Import");
-    fileMenu->addMenu("Export");
-    fileMenu->addMenu("Wyjscie");
+    auto importAction = fileMenu->addAction("Import");
+    connect(importAction, &QAction::triggered, this, &Window::importAction);
+    auto exportAction = fileMenu->addAction("Export");
+    connect(exportAction, &QAction::triggered, this, &Window::exportAction);
+    auto exitAction = fileMenu->addAction("Wyjście");
+    connect(exitAction, &QAction::triggered, this, &QCoreApplication::exit);
 }
 
 void Window::initHelpMenu(QMenuBar *mainMenu) {
     auto helpMenu = mainMenu->addMenu("Pomoc");
-    helpMenu->addMenu("O programie");
-    helpMenu->addMenu("Autorzy");
+    auto aboutAction = helpMenu->addAction("O programie");
+    connect(aboutAction, &QAction::triggered, this, &Window::showAboutPopup);
+    auto authorsAction = helpMenu->addAction("Autorzy");
+    connect(authorsAction, &QAction::triggered, this, &Window::showAuthorsPopup);
+}
+
+void Window::showAuthorsPopup() {
+    QMessageBox authorsPopup;
+    authorsPopup.about(this, "Autorzy", "Maciej Brzęczkowski");
+}
+
+void Window::showAboutPopup() {
+    QMessageBox aboutPopup;
+    aboutPopup.about(this, "O programie", "Kodowanie Huffmana\n Projekt z przedmiotu 'Wstęp do komunikacji "
+                                          "człowiek-komputer\n 2018");
+}
+
+void Window::exportAction() {
+    QString filename = QFileDialog::getSaveFileName(this, QFileDialog::tr("Eksport"), "");
+}
+
+void Window::importAction() {
+    QString filename = QFileDialog::getOpenFileName(this, QFileDialog::tr("Import"), "");
 }

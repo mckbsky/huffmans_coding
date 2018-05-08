@@ -13,6 +13,14 @@ private:
     QWidget *widget;
     QVBoxLayout *qvBoxLayout;
 
+    void showAuthorsPopup();
+
+    void showAboutPopup();
+
+    void exportAction();
+
+    void importAction();
+
 public:
 
     Window();
@@ -28,6 +36,12 @@ public:
     QLayout *initKeyLayer();
 
     QLayout *initButtonLayer();
+
+    void initMenu();
+
+    void initFileMenu(QMenuBar *pBar);
+
+    void initHelpMenu(QMenuBar *pBar);
 };
 
 #endif
