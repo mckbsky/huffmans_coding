@@ -32,9 +32,9 @@ void Decoder::keyToHistogram(char *keyFileName, Histogram *histogram, int *codeC
     while (token != nullptr) {
         i = atoi(token);
         token = strtok(nullptr, delimeter);
-        histogram->getNode(i)->setFreq(atoi(token));
+        histogram->getNode(i).setFreq(atoi(token));
         token = strtok(nullptr, delimeter);
-        histogram->getNode(i)->setZeroes(atoi(token));
+        histogram->getNode(i).setZeroes(atoi(token));
         token = strtok(nullptr, delimeter);
     }
 
@@ -67,7 +67,7 @@ void Decoder::decode(Node *root, char *inputFileName, const char *outputFileName
     unsigned char binary[BYTE_SIZE + 1] = {0};
     while (fread(&parsedChar, 1, 1, inputFile) == 1) {
         if (ftell(inputFile) == inputFileSize && *codeCollision != -1) {
-            histogram->getNode(parsedChar)->setZeroes(*codeCollision);
+            histogram->getNode(parsedChar).setZeroes(*codeCollision);
         }
         asciiToBin(parsedChar, binary, histogram);
 
@@ -96,7 +96,7 @@ void Decoder::decode(Node *root, char *inputFileName, const char *outputFileName
 void Decoder::asciiToBin(unsigned char ascii, unsigned char *binary, Histogram *histogram) {
     int i;
     int j = 0;
-    int zeroes = histogram->getNode(ascii)->getZeroes();
+    int zeroes = histogram->getNode(ascii).getZeroes();
 
     for (i = BYTE_SIZE - 1; ascii != 0; --i) {
         binary[i] = (ascii & 1) == 0 ? '0' : '1';

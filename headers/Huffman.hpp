@@ -2,12 +2,9 @@
 #define HUFFMAN_H
 
 #include "Tree.hpp"
+#include <vector>
 
 class Huffman {
-
-private:
-
-    char **codes;
 
 public:
 
@@ -23,9 +20,7 @@ public:
 
     void freeMemory(Tree *tree);
 
-    void createCodeTable(Tree *tree);
-
-    double doEncode(char **argv, Argument arg);
+    std::vector<char> doEncode(char *input, char *output, Argument arg);
 };
 
 

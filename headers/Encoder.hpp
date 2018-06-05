@@ -3,6 +3,7 @@
 
 #include "Argument.hpp"
 #include "Histogram.hpp"
+#include <vector>
 
 #define BYTE_SIZE 8
 #define IS_ASCII(c)  (((c) & ~0xFF) == 0)
@@ -15,7 +16,7 @@ private:
 
 public:
 
-    double
+    std::vector<char>
     encode(char *inputFileName, char *outputFileName, Histogram *histogram, int *codeCollision, enum Argument arg,
            char **codes);
 

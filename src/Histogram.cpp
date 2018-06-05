@@ -23,7 +23,6 @@ bool Histogram::createHistogram(char *inputFile, enum Argument arg) {
         return false;
     }
 
-    this->histogram = new Node[256];
     prepareHistogram();
     fillHistogram(file);
 
@@ -66,12 +65,14 @@ long Histogram::fileSize(FILE *file) {
     return size;
 }
 
-Node *Histogram::getNode(int n) {
-    return &this->histogram[n];
+Node Histogram::getNode(int n) {
+    return this->histogram[n];
 }
 
-void Histogram::setNode(int n, Node *node) {
-    this->histogram[n] = *node;
+void Histogram::setNode(int n, Node node) {
+    this->histogram[n].setC(node.getC());
+    this->histogram[n].setFreq(node.getFreq());
+    this->histogram[n].setZeroes(node.getZeroes());
 }
 
 

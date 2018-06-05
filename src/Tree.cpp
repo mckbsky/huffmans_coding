@@ -1,4 +1,4 @@
-#include <cstdio>
+
 #include <cstdlib>
 #include "Tree.hpp"
 
@@ -27,7 +27,7 @@ Node *Tree::generateTree(Node *root, Histogram *histogram) {
 Node *Tree::addLeafToLeftBranch(Histogram *histogram, Node *root, int index) {
     auto *node = new Node();
     node->setLeft(new Node());
-    node->getLeft()->setC(histogram->getNode(index)->getC());
+    node->getLeft()->setC(histogram->getNode(index).getC());
     node->setRight(root);
     return node;
 }
@@ -35,9 +35,9 @@ Node *Tree::addLeafToLeftBranch(Histogram *histogram, Node *root, int index) {
 Node *Tree::addTwoLeavesAndCreateNewRoot(Histogram *histogram, Node *root, int index) {
     auto *node = new Node();
     node->setLeft(new Node());
-    node->getLeft()->setC(histogram->getNode(index - 1)->getC());
+    node->getLeft()->setC(histogram->getNode(index - 1).getC());
     node->setRight(new Node());
-    node->getRight()->setC(histogram->getNode(index)->getC());
+    node->getRight()->setC(histogram->getNode(index).getC());
 
     auto *newRoot = new Node();
     newRoot->setLeft(node);
@@ -47,16 +47,16 @@ Node *Tree::addTwoLeavesAndCreateNewRoot(Histogram *histogram, Node *root, int i
 
 Node *Tree::addLeaf(Histogram *histogram, int index) {
     auto *node = new Node();
-    node->setC(histogram->getNode(index)->getC());
+    node->setC(histogram->getNode(index).getC());
     return node;
 }
 
 Node *Tree::addTwoLeaves(Histogram *histogram, int index) {
     auto *node = new Node();
     node->setLeft(new Node());
-    node->getLeft()->setC(histogram->getNode(index - 1)->getC());
+    node->getLeft()->setC(histogram->getNode(index - 1).getC());
     node->setRight(new Node());
-    node->getRight()->setC(histogram->getNode(index)->getC());
+    node->getRight()->setC(histogram->getNode(index).getC());
     return node;
 }
 
@@ -108,13 +108,8 @@ bool Tree::isLeaf(Node *root) {
 void Tree::saveCode(List *list, unsigned char c) {
     auto tmp = list->getTail()->getPrev();
     unsigned int i;
-    size_t allocatedChunks = 0;
 
     for (i = 0; tmp != nullptr; i++) {
-        if (i + 2 >= allocatedChunks) {
-            allocatedChunks += 10;
-            codes[c] = (char *) realloc(codes[c], (allocatedChunks) * sizeof(char));
-        }
         codes[c][i] = tmp->getCode();
         codes[c][i + 1] = '\0';
         tmp = tmp->getPrev();
@@ -123,4 +118,23 @@ void Tree::saveCode(List *list, unsigned char c) {
 
 void Tree::setRoot(Node *node) {
     this->root = node;
+}
+
+char **Tree::getCodes() {
+    return this->codes;
+}
+
+void Tree::createCodeTable() {
+    auto *list = new List();
+    list->createList();
+
+//    codes = (char **) malloc(256 * sizeof(char *));
+//    for (int i = 0; i < 256; i++) {
+//        codes[i] = nullptr;
+//    }
+    this->codes = new char *[256];
+    for (int i = 0; i < 256; ++i) {
+        this->codes[i] = new char[30];
+    }
+    createCodes(getRoot(), list);
 }

@@ -8,6 +8,7 @@
 #include <Decoder.hpp>
 #include <cstring>
 #include <Window.hpp>
+#include <fstream>
 
 int main(int argc, char **argv) {
     auto *huffman = new Huffman();
@@ -24,8 +25,7 @@ int main(int argc, char **argv) {
         huffman->printHelp();
         return EXIT_SUCCESS;
     } else if (arg == ENCODE || arg == STRING || arg == ALL) {
-        double encodeTime = huffman->doEncode(argv, arg);
-        printf("Compression ratio = %.2lf\n", encodeTime);
+        huffman->doEncode(argv[2], argv[3], arg);
     } else if (arg == DECODE) {
         huffman->doDecode(argv[2], argv[3], argv[4]);
     } else if (arg == AUTHORS) {
@@ -74,15 +74,15 @@ void Huffman::printHelp() {
     printf("--authors - prints authors of this application\n");
 }
 
-double Huffman::doEncode(char **argv, Argument arg) {
+std::vector<char> Huffman::doEncode(char *input, char *output, Argument arg) {
     int codeCollision = -1;
     Node *root = nullptr;
     auto *histogram = new Histogram();
     double encodeTime;
 
-    if (!histogram->createHistogram(argv[2], arg)) {
+    if (!histogram->createHistogram(input, arg)) {
         fprintf(stderr, "Error creating histogram\n");
-        return -1.0;
+        return {};
     }
 
     HistrogramSorter sorter;
@@ -95,19 +95,20 @@ double Huffman::doEncode(char **argv, Argument arg) {
     tree->setRoot(root);
 
     sorter.sortCharacters(histogram, 0, ASCII_TABLE_SIZE - 1);
-    createCodeTable(tree);
+    tree->createCodeTable();
 
     Encoder encoder;
-    encodeTime = encoder.encode(argv[2], argv[3], histogram, &codeCollision, arg, codes);
-    encoder.generateKey(histogram, argv[3], codeCollision);
+    std::vector<char> encodedText = encoder.encode(input, output, histogram, &codeCollision, arg, tree->getCodes());
+    encoder.generateKey(histogram, output, codeCollision);
 
     if (arg == ALL) {
         Decoder decoder;
-        decoder.decode(root, argv[3], "decoded.txt", histogram, &codeCollision);
+        decoder.decode(root, output, "decoded.txt", histogram, &codeCollision);
     }
 
     freeMemory(tree);
-    return encodeTime;
+
+    return encodedText;
 }
 
 void Huffman::printAuthors() {
@@ -141,21 +142,11 @@ void Huffman::doDecode(char *input, char *output, char *key) {
 void Huffman::freeMemory(Tree *tree) {
     int i;
     for (i = 0; i < ASCII_TABLE_SIZE; i++) {
-        free(codes[i]);
+        free(tree->getCodes()[i]);
     }
-    free(codes);
+    free(tree->getCodes());
     tree->removeTree(tree->getRoot());
 }
 
-void Huffman::createCodeTable(Tree *tree) {
-    auto *list = new List();
-    list->createList();
-
-    codes = (char **) malloc(ASCII_TABLE_SIZE * sizeof(char *));
-    for (int i = 0; i < ASCII_TABLE_SIZE; i++) {
-        codes[i] = nullptr;
-    }
-    tree->createCodes(tree->getRoot(), list);
-}
 
 int Huffman::ASCII_TABLE_SIZE = 256;

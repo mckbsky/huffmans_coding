@@ -5,27 +5,29 @@
 #include <cmath>
 #include <cstring>
 
-double Encoder::encode(char *inputFileName, char *outputFileName, Histogram *histogram, int *codeCollision,
-                       enum Argument arg, char **codes) {
+std::vector<char> Encoder::encode(char *inputFileName, char *outputFileName, Histogram *histogram, int *codeCollision,
+                                  enum Argument arg, char **codes) {
     FILE *inputFile = nullptr;
     FILE *outputFile = fopen(outputFileName, "wb");
     long inputFileSize = 0, outputFileSize = 0;
+    std::vector<char> out;
 
     if (arg == ENCODE || arg == ALL) {
         inputFile = fopen(inputFileName, "r");
     } else if (arg == STRING) {
         inputFile = fmemopen((void *) inputFileName, strlen(inputFileName), "r");
     } else {
-        return -EINVAL;
+        std::cerr << "Error";
+        return {};
     }
 
     if (inputFile == nullptr) {
         std::cerr << "Error: Can't open input file - " << inputFileName << std::endl;
-        return -EIO;
+        return {};
     }
     if (outputFile == nullptr) {
         std::cerr << "Error: Can't open output file - " << outputFileName << std::endl;
-        return -EIO;
+        return {};
     }
 
     int i = 1;
@@ -37,10 +39,11 @@ double Encoder::encode(char *inputFileName, char *outputFileName, Histogram *his
     while (fscanf(inputFile, "%c", &parsedChar) == 1) {
         if (!IS_ASCII(parsedChar)) {
             std::cerr << "Found non-ASCII character ->  " << parsedChar << +", exiting..." << std::endl;
-            return -1.0;
+            return {};
         }
         inputFileSize++;
         while (true) {
+
             if (codes[parsedChar][j] != '\0') {
                 byte[i - 1] = static_cast<unsigned char>(codes[parsedChar][j]);
                 i++;
@@ -56,6 +59,7 @@ double Encoder::encode(char *inputFileName, char *outputFileName, Histogram *his
             if (i > BYTE_SIZE) {
                 unsigned char tmp = binToAscii(byte, histogram, codeCollision);
                 fwrite(&tmp, 1, 1, outputFile);
+                out.emplace_back(tmp);
                 outputFileSize++;
                 memset(byte, 0, sizeof(byte));
                 i = 1;
@@ -64,6 +68,7 @@ double Encoder::encode(char *inputFileName, char *outputFileName, Histogram *his
         if (i < BYTE_SIZE) {
             unsigned char tmp = binToAscii(byte, histogram, codeCollision);
             fwrite(&tmp, 1, 1, outputFile);
+            out.emplace_back(tmp);
             outputFileSize++;
         }
     }
@@ -76,7 +81,7 @@ double Encoder::encode(char *inputFileName, char *outputFileName, Histogram *his
     }
 
     std::cout << "Encoding of [" << inputFileName << "] successful!" << std::endl;
-    return (double) outputFileSize / inputFileSize;
+    return out;
 }
 
 unsigned char Encoder::binToAscii(unsigned char *binary, Histogram *histogram, int *codeCollision) {
@@ -97,9 +102,9 @@ unsigned char Encoder::binToAscii(unsigned char *binary, Histogram *histogram, i
         zeroes += 1;
     }
 
-    if (zeroes != 0 && histogram->getNode(ascii)->getZeroes() == 0) {
-        histogram->getNode(ascii)->setZeroes(zeroes);
-    } else if (histogram->getNode(ascii)->getZeroes() != zeroes) {
+    if (zeroes != 0 && histogram->getNode(ascii).getZeroes() == 0) {
+        histogram->getNode(ascii).setZeroes(zeroes);
+    } else if (histogram->getNode(ascii).getZeroes() != zeroes) {
         *codeCollision = zeroes;
     }
     return ascii;
@@ -122,9 +127,9 @@ void Encoder::generateKey(Histogram *histogram, char *outputFile, int codeCollis
 
     fprintf(file, "%d:", codeCollision);
     for (int i = 0; i < 256; ++i) {
-        if (histogram->getNode(i)->getFreq() != 0 || histogram->getNode(i)->getZeroes() != 0)
-            fprintf(file, "%d:%d:%d:", histogram->getNode(i)->getC(), histogram->getNode(i)->getFreq(),
-                    histogram->getNode(i)->getZeroes());
+        if (histogram->getNode(i).getFreq() != 0 || histogram->getNode(i).getZeroes() != 0)
+            fprintf(file, "%d:%d:%d:", histogram->getNode(i).getC(), histogram->getNode(i).getFreq(),
+                    histogram->getNode(i).getZeroes());
     }
     std::cout << "Your decoding key was saved to: [" << keyFileName << "]" << std::endl;
 

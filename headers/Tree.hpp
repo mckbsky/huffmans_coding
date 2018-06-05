@@ -42,6 +42,10 @@ public:
 
     bool isSingleLeafTree(Node *root, List *list);
 
+    char **getCodes();
+
+    void createCodeTable();
+
 };
 
 #endif

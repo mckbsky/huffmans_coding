@@ -97,13 +97,11 @@ void Window::initHelpMenu(QMenuBar *mainMenu) {
 }
 
 void Window::showAuthorsPopup() {
-    QMessageBox authorsPopup;
-    authorsPopup.about(this, "Autorzy", "Maciej Brzęczkowski");
+    QMessageBox::about(this, "Autorzy", "Maciej Brzęczkowski");
 }
 
 void Window::showAboutPopup() {
-    QMessageBox aboutPopup;
-    aboutPopup.about(this, "O programie", "Kodowanie Huffmana\n Projekt z przedmiotu 'Wstęp do komunikacji "
+    QMessageBox::about(this, "O programie", "Kodowanie Huffmana\n Projekt z przedmiotu 'Wstęp do komunikacji "
                                           "człowiek-komputer\n 2018");
 }
 

@@ -11,9 +11,9 @@ public:
 
     bool createHistogram(char *inputFile, enum Argument arg);
 
-    Node *getNode(int);
+    Node getNode(int);
 
-    void setNode(int, Node *);
+    void setNode(int, Node);
 
     void prepareHistogram();
 
@@ -23,7 +23,7 @@ public:
 
 private:
 
-    Node *histogram;
+    Node histogram[256];
 
     void fillHistogram(FILE *file);
 
