@@ -2,7 +2,7 @@
 #include <cstring>
 #include "Histogram.hpp"
 
-bool Histogram::createHistogram(char *inputFile, enum Argument arg) {
+bool Histogram::createHistogram(const char *inputFile, enum Argument arg) {
     FILE *file = nullptr;
 
     if (arg == ENCODE || arg == ALL) {

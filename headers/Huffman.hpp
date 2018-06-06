@@ -20,7 +20,7 @@ public:
 
     void freeMemory(Tree *tree);
 
-    std::vector<char> doEncode(char *input, char *output, Argument arg);
+    std::vector<char> doEncode(const char *input, const char *output, Argument arg);
 };
 
 

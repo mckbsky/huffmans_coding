@@ -5,6 +5,7 @@
 #include <QtWidgets/QWidget>
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QVBoxLayout>
+#include <QtWidgets/QTextEdit>
 
 class Window : public QMainWindow {
 
@@ -12,6 +13,8 @@ private:
 
     QWidget *widget;
     QVBoxLayout *qvBoxLayout;
+    QTextEdit *inTextEdit;
+    QTextEdit *outTextEdit;
 
     void showAuthorsPopup();
 
@@ -20,6 +23,8 @@ private:
     void exportAction();
 
     void importAction();
+
+    void encodeAction();
 
 public:
 

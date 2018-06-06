@@ -5,8 +5,9 @@
 #include <cmath>
 #include <cstring>
 
-std::vector<char> Encoder::encode(char *inputFileName, char *outputFileName, Histogram *histogram, int *codeCollision,
-                                  enum Argument arg, char **codes) {
+std::vector<char>
+Encoder::encode(const char *inputFileName, const char *outputFileName, Histogram *histogram, int *codeCollision,
+                enum Argument arg, char **codes) {
     FILE *inputFile = nullptr;
     FILE *outputFile = fopen(outputFileName, "wb");
     long inputFileSize = 0, outputFileSize = 0;
@@ -111,7 +112,7 @@ unsigned char Encoder::binToAscii(unsigned char *binary, Histogram *histogram, i
 }
 
 
-void Encoder::generateKey(Histogram *histogram, char *outputFile, int codeCollision) {
+void Encoder::generateKey(Histogram *histogram, const char *outputFile, int codeCollision) {
     auto postfix = "_key";
     auto keyFileName = (char *) malloc(strlen(outputFile) + strlen(postfix));
 

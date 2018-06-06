@@ -74,7 +74,7 @@ void Huffman::printHelp() {
     printf("--authors - prints authors of this application\n");
 }
 
-std::vector<char> Huffman::doEncode(char *input, char *output, Argument arg) {
+std::vector<char> Huffman::doEncode(const char *input, const char *output, Argument arg) {
     int codeCollision = -1;
     Node *root = nullptr;
     auto *histogram = new Histogram();

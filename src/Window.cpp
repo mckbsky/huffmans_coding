@@ -1,12 +1,13 @@
 #include <Window.hpp>
 #include <QtWidgets/QLabel>
-#include <QtWidgets/QTextEdit>
 #include <QtWidgets/QLineEdit>
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QMenuBar>
 #include <QtWidgets/QMessageBox>
 #include <QtCore/QCoreApplication>
 #include <QtWidgets/QFileDialog>
+#include <iostream>
+#include <headers/Huffman.hpp>
 
 Window::Window() {
     initWindow();
@@ -44,8 +45,8 @@ QLayout *Window::initLabelLayer() {
 
 QLayout *Window::initInputLayer() {
     auto boxLayout = new QHBoxLayout();
-    auto inTextEdit = new QTextEdit();
-    auto outTextEdit = new QTextEdit();
+    inTextEdit = new QTextEdit();
+    outTextEdit = new QTextEdit();
     boxLayout->addWidget(inTextEdit);
     boxLayout->addWidget(outTextEdit);
     return boxLayout;
@@ -64,6 +65,7 @@ QLayout *Window::initKeyLayer() {
 QLayout *Window::initButtonLayer() {
     auto encodeButton = new QPushButton();
     encodeButton->setText("Kodowanie");
+    connect(encodeButton, &QPushButton::released, this, &Window::encodeAction);
     auto decodeButton = new QPushButton();
     decodeButton->setText("Dekodowanie");
     auto boxLayout = new QHBoxLayout();
@@ -102,7 +104,7 @@ void Window::showAuthorsPopup() {
 
 void Window::showAboutPopup() {
     QMessageBox::about(this, "O programie", "Kodowanie Huffmana\n Projekt z przedmiotu 'Wstęp do komunikacji "
-                                          "człowiek-komputer\n 2018");
+                                            "człowiek-komputer\n 2018");
 }
 
 void Window::exportAction() {
@@ -111,4 +113,12 @@ void Window::exportAction() {
 
 void Window::importAction() {
     QString filename = QFileDialog::getOpenFileName(this, QFileDialog::tr("Import"), "");
+}
+
+void Window::encodeAction() {
+    auto inputText = inTextEdit->toPlainText().toLatin1().data();
+    Huffman huffman;
+    auto encodedChars = huffman.doEncode(inputText, "out.txt", Argument::STRING);
+    std::string encodedString(encodedChars.begin(), encodedChars.end());
+    outTextEdit->setPlainText(QString(encodedString.c_str()));
 }

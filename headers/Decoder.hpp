@@ -11,7 +11,8 @@ public:
     void keyToHistogram(char *keyFileName, Histogram *histogram, int *codeCollision);
 
     void
-    decode(Node *root, char *inputFileName, const char *outputFileName, Histogram *histogram, const int *codeCollision);
+    decode(Node *root, const char *inputFileName, const char *outputFileName, Histogram *histogram,
+           const int *codeCollision);
 
     void asciiToBin(unsigned char ascii, unsigned char *binary, Histogram *histogram);
 

@@ -45,7 +45,7 @@ void Decoder::keyToHistogram(char *keyFileName, Histogram *histogram, int *codeC
     free(key);
 }
 
-void Decoder::decode(Node *root, char *inputFileName, const char *outputFileName, Histogram *histogram,
+void Decoder::decode(Node *root, const char *inputFileName, const char *outputFileName, Histogram *histogram,
                      const int *codeCollision) {
     Node *tmp = root;
     FILE *inputFile, *outputFile;

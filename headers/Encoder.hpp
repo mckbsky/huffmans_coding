@@ -17,10 +17,11 @@ private:
 public:
 
     std::vector<char>
-    encode(char *inputFileName, char *outputFileName, Histogram *histogram, int *codeCollision, enum Argument arg,
+    encode(const char *inputFileName, const char *outputFileName, Histogram *histogram, int *codeCollision,
+           enum Argument arg,
            char **codes);
 
-    void generateKey(Histogram *histogram, char *outputFile, int codeCollision);
+    void generateKey(Histogram *histogram, const char *outputFile, int codeCollision);
 
 };
 

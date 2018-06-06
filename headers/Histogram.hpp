@@ -9,7 +9,7 @@ class Histogram {
 
 public:
 
-    bool createHistogram(char *inputFile, enum Argument arg);
+    bool createHistogram(const char *inputFile, enum Argument arg);
 
     Node getNode(int);
 
